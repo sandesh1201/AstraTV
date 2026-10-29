@@ -1,0 +1,11 @@
+[
+  {
+    "id": "my-film",
+    "title": "My authorized film",
+    "url": "https://example.com/my-film.mp4",
+    "description": "Replace this entry with media you own or have permission to play.",
+    "year": "2026",
+    "genre": "Independent",
+    "cast": "Your cast and creators"
+  }
+]
