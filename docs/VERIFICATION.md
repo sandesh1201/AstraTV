@@ -1,4 +1,21 @@
-# Verification · native edition 0.2
+# Verification · research edition 0.3
+
+## Version 0.3 validation (2026-10-29)
+
+- `assembleDebug`, `lintDebug`, `testDebugUnitTest` passed: **24 tests, zero failures/errors** (10 parser, 5 NetMirror contracts, 9 research-edition tests). Lint has no errors. The original 0.2 checks below remain historical evidence, not new coverage of every source.
+- New fixtures cover quoted M3U metadata, movie variants/languages, country membership, unsafe credential/CRLF headers, rejected HTTP/DRM directives, multi-season episode identity, filtering/pagination, HLS behind misleading MP4 names, origin-bound AES-GCM and research-log redaction. Fixed Prime and Hotstar platform requests are tested with injected sessions; these are contract tests, not live service access.
+- Supplied movie playlist inspection found 6,850 raw entries, including 3,160 Telugu and 687 Hindi tags. Grouped native catalogs deduplicate variants; counts may differ and the upstream playlist changes. Small host-side probes of one Telugu and one Hindi source returned HTTP 200 HLS content. No complete films were downloaded for testing.
+- Latest APK installed on the isolated landscape Android 16 emulator. Native home artwork, title metadata, seven add-on profiles and shared navigation rendered. MovieRulz default Telugu/Hindi catalog displayed 3,884 grouped items during this run, in bounded pages.
+- **New playlist playback verified:** selecting a Telugu-tagged entry through native details → source chooser → preflight rendered video in Media3. MediaSession reported PLAYING, a progressing position and buffered duration. Evidence: ignored `build/v3-playback.png`. This verifies the tested source only, not the accuracy of its label, complete content, all variants, or future availability.
+- Native Telugu TV shelf loaded with channel cards; its default catalog contained 70 indexed entries during investigation. This is directory coverage, not 70 individually verified broadcasts. The India adapter reports partial language-feed coverage and retains remaining country entries under Other Indian languages.
+- The final APK's Language selector changed Telugu → All and showed 796 indexed language/channel entries with explicit 14/15 feed coverage. News genre selection was exercised separately. Language duplicates and alternate feeds mean this is not a count of unique broadcasters or verified playable streams.
+- Artwork now follows bounded HTTPS redirects and retains native letter placeholders on failure. Source errors remain native; no browser fallback was reintroduced.
+- **Catch-up navigation verified:** TamilTVSerials rendered native series cards, including Bigg Boss Telugu. Its detail page opened Season 10 and dated Episode 54/53/52 cards inside the same Astra shell. Back returned to native details. Evidence: ignored `build/v3-episodes.png`. This is UI/metadata verification, not verification of the broken video hosts.
+- Final lint: **0 errors, 27 warnings**. Packaged debug APK signature verifies with one v2 signer. A final category-hero correction selects a title from the visible provider category instead of retaining a movie when switching to Live.
+- NetMirror remains inaccessible with the published reference endpoints/session state. Tested Tamil video shortlinks returned tiny non-video redirect pages. Native catalog/episode UI does not establish their playback availability.
+- Team workflow and defensive test cases are in [RESEARCH_GUIDE.md](RESEARCH_GUIDE.md). Physical Android TV remote, decoder, speaker, large-library and hostile-network acceptance remains necessary; this is not a security certification.
+
+## Earlier 0.2 evidence
 
 The original 0.1 prototype was a browser companion. Version 0.2 removes that approach. This record distinguishes app behavior, parser coverage, external-provider availability and runtime checks; compilation alone does not establish that a third-party video can play.
 

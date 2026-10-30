@@ -39,9 +39,10 @@ public class PlaybackService extends MediaSessionService {
             String id=intent.getStringExtra("id"),url=intent.getStringExtra("url");
             if(Library.https(url)&&(player.getCurrentMediaItem()==null||!player.getCurrentMediaItem().mediaId.equals(id)||intent.getBooleanExtra("retry",false))){
                 save();Map<String,String> headers=new HashMap<>();
-                try{JSONObject h=new JSONObject(intent.getStringExtra("headers"));Iterator<String> keys=h.keys();while(keys.hasNext()){String key=keys.next();headers.put(key,h.getString(key));}}catch(Exception ignored){}
-                DefaultHttpDataSource.Factory http=new DefaultHttpDataSource.Factory().setConnectTimeoutMs(10000).setReadTimeoutMs(12000).setAllowCrossProtocolRedirects(false).setDefaultRequestProperties(headers).setUserAgent("AstraTV/0.2");
+                try{headers.putAll(PlaylistParser.safeHeaders(new JSONObject(intent.getStringExtra("headers"))));}catch(Exception ignored){}
+                DefaultHttpDataSource.Factory http=new DefaultHttpDataSource.Factory().setConnectTimeoutMs(10000).setReadTimeoutMs(12000).setAllowCrossProtocolRedirects(false).setDefaultRequestProperties(headers).setUserAgent("AstraTV/0.3");
                 MediaItem.Builder item=new MediaItem.Builder().setMediaId(id).setUri(url).setMediaMetadata(new MediaMetadata.Builder().setTitle(intent.getStringExtra("title")).build());
+                String mime=intent.getStringExtra("mimeType");if(mime!=null&&!mime.isEmpty())item.setMimeType(mime);
                 List<MediaItem.SubtitleConfiguration> subtitles=new ArrayList<>();
                 try{JSONArray a=new JSONArray(intent.getStringExtra("subtitles"));for(int i=0;i<a.length();i++){JSONObject s=a.getJSONObject(i);String uri=s.optString("url");if(Library.https(uri))subtitles.add(new MediaItem.SubtitleConfiguration.Builder(android.net.Uri.parse(uri)).setMimeType(uri.toLowerCase(Locale.ROOT).contains(".srt")?MimeTypes.APPLICATION_SUBRIP:MimeTypes.TEXT_VTT).setLabel(s.optString("lang","Subtitles")).build());}}catch(Exception ignored){}
                 item.setSubtitleConfigurations(subtitles);

@@ -13,18 +13,25 @@ import java.util.concurrent.*;
 public final class ProviderRepository {
     public static final class Catalog {
         public final List<Library.Title> titles;public final String status;public final boolean stale;
-        Catalog(List<Library.Title> titles,String status,boolean stale){this.titles=titles;this.status=status;this.stale=stale;}
+        public final int total,page;public final boolean hasMore;
+        Catalog(List<Library.Title> titles,String status,boolean stale){this(titles,status,stale,titles.size(),1,titles.size()>=18);}
+        Catalog(List<Library.Title> titles,String status,boolean stale,int total,int page,boolean hasMore){this.titles=titles;this.status=status;this.stale=stale;this.total=total;this.page=page;this.hasMore=hasMore;}
     }
     public static final class Stream {
         public final String name,url;public final Map<String,String> headers;
         public final JSONArray subtitles=new JSONArray();
+        public String mimeType="";
         Stream(String name,String url,Map<String,String> headers){this.name=name;this.url=url;this.headers=headers;}
     }
     public final ExecutorService io=Executors.newFixedThreadPool(4);
     private final SharedPreferences prefs;
     private final File cache;
     private final NetMirrorProvider netmirror;
-    public ProviderRepository(Context c){prefs=c.getSharedPreferences("astra",0);cache=new File(c.getCacheDir(),"catalogs");cache.mkdirs();netmirror=new NetMirrorProvider(prefs);}
+    private final MoviePlaylistProvider movies=new MoviePlaylistProvider();
+    private final IndianTvProvider tv=new IndianTvProvider();
+    public ProviderRepository(Context c){prefs=c.getSharedPreferences("astra",0);cache=new File(c.getCacheDir(),"catalogs-v3");cache.mkdirs();netmirror=new NetMirrorProvider(prefs);}
+    public String language(String id){return prefs.getString("browse.language."+id,id.equals("movierulz")?"Telugu + Hindi":id.equals("news")?"Telugu":"All");}
+    public String genre(String id){return prefs.getString("browse.genre."+id,"All");}
     public String endpoint(String id){return prefs.getString("provider."+id,"");}
     public boolean enabled(String id){return prefs.getBoolean("addon."+id,true);}
     public void configure(String id,String manifest)throws IOException{
@@ -33,30 +40,36 @@ public final class ProviderRepository {
         File f=new File(cache,id+".json");if(f.exists())f.delete();
     }
     public Catalog load(Library.Addon addon,String search,int page)throws Exception{
+        requireEnabled(addon.id);
         List<Library.Title> titles;
         try{
+            Catalog catalog=null;
             if(!endpoint(addon.id).isEmpty())titles=manifestCatalog(addon,search,page);
-            else if(addon.id.equals("netmirror"))titles=netmirror.catalog(search);
-            else if(addon.id.equals("news"))titles=news();
+            else if(Library.netmirror(addon.id))titles=netmirror.catalog(search,addon.id);
+            else if(addon.id.equals("movierulz")){catalog=movies.catalog(search,page,search.isEmpty()?language(addon.id):"All",search.isEmpty()?genre(addon.id):"All");titles=catalog.titles;}
+            else if(addon.id.equals("news")){catalog=tv.catalog(search,page,search.isEmpty()?language(addon.id):"All",search.isEmpty()?genre(addon.id):"All");titles=catalog.titles;}
             else{
                 String url=addon.url+(page>1?"page/"+page+"/":"")+(search.isEmpty()?"":"?s="+encode(search));
                 Response r=request(url,"");titles=ProviderParser.catalog(addon,r.body,r.url);
                 if(titles.isEmpty())throw new IOException("Provider returned no catalog items. Its format or availability may have changed.");
+                if(addon.id.equals("tamil")||addon.id.equals("telugu"))titles=SeriesIndex.group(titles);
             }
-            if(search.isEmpty()&&page==1)saveCatalog(addon.id,titles);
-            return new Catalog(titles,titles.size()+" titles",false);
+            Catalog result=catalog==null?new Catalog(titles,titles.size()+" titles",false):catalog;
+            if(search.isEmpty()&&page==1)saveCatalog(addon.id,result);
+            return result;
         }catch(Exception e){
-            if(search.isEmpty()&&page==1){List<Library.Title> saved=readCatalog(addon.id);if(!saved.isEmpty())return new Catalog(saved,"Saved catalog · "+message(e),true);}
+            if(search.isEmpty()&&page==1){Catalog saved=readCached(addon.id);if(saved!=null&&!saved.titles.isEmpty())return new Catalog(saved.titles,"Saved catalog · "+message(e),true,saved.total,1,saved.hasMore);}
             throw e;
         }
     }
     public List<Library.Title> cached(String id){return readCatalog(id);}
     public Library.Title details(Library.Title t)throws Exception{
+        if(!enabled(t.provider))return t;
         String manifest=endpoint(t.provider);
         if(!manifest.isEmpty()){
             JSONObject data=new JSONObject(request(base(manifest)+"/meta/"+encode(t.type)+"/"+encode(t.id)+".json","").body);
             if(data.optJSONObject("meta")!=null){Library.Title full=ProviderParser.meta(data.getJSONObject("meta"),t.provider,t.providerName);if(full.poster.isEmpty())full.poster=t.poster;return full;}
-        }else if(t.provider.equals("netmirror"))return netmirror.details(t);
+        }else if(Library.netmirror(t.provider))return netmirror.details(t);
         else if(!t.pageUrl.isEmpty()){Response r=request(t.pageUrl,"");return ProviderParser.details(t,r.body,r.url);}
         return t;
     }
@@ -80,8 +93,9 @@ public final class ProviderRepository {
         return out;
     }
     public List<Stream> streams(Library.Title t)throws Exception{
-        if(t.provider.equals("news")&&t.videos.length()>0){List<Stream> out=new ArrayList<>();for(int i=0;i<t.videos.length();i++){JSONObject v=t.videos.getJSONObject(i);if(Library.https(v.optString("url")))out.add(new Stream(v.optString("name","Live source"),v.getString("url"),Collections.emptyMap()));}if(!out.isEmpty())return out;}
-        if(Library.https(t.url))return Collections.singletonList(new Stream("Direct playback",t.url,Collections.emptyMap()));
+        requireEnabled(t.provider);
+        if((t.provider.equals("news")||t.provider.equals("movierulz"))&&t.videos.length()>0){List<Stream> out=new ArrayList<>();for(int i=0;i<t.videos.length();i++){JSONObject v=t.videos.getJSONObject(i);if(Library.https(v.optString("url")))out.add(new Stream(v.optString("name","Source"),v.getString("url"),PlaylistParser.safeHeaders(v.optJSONObject("headers"))));}if(!out.isEmpty())return out;}
+        if(Library.https(t.url))return Collections.singletonList(new Stream("Direct playback",t.url,PlaylistParser.safeHeaders(t.headers)));
         String manifest=endpoint(t.provider);
         if(!manifest.isEmpty()){
             JSONArray streams=new JSONObject(request(base(manifest)+"/stream/"+encode(t.type)+"/"+encode(t.id)+".json","").body).optJSONArray("streams");
@@ -93,7 +107,7 @@ public final class ProviderRepository {
             }
             if(out.isEmpty())throw new IOException("This provider returned no direct HTTPS streams. Browser links, torrents and DRM-only sources cannot be played by this integration.");return out;
         }
-        if(t.provider.equals("netmirror"))return netmirror.streams(t);
+        if(Library.netmirror(t.provider))return netmirror.streams(t);
         if(t.pageUrl.isEmpty())throw new IOException("No native stream has been supplied for this title.");
         List<Stream> out=new ArrayList<>();Set<String> seen=new HashSet<>();long deadline=System.nanoTime()+TimeUnit.SECONDS.toNanos(25);
         resolvePage(t.pageUrl,"",0,seen,out,deadline);
@@ -115,23 +129,41 @@ public final class ProviderRepository {
             if(!out.isEmpty())break;
         }
     }
-    private static List<Library.Title> news()throws Exception{
-        List<Library.Title> channels=ProviderParser.newsPlaylist(request("https://iptv-org.github.io/iptv/languages/tel.m3u","",Collections.emptyMap(),true).body);
-        if(channels.isEmpty())throw new IOException("No HTTPS Telugu news streams were returned by the directory.");return channels;
-    }
     public List<Library.Title> episodes(Library.Title t,int season)throws Exception{
-        if(t.provider.equals("netmirror")&&endpoint(t.provider).isEmpty())return netmirror.episodes(t,season);
-        List<Library.Title> out=new ArrayList<>();for(int i=0;i<t.videos.length();i++){JSONObject video=t.videos.optJSONObject(i);if(video==null)continue;Library.Title episode=Library.Title.from(t.json());episode.id=video.getString("id");episode.name=video.optString("title",video.optString("name","Episode "+(i+1)));episode.type=t.type;episode.videos=new JSONArray();episode.seasons=new JSONArray();out.add(episode);}return out;
+        return episodes(t,season,1);
     }
-    private void saveCatalog(String id,List<Library.Title> titles){try{JSONArray a=new JSONArray();for(Library.Title t:titles)a.put(t.json());try(Writer w=new OutputStreamWriter(new FileOutputStream(new File(cache,id+".json")),StandardCharsets.UTF_8)){w.write(a.toString());}}catch(Exception ignored){}}
-    private List<Library.Title> readCatalog(String id){List<Library.Title> out=new ArrayList<>();try{File f=new File(cache,id+".json");if(!f.exists())return out;try(InputStream in=new FileInputStream(f)){JSONArray a=new JSONArray(read(in,4*1024*1024));for(int i=0;i<a.length();i++)out.add(Library.Title.from(a.getJSONObject(i)));}}catch(Exception ignored){}return out;}
+    public List<Library.Title> episodes(Library.Title t,int season,int page)throws Exception{
+        requireEnabled(t.provider);
+        if(Library.netmirror(t.provider)&&endpoint(t.provider).isEmpty())return netmirror.episodes(t,season);
+        List<Library.Title> out=new ArrayList<>();
+        if((t.provider.equals("tamil")||t.provider.equals("telugu"))&&!t.seriesUrl.isEmpty()){
+            Library.Addon addon=null;for(Library.Addon a:Library.addons())if(a.id.equals(t.provider))addon=a;
+            String url=addon.url+"?s="+encode(t.name)+(page>1?"&paged="+page:"");Response r=request(url,"");for(Library.Title post:ProviderParser.catalog(addon,r.body,r.url))if(SeriesIndex.normalized(SeriesIndex.nameOf(post.name)).equals(SeriesIndex.normalized(t.name))&&(season<0||post.season==season)){post.type="episode";post.name=post.episode>0?"Episode "+post.episode+(post.released.isEmpty()?"":" · "+post.released):post.released;out.add(post);}
+            if(!out.isEmpty())return out;
+        }
+        if(page>1)return out;
+        for(int i=0;i<t.videos.length();i++){JSONObject video=t.videos.optJSONObject(i);if(video==null)continue;Library.Title episode=video.has("pageUrl")?Library.Title.from(video):Library.Title.from(t.json());episode.id=video.getString("id");episode.name=video.optString("title",video.optString("name","Episode "+(i+1)));if(!video.has("pageUrl"))episode.type=t.type;episode.videos=new JSONArray();episode.seasons=new JSONArray();out.add(episode);}return out;
+    }
+    private void requireEnabled(String id)throws IOException{if(!enabled(id))throw new IOException("This provider is disabled. Enable it in Add-ons to use its sources.");}
+    private File cacheFile(String id){String sessionScope=Library.netmirror(id)?prefs.getString("netmirror.api","")+"|"+prefs.getInt("netmirror.session.revision",0):"";return new File(cache,id+"-"+PlaylistParser.stable(language(id)+"|"+genre(id)+"|"+endpoint(id)+"|"+sessionScope)+".json");}
+    private void saveCatalog(String id,Catalog catalog){try{JSONArray a=new JSONArray();for(Library.Title t:catalog.titles)a.put(t.json());JSONObject data=new JSONObject().put("items",a).put("total",catalog.total).put("hasMore",catalog.hasMore).put("savedAt",System.currentTimeMillis());try(Writer w=new OutputStreamWriter(new FileOutputStream(cacheFile(id)),StandardCharsets.UTF_8)){w.write(data.toString());}}catch(Exception ignored){}}
+    private Catalog readCached(String id){try{File f=cacheFile(id);if(!f.exists())return null;try(InputStream in=new FileInputStream(f)){JSONObject data=new JSONObject(read(in,4*1024*1024));JSONArray a=data.getJSONArray("items");List<Library.Title> titles=new ArrayList<>();for(int i=0;i<a.length();i++)titles.add(Library.Title.from(a.getJSONObject(i)));return new Catalog(titles,"Saved catalog",true,data.optInt("total",titles.size()),1,data.optBoolean("hasMore"));}}catch(Exception ignored){return null;}}
+    private List<Library.Title> readCatalog(String id){Catalog c=readCached(id);return c==null?new ArrayList<>():c.titles;}
     private static String base(String manifest){return manifest.substring(0,manifest.length()-"/manifest.json".length());}
     private static String encode(String s){try{return URLEncoder.encode(s,"UTF-8").replace("+","%20");}catch(UnsupportedEncodingException e){throw new IllegalStateException(e);}}
-    public static String message(Exception e){String m=e.getMessage();return m==null?"Provider unavailable":m;}
+    public static String message(Exception e){
+        if(e instanceof java.net.SocketTimeoutException)return "The source did not respond in time. Try again.";
+        if(e instanceof java.net.UnknownHostException)return "The source host could not be reached.";
+        if(e instanceof javax.net.ssl.SSLException)return "A secure connection to this source could not be established.";
+        if(e instanceof org.json.JSONException)return "The source returned an unsupported data format.";
+        String m=e.getMessage();if(m!=null)for(String prefix:new String[]{"Source ","Provider ","NetMirror ","No ","The host ","This provider ","This manifest ","Only HTTPS ","Enter an HTTPS ","The device ","Too many ","Each video ","Maximum ","Catalog must "})if(m.startsWith(prefix))return m;
+        return "This source is unavailable. Check your connection and provider settings.";
+    }
     public static final class Response {public String body,url;public boolean media;Response(String body,String url,boolean media){this.body=body;this.url=url;this.media=media;}}
     public static Response request(String address,String referer)throws IOException{
         return request(address,referer,Collections.emptyMap());
     }
+    public static String requestText(String address)throws IOException{return request(address,"",Collections.emptyMap(),true).body;}
     public static Response request(String address,String referer,Map<String,String> headers)throws IOException{
         return request(address,referer,headers,false);
     }
@@ -141,7 +173,7 @@ public final class ProviderRepository {
             if(!Library.https(current))throw new IOException("Only HTTPS providers are supported");
             HttpURLConnection c=(HttpURLConnection)new URL(current).openConnection();
             c.setInstanceFollowRedirects(false);c.setConnectTimeout(8000);c.setReadTimeout(8000);
-            c.setRequestProperty("User-Agent","AstraTV/0.2 (Android TV; native media client)");c.setRequestProperty("Accept","application/json,text/html,*/*");
+            c.setRequestProperty("User-Agent","AstraTV/0.3 (Android TV; native media client)");c.setRequestProperty("Accept","application/json,text/html,*/*");
             if(!referer.isEmpty())c.setRequestProperty("Referer",referer);
             for(Map.Entry<String,String> h:headers.entrySet())c.setRequestProperty(h.getKey(),h.getValue());
             try{

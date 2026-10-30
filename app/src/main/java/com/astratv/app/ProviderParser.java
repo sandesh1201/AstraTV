@@ -22,7 +22,14 @@ public final class ProviderParser {
             Matcher year=Pattern.compile("\\b(19|20)\\d{2}\\b").matcher(name);if(year.find())t.year=year.group();
             String clean=name.replaceAll("(?i)\\s*(HDRip|DVDScr|WEBRip|WEB-DL|BRRip|BluRay|HDTS)\\b.*","").replaceAll("\\s*\\((19|20)\\d{2}\\)","");
             if(!addon.id.equals("movierulz")){clean=clean.replaceAll("\\s*[-–]?\\s*\\d{2}-\\d{2}-\\d{4}.*","");Element badge=block.selectFirst(".skytamil-episode-badge");if(badge!=null)t.genre=badge.text();}
-            if(!clean.trim().isEmpty())t.name=clean.trim();result.add(t);if(result.size()==60)break;
+            if(!clean.trim().isEmpty())t.name=clean.trim();
+            Matcher date=Pattern.compile("(\\d{2})-(\\d{2})-((?:19|20)\\d{2})").matcher(name);if(date.find())t.released=date.group(3)+"-"+date.group(2)+"-"+date.group(1);
+            Matcher episode=Pattern.compile("(?i)episode\\s*(\\d+)").matcher(name);if(episode.find())t.episode=number(episode.group(1),0);
+            Matcher season=Pattern.compile("(?i)season\\s*(\\d+)").matcher(name);if(season.find())t.season=number(season.group(1),1);
+            t.language=addon.id.equals("telugu")?"Telugu":addon.id.equals("tamil")?"Tamil":name.toLowerCase(Locale.ROOT).contains("hindi")?"Hindi":name.toLowerCase(Locale.ROOT).contains("telugu")?"Telugu":"";
+            for(String language:new String[]{"Malayalam","Kannada","Telugu","Hindi","Tamil"})if(name.toLowerCase(Locale.ROOT).contains(language.toLowerCase(Locale.ROOT))){t.language=language;break;}
+            if(addon.id.equals("tamil")||addon.id.equals("telugu"))t.seriesUrl=ProviderParser.absolute(base,"/?s="+encode(t.name));
+            result.add(t);if(result.size()==60)break;
         }return result;
     }
     public static Library.Title details(Library.Title t,String html,String base){
@@ -53,6 +60,8 @@ public final class ProviderParser {
         if(o.optJSONArray("genres")!=null)t.genre=join(o.getJSONArray("genres"));if(o.optJSONArray("cast")!=null)t.cast=join(o.getJSONArray("cast"));return t;
     }
     private static String join(JSONArray array)throws JSONException{List<String> v=new ArrayList<>();for(int i=0;i<array.length();i++)v.add(array.getString(i));return String.join(" · ",v);}
+    private static String encode(String text){try{return java.net.URLEncoder.encode(text,"UTF-8");}catch(java.io.UnsupportedEncodingException e){throw new IllegalStateException(e);}}
+    private static int number(String text,int fallback){try{return Math.min(1000000,Integer.parseInt(text));}catch(NumberFormatException e){return fallback;}}
     public static List<Library.Title> newsPlaylist(String playlist)throws JSONException{
         Map<String,Library.Title> channels=new LinkedHashMap<>();String info="";
         for(String line:playlist.split("\\r?\\n")){

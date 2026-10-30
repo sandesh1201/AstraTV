@@ -4,7 +4,7 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
     <uses-feature android:name="android.software.leanback" android:required="false" />
     <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
-    <application android:label="Astra TV" android:theme="@style/AppTheme" android:icon="@drawable/banner" android:banner="@drawable/banner" android:allowBackup="false" android:usesCleartextTraffic="false">
+    <application android:label="Astra TV" android:theme="@style/AppTheme" android:icon="@drawable/banner" android:banner="@drawable/banner" android:allowBackup="false" android:dataExtractionRules="@xml/data_extraction_rules" android:usesCleartextTraffic="false">
         <activity android:name=".MainActivity" android:exported="true" android:screenOrientation="landscape">
             <intent-filter><action android:name="android.intent.action.MAIN" /><category android:name="android.intent.category.LEANBACK_LAUNCHER" /><category android:name="android.intent.category.LAUNCHER" /></intent-filter>
         </activity>

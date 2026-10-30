@@ -16,11 +16,14 @@ final class NetMirrorProvider {
     private final SharedPreferences prefs;
     interface Transport{String get(String url,Map<String,String> headers)throws IOException;}
     private final Transport transport;
-    NetMirrorProvider(SharedPreferences prefs){this(prefs,(url,h)->ProviderRepository.request(url,h.getOrDefault("Referer",""),h).body);}
-    NetMirrorProvider(SharedPreferences prefs,Transport transport){this.prefs=prefs;this.transport=transport;}
+    interface SessionReader{String read(String origin);}
+    private final SessionReader sessions;
+    NetMirrorProvider(SharedPreferences prefs){this(prefs,(url,h)->ProviderRepository.request(url,h.getOrDefault("Referer",""),h).body,new SessionVault(prefs)::read);}
+    NetMirrorProvider(SharedPreferences prefs,Transport transport){this(prefs,transport,new SessionVault(prefs)::read);}
+    NetMirrorProvider(SharedPreferences prefs,Transport transport,SessionReader sessions){this.prefs=prefs;this.transport=transport;this.sessions=sessions;}
     String base(){return prefs.getString("netmirror.api","https://net50.cc/mobile").replaceAll("/+$","");}
     private Map<String,String> headers(String ott){
-        Map<String,String> h=new HashMap<>();String cookie=prefs.getString("netmirror.session","");
+        Map<String,String> h=new HashMap<>();String cookie=sessions.read(base());
         if(!cookie.isEmpty())h.put("Cookie","t_hash_t="+cookie+"; ott="+ott+";");
         h.put("Referer",base()+"/home?app=1");return h;
     }
@@ -37,17 +40,18 @@ final class NetMirrorProvider {
     private static Library.Title title(String ott,String id,String name){
         Library.Title t=new Library.Title(ott+"~"+id,name,"","","","","NetMirror");t.provider="netmirror";t.providerName="NetMirror";t.poster=poster(ott,id);t.background=t.poster;return t;
     }
-    List<Library.Title> catalog(String search)throws Exception{
-        String ott=prefs.getString("netmirror.ott","nf");List<Library.Title> out=new ArrayList<>();
+    List<Library.Title> catalog(String search)throws Exception{return catalog(search,"netmirror");}
+    List<Library.Title> catalog(String search,String provider)throws Exception{
+        String ott=Library.platform(provider);List<Library.Title> out=new ArrayList<>();
         if(!search.isEmpty()){
             JSONObject o=object("/"+prefix(ott)+"search.php?s="+encode(search),ott);JSONArray items=o.optJSONArray("searchResult");
-            if(items!=null)for(int i=0;i<items.length();i++){JSONObject item=items.getJSONObject(i);Library.Title t=title(ott,item.getString("id"),item.optString("t"));t.year=item.optString("y");out.add(t);}
+            if(items!=null)for(int i=0;i<items.length();i++){JSONObject item=items.getJSONObject(i);Library.Title t=title(ott,item.getString("id"),item.optString("t"));t.year=item.optString("y");t.provider=provider;t.providerName=Library.providerName(provider);out.add(t);}
         }else{
             Document doc=Jsoup.parse(get("/home?app=1",ott),base()+"/");Set<String> ids=new HashSet<>();
             for(Element el:doc.select("[data-post]")){
                 String id=el.attr("data-post");if(!id.matches("[a-zA-Z0-9_-]+")||!ids.add(id))continue;
                 Element image=el.selectFirst("img");String name=el.attr("data-title");if(name.isEmpty()&&image!=null)name=image.attr("alt");if(name.isEmpty())name="NetMirror · "+id;
-                out.add(title(ott,id,name));if(out.size()>=60)break;
+                Library.Title item=title(ott,id,name);item.provider=provider;item.providerName=Library.providerName(provider);out.add(item);if(out.size()>=60)break;
             }
         }
         if(out.isEmpty())throw new IOException("NetMirror API returned no catalog. The source repository's server may be unavailable or require a valid session. Configure its API or connect a manifest in Add-ons.");
@@ -82,7 +86,7 @@ final class NetMirrorProvider {
         if(season<0)items=t.videos;else{JSONObject response=object("/"+prefix(p[0])+"episodes.php?s="+season+"&series="+encode(p[1]),p[0]);items=response.optJSONArray("episodes");}
         List<Library.Title> out=new ArrayList<>();if(items==null)return out;
         for(int i=0;i<items.length();i++){JSONObject e=items.optJSONObject(i);if(e==null)continue;
-            Library.Title episode=title(p[0],e.optString("id"),e.optString("t",e.optString("title","Episode "+(i+1))));episode.description=e.optString("d",t.description);episode.type="episode";episode.poster=t.poster;episode.background=t.background;out.add(episode);
+            Library.Title episode=title(p[0],e.optString("id"),e.optString("t",e.optString("title","Episode "+(i+1))));episode.provider=t.provider;episode.providerName=t.providerName;episode.description=e.optString("d",t.description);episode.type="episode";episode.poster=t.poster;episode.background=t.background;out.add(episode);
         }return out;
     }
 }

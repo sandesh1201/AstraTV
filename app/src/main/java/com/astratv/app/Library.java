@@ -12,6 +12,9 @@ public final class Library {
         public String id, name, description, url, cast, year, genre;
         public String provider="library", providerName="Your library", type="movie";
         public String pageUrl="", poster="", background="", rating="";
+        public String language="", group="", released="", seriesUrl="";
+        public int season=1,episode=0;
+        public JSONObject headers=new JSONObject();
         public JSONArray videos=new JSONArray(), seasons=new JSONArray();
         public Title(String id,String name,String description,String url,String cast,String year,String genre) {
             this.id=id;this.name=name;this.description=description;this.url=url;this.cast=cast;this.year=year;this.genre=genre;
@@ -19,7 +22,8 @@ public final class Library {
         public JSONObject json() throws JSONException {
             return new JSONObject().put("id",id).put("title",name).put("description",description).put("url",url)
                 .put("cast",cast).put("year",year).put("genre",genre).put("provider",provider).put("providerName",providerName)
-                .put("type",type).put("pageUrl",pageUrl).put("poster",poster).put("background",background).put("rating",rating).put("videos",videos).put("seasons",seasons);
+                .put("type",type).put("pageUrl",pageUrl).put("poster",poster).put("background",background).put("rating",rating).put("videos",videos).put("seasons",seasons)
+                .put("language",language).put("group",group).put("released",released).put("seriesUrl",seriesUrl).put("season",season).put("episode",episode).put("headers",headers);
         }
         public static Title from(JSONObject o) throws JSONException {
             Title t=new Title(o.getString("id"),o.optString("title",o.optString("name")),o.optString("description"),o.optString("url"),
@@ -27,7 +31,9 @@ public final class Library {
             t.provider=o.optString("provider","library");t.providerName=o.optString("providerName","Your library");
             t.type=o.optString("type","movie");t.pageUrl=o.optString("pageUrl");t.poster=o.optString("poster");
             t.background=o.optString("background",t.poster);t.rating=o.optString("rating");
-            if(o.optJSONArray("videos")!=null)t.videos=o.getJSONArray("videos");if(o.optJSONArray("seasons")!=null)t.seasons=o.getJSONArray("seasons");return t;
+            if(o.optJSONArray("videos")!=null)t.videos=o.getJSONArray("videos");if(o.optJSONArray("seasons")!=null)t.seasons=o.getJSONArray("seasons");
+            t.language=o.optString("language");t.group=o.optString("group");t.released=o.optString("released");t.seriesUrl=o.optString("seriesUrl");t.season=o.optInt("season",1);t.episode=o.optInt("episode");
+            if(o.optJSONObject("headers")!=null)t.headers=o.getJSONObject("headers");return t;
         }
         public String key(){return provider+":"+id;}
     }
@@ -55,9 +61,14 @@ public final class Library {
         for(Title t:out){t.provider="samples";t.providerName="Open cinema";}return out;
     }
     public static List<Addon> addons(){return Arrays.asList(
-        new Addon("movierulz","Latest movies","MovieRulz","https://www.5movierulz.green/"),
-        new Addon("tamil","Tamil catch-up","TamilTVSerial","https://www.tamiltvserial.com/"),
-        new Addon("telugu","Telugu catch-up","TeluguStream","https://telugustream.com/"),
-        new Addon("news","Telugu news","Broadcaster streams",""),
-        new Addon("netmirror","NetMirror","Native provider connection required",""));}
+        new Addon("netmirror","Netflix (NetMirror)","NetMirror · Netflix",""),
+        new Addon("netmirror_pv","Prime (NetMirror)","NetMirror · Prime Video",""),
+        new Addon("netmirror_hs","Hotstar (NetMirror)","NetMirror · Hotstar",""),
+        new Addon("movierulz","MovieRulz","Telugu & Hindi movies","https://www.5movierulz.green/"),
+        new Addon("tamil","TamilTVSerials","Tamil series & episodes","https://www.tamiltvserial.com/"),
+        new Addon("telugu","TeluguStream","Telugu series & episodes","https://telugustream.com/"),
+        new Addon("news","TV channels","Indian live TV · language & genre",""));}
+    public static boolean netmirror(String id){return id.equals("netmirror")||id.equals("netmirror_pv")||id.equals("netmirror_hs");}
+    public static String platform(String id){return id.equals("netmirror_pv")?"pv":id.equals("netmirror_hs")?"hs":"nf";}
+    public static String providerName(String id){for(Addon a:addons())if(a.id.equals(id))return a.name;return "Your library";}
 }
