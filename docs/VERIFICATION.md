@@ -1,5 +1,83 @@
 # Verification · research edition 0.3
 
+## Turn 3 · Einthusan simulation, VPN, catalog, player, security (2026-11-02)
+
+**Automated gate:** `assembleDebug lintDebug testDebugUnitTest` passed with **81 tests, 0 failures**,
+up from a 40-test baseline:
+
+- CatalogRanking 4, CatalogSort 3, EinthusanContract 12, GenreTaxonomy 3, LanguageTaxonomy 3,
+  MetadataMatcher 3, NetMirrorProvider 5, PlaybackPolicy 5, ProviderParser 10,
+  ProviderRiskScanner 8, ResearchEdition 9, SecurityDashboard 5, TrailerResolver 4, Vpn 7.
+- Lint: **0 errors, 50 warnings**: 28 `SetTextI18n`, 10 `GradleDependency`, and the rest are
+  pre-existing minor categories.
+- CI grep gates were run locally and pass.
+
+**Emulator** (Android 16, `sdk_gphone64_x86_64`, debug APK 20,884,299 bytes):
+
+| Area | Result |
+| --- | --- |
+| Home | No crash. Order follows Phase 6. Trending and Popular This Week stay hidden without a TMDB key, so Latest Releases leads |
+| Navigation | New tabs render. Settings → Add-ons & sources still reaches every add-on |
+| Einthusan simulation | Enabled from Add-ons, lists 7 titles, details show language/type and a small "Source" line |
+| HLS playback | MediaSession PLAYING. ABR moved 224×100 → 784×350 → 1680×750 (burned-in variant labels). Quality menu listed 720p/350p/200p/100p + Auto. Fixed 720p held; speed 1.5× confirmed by the media session; Resume restored the position |
+| Decoder fault | A one-off AAC decoder init failure on the overloaded emulator showed "This source could not play (ERROR_CODE_DECODER_INIT_FAILED)" with Retry. Retry recovered playback |
+| VPN | Invalid configs rejected. Consent decline handled. A tunnel to a documentation-range endpoint never showed Protected. Require VPN refused playback. Disconnect and Remove verified. Details: `docs/VPN.md` |
+| Dashboard | Hidden without a tester PIN. With a temporary PIN build: wrong PIN shows attempts left, correct PIN shows 18 findings (15 pass / 0 fail / 3 not testable), screenshots are black (`FLAG_SECURE`), and provider risk flagged MovieRulz `url.wrapped` |
+
+**Bugs found by this validation and fixed:**
+
+1. Quality label stuck at the first rendition. It now reads the decoder's input format, published
+   through session extras.
+2. VPN latency was measured on the normal network before the tunnel routed traffic. The probe is
+   now bound to the VPN `Network` and runs only once the tunnel is protected.
+3. The IPv6 warning asked users to enable leak protection when it was already on.
+4. "Telugu Movies" and the other language shelves included TV series.
+5. The source picker showed a duplicate label ("1080p · HLS · 1080p").
+6. A wrong tester PIN gave no feedback.
+7. Tunnel statistics lingered after config removal.
+8. Proxy-relayed stream URLs were not flagged by the scanner (new rule `url.wrapped`).
+9. A lint `AuthLeak` warning on a test URL inside a retest.
+
+**Environment caveat:** the host had about 200 MB of free RAM during the run, and both the
+emulator's System UI and the system process reported "not responding". Two Astra ANRs had the main
+thread idle in framework code, with no focused window. Launch times from this run (10–21 s) are not
+representative and are not reported as benchmarks. A physical-TV performance pass (Phase 10: start
+time, frame pacing, memory) remains open.
+
+**Not verified:** Trending and Popular This Week with a real TMDB key, a real WireGuard server
+(handshake, throughput, exit location), DRM playback, and any real Einthusan endpoint, which is
+blocked by design.
+
+## Phase 5 · Performance (2026-11-02)
+
+- Same `assembleDebug` / `lintDebug` / `testDebugUnitTest` gate as Phase 4: **37 tests, 0 failures**. Lint: **0 errors, 34 warnings**.
+- Artwork now has a 32 MB memory LRU plus `cache/artwork-v1` disk files, viewport-deferred decode, and next-card prefetch. Shelves restore per-row focus. Release builds enable R8 (`minifyEnabled` / `shrinkResources`). Reduce motion already disables blur, parallax and trailers.
+- Physical-TV 60fps, decoder/speaker and baseline-profile collection remain device measurements. This Java/Views app has no Compose compiler reports.
+
+## Phase 4 · Trailer autoplay (2026-11-02)
+
+- `assembleDebug`, `lintDebug`, `testDebugUnitTest` passed. **37 tests, 0 failures, 0 errors** (previous 33 plus 4 trailer-priority / YouTube-host tests). Lint: **0 errors, 34 warnings**.
+- Focusing a card or hero for the configured delay (default 1.2s) crossfades a muted looping trailer when a source exists. Priority is provider HTTPS URL → TMDB official YouTube key → YouTube Data search. YouTube plays only through `YoutubeTrailerView` (official nocookie IFrame). Direct URLs play in a separate muted Media3 player, not PlaybackService. Focus change cancels immediately.
+- TV checks: Home Open cinema (provider MP4 trailer); a TMDB-matched movie with a trailer key; Settings Autoplay off / sound on / delay cycle / Reduce motion. Confirm the WebView never navigates off youtube-nocookie.com and that Back still restores the native stack.
+
+## Phase 3 · Metadata enrichment (2026-11-02)
+
+- `assembleDebug`, `lintDebug`, `testDebugUnitTest` passed. **33 tests, 0 failures, 0 errors** (previous 30 plus 3 metadata-matching confidence tests). Lint: **0 errors, 33 warnings**.
+- New `metadata_v1.db` cache (7-day TTL, manual matches persist). Library JSON, `astra` watchlist/review keys, provider sessions and the research log were not changed. Ratings badges render only when a source actually returned a score and the TMDB match is ≥ 0.62 confidence.
+- TV checks: open a title with a TMDB key configured and confirm labeled TMDB/IMDb/RT/Metacritic/Trakt badges appear or stay hidden; with no key, the details page shows “Metadata unavailable”; Correct metadata match lists scored candidates; focusing a cast member opens filmography of titles that exist in connected catalogs only.
+
+## Phase 2 · Home, filters, sorting (2026-11-02)
+
+- `assembleDebug`, `lintDebug`, `testDebugUnitTest` passed. **30 tests, 0 failures, 0 errors** (previous 24 plus 3 genre-normalization and 3 newest-first sorting tests). Lint: **0 errors, 32 warnings**.
+- Home now uses a cinematic hero (Play / Watchlist / More Info, genre chips, rating badge) and shelves: Continue Watching, New Releases, Trending, Top Rated, per-genre. Frosted Filters rail persists in `astra_ui_v1` only. Provider 48-item pages, live language→genre browsing, and library JSON were not changed.
+- TV checks: D-pad Home hero actions; long-press a card for watchlist; open Filters, combine genre+language, Apply, confirm shelves update; Search recent/voice/grouped results; MovieRulz/Live still page 48 and keep their Language/Genre selectors. Newest-first is the default sort.
+
+## Phase 1 · tvOS theme (2026-11-02)
+
+- `assembleDebug`, `lintDebug`, `testDebugUnitTest` passed. **24 tests, 0 failures, 0 errors.** Lint: **0 errors, 31 warnings** (dependency/target and localization; no new errors).
+- In-place Java/Views theme layer: `coreui.TvTheme`, `FocusMotion`, `GlassPanel`, `ShimmerView`, `ColorExtractor`, plus `TvUi` pills/chips and MainActivity nav/hero tint. Application ID, signing, provider pipeline and `astra` preference keys were not changed.
+- TV checks: D-pad the eight top tabs; confirm focused cards scale with a bright edge; scroll until the pill nav picks up backdrop artwork; refresh sources to see shimmer instead of a spinner; enable Settings → Reduce motion and confirm springs/blur/shimmer halt. Repeat on API 26 (solid glass) and API 31+ (blur). Physical-TV 60fps remains a Phase 5 measurement.
+
 ## Version 0.3 validation (2026-10-29)
 
 - `assembleDebug`, `lintDebug`, `testDebugUnitTest` passed: **24 tests, zero failures/errors** (10 parser, 5 NetMirror contracts, 9 research-edition tests). Lint has no errors. The original 0.2 checks below remain historical evidence, not new coverage of every source.

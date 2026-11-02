@@ -1,16 +1,18 @@
-# Astra TV · Native edition
+# Saandio TV · Native edition
 
-Android TV media client with native catalogs, artwork shelves, detail pages, source selection, watchlist, personal reviews and Media3 playback. Version **0.3.0** is a team research edition with seven provider profiles, Telugu/Hindi movie browsing, Indian TV language/genre filters, native catch-up series and a redacted research log. No WebView, browser intent, external-app launcher or bundled NetMirror APK remains.
+*Formerly Astra TV. The display name and icon changed; the application ID (`com.astratv.app`), signing key and stored data are unchanged, so existing installs upgrade in place.*
+
+Android TV media client with native catalogs, artwork shelves, detail pages, source selection, watchlist, personal reviews and Media3 playback. Version **0.3.0** is a team research edition with seven provider profiles, Telugu/Hindi movie browsing, Indian TV language/genre filters, native catch-up series and a redacted research log. There is no browser intent, external-app launcher or bundled NetMirror APK. A single locked-down WebView exists only for official YouTube trailer embeds (see Privacy).
 
 ## Install
 
-Use `dist/AstraTV-debug.apk` for local sideloading, or build with Android Studio / `gradlew.bat assembleDebug`. Android 8.0 (API 26) or newer is required. Builds use JDK 17+, SDK 35, AGP 8.11.1 and Gradle 8.14.
+Use `dist/SaandioTV-debug.apk` for local sideloading, or build with Android Studio / `gradlew.bat assembleDebug`. Android 8.0 (API 26) or newer is required. Builds use JDK 17+, SDK 35, AGP 8.11.1 and Gradle 8.14.
 
 ```powershell
-adb install -r dist/AstraTV-debug.apk
+adb install -r dist/SaandioTV-debug.apk
 ```
 
-Launch **Astra TV** from your TV's apps. Navigate with arrows, Select and Back. The existing application ID and signing key are retained for local upgrades. Legacy sample/import watchlist, reviews and positions are migrated to provider-scoped keys.
+Launch **Saandio TV** from your TV's apps. Navigate with arrows, Select and Back. The existing application ID and signing key are retained for local upgrades. Legacy sample/import watchlist, reviews and positions are migrated to provider-scoped keys.
 
 ## How the native add-ons work
 
@@ -34,17 +36,38 @@ Import your own direct HTTPS catalog under Settings. `catalog.example.json` show
 
 ## Build and verification
 
+The cinematic UI upgrade is implemented in place using the existing **Java/Android Views** stack (not a Compose rewrite). See [TVOS_UPGRADE.md](docs/TVOS_UPGRADE.md) for the phased plan and TV acceptance steps. Phases 1–5 cover the tvOS theme, cinematic Home/filters/newest-first sorting, TMDB metadata overlay, focus-to-trailer autoplay, and a performance pass (artwork disk cache, prefetch, per-row focus memory, R8 on release). Provider contracts and existing library JSON remain unchanged. Put optional metadata keys in `local.properties`; they are never committed.
+
 ```powershell
 gradlew.bat assembleDebug lintDebug testDebugUnitTest
 ```
 
-Read [docs/VERIFICATION.md](docs/VERIFICATION.md) for actual checks and [docs/RESEARCH_GUIDE.md](docs/RESEARCH_GUIDE.md) for team review exercises, trust boundaries and known limitations. Settings → Research lab provides source status and an explicitly exported, bounded log containing provider, stage, outcome and time. It excludes URLs, headers, session values and response bodies. Build outputs, local research and emulator files are ignored by Git. Watchlist/search presentation is currently capped at 96 visible results.
+Read [docs/VERIFICATION.md](docs/VERIFICATION.md) for actual checks and [docs/RESEARCH_GUIDE.md](docs/RESEARCH_GUIDE.md) for team review exercises, trust boundaries and known limitations. Settings → Research lab provides source status and an explicitly exported, bounded log containing provider, stage, outcome and time. It excludes URLs, headers, session values and response bodies. Build outputs, local research and emulator files are ignored by Git. Watchlist, search and provider grids no longer cap at 96 visible results; provider requests stay at 48-title pages. Default catalog order is newest first.
 
 ## Privacy and reference material
 
-App-private preferences contain watchlist, reviews, history, imported metadata and encrypted optional provider sessions. Catalogs are cached in app-private storage; backup/transfer exclusions are configured. Source servers, third-party proxies and artwork hosts receive normal network requests. There are no analytics or advertising SDKs. No webpages or third-party scripts execute inside the app, so their popup ads and browser redirects do not run. This does not remove advertising already embedded in a video stream or make the client a hardened security sandbox.
+App-private preferences contain watchlist, reviews, history, imported metadata and encrypted optional provider sessions. Catalogs are cached in app-private storage; backup/transfer exclusions are configured. Source servers, third-party proxies, artwork hosts and optional metadata APIs (TMDB / OMDb / Trakt / YouTube Data) receive normal network requests when keys are configured. There are no analytics or advertising SDKs.
 
-The app is independently written. Nuvio informed the native catalog/detail/player architecture; no Nuvio or Flutter source was copied into Astra. No source APKs are redistributed.
+**YouTube trailer exception:** the only WebView in the app loads the official YouTube IFrame player on `https://www.youtube-nocookie.com/embed/{id}`. Top-level navigation and new windows are blocked. JavaScript is enabled only so the player can run. Cookies are not accepted or persisted. Subresources are limited to youtube-nocookie, ytimg, googlevideo and gstatic HTTPS hosts required by that official embed. YouTube stream URLs are never scraped or extracted. Direct HTTPS trailers from a provider play in Media3 instead. Reduce motion and the Autoplay trailers setting disable this path. This does not remove advertising already embedded in a video stream or make the client a hardened security sandbox.
+
+API keys are read from `local.properties` (`tmdb.api.key`, `omdb.api.key`, `trakt.client.id`, `youtube.api.key`) into BuildConfig, or entered in Settings. They are stored in app-private `astra_ui_v1` preferences and are never committed or written to the research log.
+
+Home shelves use language and genre titles. Provider names stay on Add-ons and in a small "Source" line on each title. Einthusan is not connected: there is no official third-party API, and the app does not scrape it. A clearly labelled **Einthusan (simulation)** add-on (off by default) exercises the integration contract with Creative Commons films; see [docs/EINTHUSAN.md](docs/EINTHUSAN.md). See [docs/SECURITY.md](docs/SECURITY.md).
+
+## Browsing, player and VPN (Turn 3)
+
+- **Navigation:** Search, Home, Movies, Trending, Latest Releases, Languages, Genres, Watchlist, Shows, Live TV, Settings. Add-ons stay reachable from Settings → Add-ons & sources.
+- **Home order:** Trending Now, Latest Releases, Recently Added, Popular This Week, Telugu/Tamil/Hindi/Malayalam/Kannada/… Movies, Hollywood Movies, Top Rated, Browse by Genre, then the existing shelves. A shelf appears only when the data supports it. Trending and Popular This Week need a TMDB key (daily and weekly charts matched to titles you actually have). Recently Added uses a local first-seen index (`catalog_index_v1.db`). Popularity is never invented.
+- **Filters and sorts:** 10 language buckets, 14 genres (multi-select). Sorts: Trending, Newest Release, Recently Added, Most Popular, Highest Rated, Language, Genre, A–Z. The same film from different sources is merged only when name and known year match; other copies stay under "Other sources".
+- **Player:** Quality menu built from the stream's real renditions (Auto or fixed), speed 0.75–2×, and automatic retry with backoff for network errors. Labels follow the decoded rendition. Unknown quality is never called HD.
+- **VPN:** optional WireGuard tunnel from a config you import (Settings → VPN). It shows live status, traffic, tunnel latency, exit-address check, IPv6 leak protection and auto-reconnect. "Protected" is shown only when Android reports the VPN, a recent handshake exists, and the tunnel is full. No servers are bundled. Details and limits: [docs/VPN.md](docs/VPN.md).
+- **Security Research Dashboard:** for authorized testers only and hidden unless the build has a tester PIN. Add `security.tester.pin=<digits>` to `local.properties` (optionally `security.tester.salt`) and rebuild. Only a PBKDF2 hash is compiled in. See [docs/SECURITY.md](docs/SECURITY.md).
+
+**Permissions:** unchanged: `INTERNET`, `ACCESS_NETWORK_STATE`, `FOREGROUND_SERVICE` and `FOREGROUND_SERVICE_MEDIA_PLAYBACK`. The WireGuard library adds a non-exported `VpnService` guarded by the system `BIND_VPN_SERVICE` permission. Android asks for VPN consent the first time you connect. **APK size:** the WireGuard native library raises the debug APK from 6.5 MB to about 21 MB (four ABIs; the Saandio icon and banner add about 0.7 MB). Use an AAB or ABI splits for distribution.
+
+Audit, repository evaluation and validation: [docs/AUDIT.md](docs/AUDIT.md), [docs/REPO_EVALUATION.md](docs/REPO_EVALUATION.md), [docs/VERIFICATION.md](docs/VERIFICATION.md). CI: `.github/workflows/android.yml`.
+
+The app is independently written. Nuvio informed the native catalog/detail/player architecture; no Nuvio or Flutter source was copied into Saandio TV. No source APKs are redistributed.
 
 - [Nuvio TV](https://github.com/NuvioMedia/NuvioTV) — TV reference, Kotlin/Compose/Media3.
 - [Nuvio Mobile 0.6.5-beta](https://github.com/NuvioMedia/NuvioMobile/releases/tag/0.6.5-beta) — additional user-provided reference.

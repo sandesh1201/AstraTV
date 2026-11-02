@@ -67,7 +67,8 @@ public final class Library {
         new Addon("movierulz","MovieRulz","Telugu & Hindi movies","https://www.5movierulz.green/"),
         new Addon("tamil","TamilTVSerials","Tamil series & episodes","https://www.tamiltvserial.com/"),
         new Addon("telugu","TeluguStream","Telugu series & episodes","https://telugustream.com/"),
-        new Addon("news","TV channels","Indian live TV · language & genre",""));}
+        new Addon("news","TV channels","Indian live TV · language & genre",""),
+        new Addon(EinthusanSimulatedProvider.ID,EinthusanSimulatedProvider.NAME,"Contract simulation · Creative Commons sample films · off by default",""));}
     public static boolean netmirror(String id){return id.equals("netmirror")||id.equals("netmirror_pv")||id.equals("netmirror_hs");}
     public static String platform(String id){return id.equals("netmirror_pv")?"pv":id.equals("netmirror_hs")?"hs":"nf";}
     public static String providerName(String id){for(Addon a:addons())if(a.id.equals(id))return a.name;return "Your library";}

@@ -16,8 +16,9 @@ final class MoviePlaylistProvider {
         // Both priority languages appear on the first page rather than one hiding the other.
         if(language.equals("Telugu + Hindi")){
             List<Library.Title> tel=new ArrayList<>(),hin=new ArrayList<>();for(Library.Title t:selected)(t.language.equals("Telugu")?tel:hin).add(t);
+            tel=CatalogSort.newestFirst(tel);hin=CatalogSort.newestFirst(hin);
             selected=new ArrayList<>();for(int i=0;i<Math.max(tel.size(),hin.size());i++){if(i<tel.size())selected.add(tel.get(i));if(i<hin.size())selected.add(hin.get(i));}
-        }
+        }else selected=CatalogSort.newestFirst(selected);
         return CatalogQuery.page(selected,page,"playlist entries");
     }
 }

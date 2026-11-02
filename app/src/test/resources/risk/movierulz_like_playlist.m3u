@@ -1,0 +1,16 @@
+#EXTM3U
+# Synthetic fixture: entries reproduce risky traits seen in community playlists. Hosts are reserved test names.
+#EXTINF:-1 group-title="Telugu",Sample A (2026) HD
+http://stream.example.invalid/a.m3u8
+#EXTINF:-1 group-title="Telugu",Sample B (2026)
+https://198.51.100.7/live/b.m3u8
+#EXTINF:-1 group-title="Hindi",Sample C (2025)
+https://user:pass@cdn.example.invalid/c.mp4
+#EXTINF:-1 group-title="Hindi",Sample D (2025)
+https://xn--exmple-cua.test/d.m3u8
+#EXTINF:-1 group-title="Tamil",Sample E (2024)
+https://192.168.1.20/e.m3u8
+#EXTINF:-1 group-title="Tamil",Sample F (2024)
+https://bit.ly/sample-f
+#EXTINF:-1 group-title="Tamil",Sample G Player
+https://files.example.invalid/player.apk

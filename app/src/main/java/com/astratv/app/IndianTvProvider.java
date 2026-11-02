@@ -22,7 +22,7 @@ final class IndianTvProvider {
         cached=new ArrayList<>(result.values());loaded=System.currentTimeMillis();coverage=successful+"/"+LANGUAGES.length+" language feeds loaded; unclassified channels retained";return new ArrayList<>(cached);
     }
     ProviderRepository.Catalog catalog(String search,int page,String language,String genre)throws Exception{
-        ProviderRepository.Catalog result=CatalogQuery.page(CatalogQuery.filter(all(),search,language,genre),page,"channels");
+        ProviderRepository.Catalog result=CatalogQuery.page(CatalogSort.newestFirst(CatalogQuery.filter(all(),search,language,genre)),page,"channels");
         return new ProviderRepository.Catalog(result.titles,result.status+" · "+coverage,false,result.total,page,result.hasMore);
     }
 }

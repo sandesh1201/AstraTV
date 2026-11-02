@@ -1,0 +1,60 @@
+name: android
+
+on:
+  push:
+    branches: [ main, master, "feature/**" ]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  security-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: gradle/actions/wrapper-validation@v4
+      - name: No custom TLS trust or hostname verification
+        run: |
+          if grep -rnE 'implements +X509(Extended)?TrustManager|extends +X509ExtendedTrustManager|checkServerTrusted|setDefaultHostnameVerifier|setHostnameVerifier|ALLOW_ALL_HOSTNAME|onReceivedSslError' app/src/main; then
+            echo "::error::Custom TLS validation found"; exit 1; fi
+      - name: No dynamic dependency versions
+        run: |
+          if grep -nE "['\"][^'\"]+:[^'\"]+:[^'\"]*\+['\"]" app/build.gradle build.gradle settings.gradle; then
+            echo "::error::Pin dependency versions"; exit 1; fi
+      - name: No committed secrets
+        run: |
+          if grep -rnE 'AIza[0-9A-Za-z_-]{35}|(api_key|apikey|token|secret)["'"'"' ]*[:=] *["'"'"'][A-Za-z0-9]{24,}|-----BEGIN [A-Z ]*PRIVATE KEY-----|PrivateKey *= *[A-Za-z0-9+/]{42}[AEIMQUYcgkosw048]=' app/src docs README.md 2>/dev/null; then
+            echo "::error::Possible secret committed"; exit 1; fi
+          if git ls-files --error-unmatch local.properties >/dev/null 2>&1; then
+            echo "::error::local.properties must not be committed"; exit 1; fi
+      - name: Cleartext traffic stays disabled
+        run: |
+          if grep -n 'usesCleartextTraffic="true"' app/src/main/AndroidManifest.xml; then
+            echo "::error::Cleartext traffic enabled"; exit 1; fi
+
+  build:
+    needs: security-scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Build, lint and unit tests
+        run: ./gradlew assembleDebug lintDebug testDebugUnitTest --no-daemon
+      - name: Upload reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reports
+          path: |
+            app/build/reports/
+            app/build/test-results/
+          retention-days: 14

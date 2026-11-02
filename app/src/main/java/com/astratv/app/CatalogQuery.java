@@ -9,7 +9,7 @@ final class CatalogQuery {
         List<Library.Title> out=new ArrayList<>();String q=search.toLowerCase(Locale.ROOT).trim();
         for(Library.Title t:items){
             boolean lang=language.equals("All")||language.isEmpty()||language.equalsIgnoreCase(t.language)||language.equals("Telugu + Hindi")&&(t.language.equals("Telugu")||t.language.equals("Hindi"));
-            boolean category=genre.equals("All")||genre.isEmpty()||Arrays.stream((t.group.isEmpty()?t.genre:t.group).split("[;,/]")).anyMatch(g->g.trim().equalsIgnoreCase(genre));
+            boolean category=GenreTaxonomy.matches(t,genre);
             if(lang&&category&&(q.isEmpty()||(t.name+" "+t.cast+" "+t.genre+" "+t.language).toLowerCase(Locale.ROOT).contains(q)))out.add(t);
         }return out;
     }

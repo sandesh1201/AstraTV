@@ -14,6 +14,8 @@ import java.util.*;
 /** One service-owned Media3 player, shared by TV controls and background playback. */
 @androidx.media3.common.util.UnstableApi
 public class PlaybackService extends MediaSessionService {
+    /** Session extra: height of the rendition currently fed to the video decoder. */
+    static final String EXTRA_VIDEO_HEIGHT="astra.videoHeight";
     private ExoPlayer player;
     private MediaSession session;
     private final Handler handler=new Handler(Looper.getMainLooper());
@@ -29,6 +31,11 @@ public class PlaybackService extends MediaSessionService {
         player.addListener(new Player.Listener(){
             @Override public void onIsPlayingChanged(boolean playing){save();}
             @Override public void onPlaybackStateChanged(int state){if(state==Player.STATE_ENDED&&player.getCurrentMediaItem()!=null)getSharedPreferences("astra",0).edit().remove("position."+player.getCurrentMediaItem().mediaId).apply();}
+        });
+        player.addAnalyticsListener(new androidx.media3.exoplayer.analytics.AnalyticsListener(){
+            @Override public void onVideoInputFormatChanged(EventTime time,Format format,androidx.media3.exoplayer.DecoderReuseEvaluation reuse){
+                Bundle extras=new Bundle();extras.putInt(EXTRA_VIDEO_HEIGHT,Math.max(0,format.height));session.setSessionExtras(extras);
+            }
         });
         handler.post(checkpoint);
     }
@@ -47,7 +54,9 @@ public class PlaybackService extends MediaSessionService {
                 try{JSONArray a=new JSONArray(intent.getStringExtra("subtitles"));for(int i=0;i<a.length();i++){JSONObject s=a.getJSONObject(i);String uri=s.optString("url");if(Library.https(uri))subtitles.add(new MediaItem.SubtitleConfiguration.Builder(android.net.Uri.parse(uri)).setMimeType(uri.toLowerCase(Locale.ROOT).contains(".srt")?MimeTypes.APPLICATION_SUBRIP:MimeTypes.TEXT_VTT).setLabel(s.optString("lang","Subtitles")).build());}}catch(Exception ignored){}
                 item.setSubtitleConfigurations(subtitles);
                 long position=getSharedPreferences("astra",0).getInt("position."+id,0);
-                player.setMediaSource(new DefaultMediaSourceFactory(http).createMediaSource(item.build()),position);
+                session.setSessionExtras(new Bundle());
+                session.setSessionExtras(new Bundle());
+                player.setMediaSource(new DefaultMediaSourceFactory(http).setLoadErrorHandlingPolicy(new androidx.media3.exoplayer.upstream.DefaultLoadErrorHandlingPolicy(2)).createMediaSource(item.build()),position);
                 player.prepare();player.play();
             }else if(Library.https(url)){player.play();}
         }
