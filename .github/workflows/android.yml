@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: gradle/actions/wrapper-validation@v4
+      - uses: gradle/actions/wrapper-validation@v6
       - name: No custom TLS trust or hostname verification
         run: |
           if grep -rnE 'implements +X509(Extended)?TrustManager|extends +X509ExtendedTrustManager|checkServerTrusted|setDefaultHostnameVerifier|setHostnameVerifier|ALLOW_ALL_HOSTNAME|onReceivedSslError' app/src/main; then
@@ -46,7 +46,7 @@ jobs:
         with:
           distribution: temurin
           java-version: "17"
-      - uses: gradle/actions/setup-gradle@v4
+      - uses: gradle/actions/setup-gradle@v6
       - name: Build, lint and unit tests
         run: ./gradlew assembleDebug lintDebug testDebugUnitTest --no-daemon
       - name: Upload reports
