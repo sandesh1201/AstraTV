@@ -35,6 +35,18 @@ public class PlaybackSourceResolverTest {
         assertEquals(PlaybackSourceResolver.Kind.DIRECT,resolver.resolve(c).kind);
         assertTrue(c.playable);
     }
+    @Test public void openDataTitlesAreNeverPlayableOnTheirOwn(){
+        for(String provider:new String[]{WikidataFilmSource.PROVIDER,TvMazeSource.PROVIDER,"thesportsdb"}){
+            CatalogItem c=movie(provider,"x1","Open Title","2026-10-01");c.title.url="https://example.org/page";
+            PlaybackSourceResolver.Resolution r=resolver.resolve(c);
+            assertEquals(provider,PlaybackSourceResolver.Kind.NOT_AVAILABLE,r.kind);assertNull(r.title);
+        }
+    }
+    @Test public void openDataTitleUsesLicensedMatchWhenOneExists(){
+        CatalogItem licensed=movie(EinthusanSimulatedProvider.ID,"e1","Devara","2024-09-27");licensed.playable=true;
+        store.replaceRows("licensed",Collections.singletonList(new CatalogSource.Batch("licensed.playable",Collections.singletonList(licensed),false)),0);
+        assertEquals(PlaybackSourceResolver.Kind.LICENSED_MATCH,resolver.resolve(movie(WikidataFilmSource.PROVIDER,"film:Q1","Devara","2024-09-27")).kind);
+    }
     @Test public void channelReasonReflectsHealth(){
         CatalogItem ch=channel("c","News");ch.health="failed";
         PlaybackSourceResolver.Resolution r=resolver.resolve(ch);

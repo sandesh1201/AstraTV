@@ -1,5 +1,28 @@
 # Verification · research edition 0.3
 
+## Turn 5 · Catalog without user keys (2026-11-02)
+
+**Root cause:** no build carried a TMDB credential (`local.properties` had only `sdk.dir`; BuildConfig `TMDB_API_KEY` was empty), so the TMDB sources reported not-ready, no movie or TV rows synced, and the UI asked viewers for a key. Permissions, base URLs and parsing were fine.
+
+**Automated checks:**
+- `gradlew.bat testDebugUnitTest assembleDebug lintDebug`: 154 unit tests passed, 0 failed (14 new in `TmdbRouteTest`, `OpenCatalogSourcesTest`, `PlaybackSourceResolverTest`). Lint 0 errors.
+- `backend/`: `node --test` 10 passed (whitelist, parameter filtering, client `api_key` dropped, bearer vs v3 key, 503 not configured, client token, TMDB 401 → 502, 429 → 503 with Retry-After, network error → 504, ETag/304, health never echoes secrets).
+- Generated BuildConfig on this machine: `CATALOG_API_BASE=""`, `TMDB_API_KEY=""` (release always `""`).
+
+**Real requests (no credentials on this machine):**
+- Local proxy, no credential: `/api/health` 200 `tmdbConfigured:false`; `/api/tmdb?path=/discover/movie…` 503 `not_configured`.
+- Local proxy with a deliberately invalid key against the real TMDB API: TMDB answered 401, proxy returned 502 `upstream_auth`; the key appeared in neither the response nor the server log.
+- App adapters run on the JVM against the live services: Wikidata returned 157 films (Telugu 40, Tamil 33, Hindi 56, Malayalam 23, Kannada 5), 1 with a free poster, 0 playable. TVMaze returned 1 Indian show (Bigg Boss, S20 · E58) and 60 worldwide shows, all with artwork, 0 playable.
+- **Not verified:** TMDB catalog content through the proxy, because no TMDB credential or deployed catalog service exists here.
+
+**Emulator (Android TV 1280×720, API 35):**
+- Fresh install (uninstalled first): no key prompt anywhere; Home showed Recently Added and the hero from Wikidata within ~15 s; TV Shows showed "Indian TV · latest episodes" and "New episodes worldwide" with TVMaze artwork, "Updated 6 min ago".
+- Offline first launch (emulator had no network after a reboot): "Not loaded yet · No internet connection" and an empty-state message; the hero fell back to the bundled open-movie sample. No placeholder titles. When the network returned, rows filled without restarting the app.
+- Offline relaunch with a saved catalog: Wikidata rows and hero appeared immediately.
+- Fixed while testing: the Home hero was never filled because `shell()` cleared the hero views after the header was built (pre-existing); freshness labels of TMDB rows now refresh when their open-data stand-in syncs.
+- Startup, AOT-compiled, measured back to back on the same loaded emulator: previous APK 5.2–8.6 s, this build 6.8–8.0 s, i.e. no measurable regression. The Turn 4 figure (2.9–3.0 s) was taken on an idle emulator.
+- **Limited:** the host had ~1 GB free RAM; the emulator repeatedly showed "System UI / system isn't responding" and once soft-rebooted. Saandio "isn't responding" dialogs also appeared, but jdb showed the app's main thread idle in `MessageQueue.nativePollOnce` each time. The details-page and Settings walkthrough could not be completed interactively; the details logic (no Play for open-data titles) is covered by unit tests.
+
 ## Turn 4 · Catalog sync, six-tab navigation, performance (2026-11-02)
 
 **Automated checks:** `gradlew.bat testDebugUnitTest assembleDebug lintDebug` passes.

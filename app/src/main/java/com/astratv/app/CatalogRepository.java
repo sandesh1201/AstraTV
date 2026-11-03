@@ -45,11 +45,12 @@ final class CatalogRepository implements CatalogSyncCoordinator.Listener {
     private CatalogRepository(Context app){
         this.app=app;prefs=app.getSharedPreferences("astra",0);ui=app.getSharedPreferences("astra_ui_v1",0);
         store=new CatalogStore(app);http=CatalogHttp.android(store);resolver=new PlaybackSourceResolver(store);
-        movies=new TmdbCatalogSource(false,()->ApiKeys.tmdb(app),LocalDate::now);tv=new TmdbCatalogSource(true,()->ApiKeys.tmdb(app),LocalDate::now);
+        movies=new TmdbCatalogSource(false,()->ApiKeys.tmdbRoute(app),LocalDate::now);tv=new TmdbCatalogSource(true,()->ApiKeys.tmdbRoute(app),LocalDate::now);
         ThreadPoolExecutor workers=new ThreadPoolExecutor(2,2,30,TimeUnit.SECONDS,new LinkedBlockingQueue<>(),r->named(r,"catalog-sync"));workers.allowCoreThreadTimeOut(true);
         ThreadPoolExecutor probes=new ThreadPoolExecutor(2,2,30,TimeUnit.SECONDS,new LinkedBlockingQueue<>(),r->named(r,"channel-probe"));probes.allowCoreThreadTimeOut(true);
         sync=new CatalogSyncCoordinator(store,http,workers,probes,System::currentTimeMillis,(id,d)->{long minutes=ui.getLong("sync.ttl."+id,0);return minutes>0?minutes*60_000L:d;});
         sync.register(movies);sync.register(tv);
+        sync.register(new WikidataFilmSource(LocalDate::now));sync.register(new TvMazeSource(java.time.Clock.systemUTC()));
         sync.register(new HdCatalogSource(this::licensed));
         sync.register(new LiveTvSource(()->prefs.getBoolean("addon.news",true)));
         sync.register(new SportsSource(()->ApiKeys.sportsDb(app),java.time.Clock::systemUTC));
@@ -80,6 +81,7 @@ final class CatalogRepository implements CatalogSyncCoordinator.Listener {
             if(SportsSource.ID.equals(sourceId))affected.add(SportsSource.ROW);
             for(String r:affected.toArray(new String[0])){
                 if(r.startsWith("movies."))affected.add(HOME_RECENT);
+                affected.addAll(CatalogFallback.dependents(r));
                 if(r.equals(LiveTvSource.ROW)){affected.add(HOME_LIVE);affected.add(ROW_FAVORITES);}
                 if(r.equals(SportsSource.ROW))affected.addAll(Arrays.asList(HOME_SPORTS,SPORTS_LIVE,SPORTS_UPCOMING,SPORTS_RESULTS,SPORTS_OTHER));
             }
@@ -118,7 +120,10 @@ final class CatalogRepository implements CatalogSyncCoordinator.Listener {
             case SportsSource.ROW:return sports(limit);
             case HOME_SPORTS:{List<CatalogItem> out=new ArrayList<>();for(CatalogItem e:sports(300)){if(SportsSource.LIVE.equals(e.status)||SportsSource.UPCOMING.equals(e.status))out.add(e);if(out.size()>=limit)break;}return out;}
             case LiveTvSource.ROW:return channels(store.row(rowId,limit));
-            default:return store.row(rowId,limit);
+            default:{
+                List<CatalogItem> saved=store.row(rowId,limit);String standIn=saved.isEmpty()?CatalogFallback.row(rowId):null;
+                return standIn==null?saved:CatalogFallback.narrow(rowId,store.row(standIn,limit));
+            }
         }
     }
     private List<CatalogItem> events(String status,int limit){
@@ -140,9 +145,11 @@ final class CatalogRepository implements CatalogSyncCoordinator.Listener {
         return out;
     }
     void freshness(String rowId,Consumer<String> callback){
-        String source=sourceFor(rowId);
+        String primary=sourceFor(rowId);
         db.execute(()->{
-            String label;CatalogSource s=source==null?null:sync.source(source);
+            String source=primary;CatalogSource s=source==null?null:sync.source(source);
+            if(s!=null&&!s.ready()&&CatalogFallback.source(rowId)!=null){source=CatalogFallback.source(rowId);s=sync.source(source);}
+            String label;
             if(s==null)label="";
             else if(!s.ready())label=s.notReadyReason();
             else{CatalogFreshnessTracker.State st=sync.state(source);label=sync.running(source)&&st.syncedAt==0?"Loading…":CatalogFreshnessTracker.label(st,sync.ttl(s),System.currentTimeMillis());}
@@ -151,10 +158,14 @@ final class CatalogRepository implements CatalogSyncCoordinator.Listener {
     }
     /** True when the row's source is older than it should be or failing; drives the subtle freshness dot. */
     void stale(String rowId,Consumer<Boolean> callback){
-        String source=sourceFor(rowId);
-        db.execute(()->{CatalogSource s=source==null?null:sync.source(source);boolean stale=s!=null&&s.ready()&&CatalogFreshnessTracker.stale(sync.state(source),sync.ttl(s),System.currentTimeMillis());main.post(()->callback.accept(stale));});
+        String primary=sourceFor(rowId);
+        db.execute(()->{String source=primary;CatalogSource s=source==null?null:sync.source(source);
+            if(s!=null&&!s.ready()&&CatalogFallback.source(rowId)!=null){source=CatalogFallback.source(rowId);s=sync.source(source);}
+            boolean stale=s!=null&&s.ready()&&CatalogFreshnessTracker.stale(sync.state(source),sync.ttl(s),System.currentTimeMillis());main.post(()->callback.accept(stale));});
     }
     static String sourceFor(String rowId){
+        if(rowId.startsWith("movies.open."))return WikidataFilmSource.ID;
+        if(rowId.startsWith("tv.open."))return TvMazeSource.ID;
         if(rowId.startsWith("movies.")||rowId.equals(HOME_RECENT))return TmdbCatalogSource.MOVIES;
         if(rowId.startsWith("tv."))return TmdbCatalogSource.TV;
         if(rowId.startsWith("hd.")||rowId.startsWith("licensed."))return HdCatalogSource.ID;
@@ -181,7 +192,7 @@ final class CatalogRepository implements CatalogSyncCoordinator.Listener {
      * network copy. Local-only queries (recently added, verified quality) page through the store.
      */
     void discover(DiscoverQuery q,int page,PageCallback callback,Consumer<String> error){
-        if(!q.remote()){
+        if(!q.remote()||!(q.movie()?movies:tv).ready()){
             db.execute(()->{
                 List<CatalogItem> pool=q.minHeight>0?store.row(HdCatalogSource.ROW_PLAYABLE,500):store.recent(q.movie()?CatalogItem.MOVIE:CatalogItem.SERIES,1500);
                 List<CatalogItem> hits=new ArrayList<>();for(CatalogItem c:pool)if(q.matches(c))hits.add(c);
@@ -211,8 +222,16 @@ final class CatalogRepository implements CatalogSyncCoordinator.Listener {
     }
     void genres(boolean movie,Consumer<Map<Integer,String>> callback){
         TmdbCatalogSource source=movie?movies:tv;
-        if(!source.ready()){main.post(()->callback.accept(Collections.emptyMap()));return;}
+        if(!source.ready()){db.execute(()->{Map<Integer,String> g=localGenres(store.recent(movie?CatalogItem.MOVIE:CatalogItem.SERIES,1500));main.post(()->callback.accept(g));});return;}
         net.execute(()->{Map<Integer,String> g;try{g=source.genreMap(http,movie?"movie":"tv");}catch(Exception e){g=Collections.emptyMap();}Map<Integer,String> r=g;main.post(()->callback.accept(r));});
+    }
+    /** Genre names present in the saved catalog, for filtering without TMDB. Negative ids never reach TMDB. */
+    static Map<Integer,String> localGenres(List<CatalogItem> items){
+        Map<String,Integer> counts=new HashMap<>();
+        for(CatalogItem c:items)for(String g:c.title.genre.split("\\s*·\\s*")){String n=g.trim();if(!n.isEmpty())counts.merge(n,1,Integer::sum);}
+        List<String> names=new ArrayList<>();for(Map.Entry<String,Integer> e:counts.entrySet())if(e.getValue()>=2)names.add(e.getKey());
+        names.sort(String.CASE_INSENSITIVE_ORDER);
+        Map<Integer,String> out=new LinkedHashMap<>();int id=-1;for(String n:names)out.put(id--,n);return out;
     }
     void years(String kind,Consumer<List<Integer>> callback){
         db.execute(()->{List<Integer> y=store.years(kind);int now=LocalDate.now().getYear();if(!y.contains(now))y.add(0,now);main.post(()->callback.accept(y));});

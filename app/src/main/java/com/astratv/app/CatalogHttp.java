@@ -38,11 +38,13 @@ final class CatalogHttp {
     static CatalogHttp android(Cache cache){return new CatalogHttp(CatalogHttp::fetch,cache,Thread::sleep);}
 
     /** Fresh body, or the cached body with {@code notModified=true} when the server confirms nothing changed. */
-    Result get(String url)throws IOException{
+    Result get(String url)throws IOException{return get(url,Collections.emptyMap());}
+    /** {@code extra} headers identify the client to a service; they are not part of the cache key. */
+    Result get(String url,Map<String,String> extra)throws IOException{
         String key=PlaylistParser.stable(url);
         CompletableFuture<Result> mine=new CompletableFuture<>(),running=inflight.putIfAbsent(key,mine);
         if(running!=null)return await(running);
-        try{Result r=load(url,key);mine.complete(r);return r;}
+        try{Result r=load(url,key,extra);mine.complete(r);return r;}
         catch(IOException|RuntimeException e){mine.completeExceptionally(e);throw e;}
         finally{inflight.remove(key,mine);}
     }
@@ -53,9 +55,9 @@ final class CatalogHttp {
         catch(InterruptedException e){Thread.currentThread().interrupt();throw new InterruptedIOException("Catalog request interrupted");}
         catch(ExecutionException e){Throwable c=e.getCause();if(c instanceof IOException)throw (IOException)c;if(c instanceof RuntimeException)throw (RuntimeException)c;throw new IOException(c);}
     }
-    private Result load(String url,String key)throws IOException{
+    private Result load(String url,String key,Map<String,String> extra)throws IOException{
         Entry cached=cache==null?null:cache.get(key);
-        Map<String,String> headers=new LinkedHashMap<>();
+        Map<String,String> headers=new LinkedHashMap<>(extra);
         if(cached!=null&&!cached.body.isEmpty()){if(!cached.etag.isEmpty())headers.put("If-None-Match",cached.etag);if(!cached.lastModified.isEmpty())headers.put("If-Modified-Since",cached.lastModified);}
         Semaphore gate=hosts.computeIfAbsent(host(url),h->new Semaphore(PER_HOST));
         IOException last=null;
@@ -89,8 +91,8 @@ final class CatalogHttp {
             if(!Library.https(current))throw new IOException("Only HTTPS sources are supported");
             if(ProviderRiskScanner.privateHost(new URL(current).getHost()))throw new IOException("Source pointed at a local network address, which is blocked");
             HttpURLConnection c=(HttpURLConnection)new URL(current).openConnection();
-            c.setInstanceFollowRedirects(false);c.setConnectTimeout(6000);c.setReadTimeout(10000);c.setUseCaches(false);
-            c.setRequestProperty("User-Agent","SaandioTV/0.4 (Android TV; catalog sync)");c.setRequestProperty("Accept","application/json,*/*");
+            c.setInstanceFollowRedirects(false);c.setConnectTimeout(6000);c.setReadTimeout(20000);c.setUseCaches(false);
+            c.setRequestProperty("User-Agent","SaandioTV/0.4 (Android TV catalog sync; https://github.com/sandesh1201/AstraTV)");c.setRequestProperty("Accept","application/json,*/*");
             for(Map.Entry<String,String> h:headers.entrySet())c.setRequestProperty(h.getKey(),h.getValue());
             try{
                 int status=c.getResponseCode();

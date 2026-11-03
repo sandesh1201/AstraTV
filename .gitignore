@@ -3,3 +3,8 @@ build/
 app/build/
 local.properties
 *.jks
+node_modules/
+backend/.env
+backend/.env.*
+!backend/.env.example
+backend/.vercel/

@@ -50,7 +50,18 @@ App-private preferences contain watchlist, reviews, history, imported metadata a
 
 **YouTube trailer exception:** the only WebView in the app loads the official YouTube IFrame player on `https://www.youtube-nocookie.com/embed/{id}`. Top-level navigation and new windows are blocked. JavaScript is enabled only so the player can run. Cookies are not accepted or persisted. Subresources are limited to youtube-nocookie, ytimg, googlevideo and gstatic HTTPS hosts required by that official embed. YouTube stream URLs are never scraped or extracted. Direct HTTPS trailers from a provider play in Media3 instead. Reduce motion and the Autoplay trailers setting disable this path. This does not remove advertising already embedded in a video stream or make the client a hardened security sandbox.
 
-API keys are read from `local.properties` (`tmdb.api.key`, `omdb.api.key`, `trakt.client.id`, `youtube.api.key`) into BuildConfig, or entered in Settings. They are stored in app-private `astra_ui_v1` preferences and are never committed or written to the research log.
+Viewers never need an API key. TMDB requests go through the **Saandio Catalog API** (`backend/`), which keeps the TMDB credential in server environment variables; the build only learns its HTTPS address from `catalog.api.base` (see below). Optional developer keys are read from `local.properties` (`tmdb.api.key` — debug builds only —, `omdb.api.key`, `trakt.client.id`, `youtube.api.key`) into BuildConfig, or entered in Settings → Developer · metadata keys. They are stored in app-private `astra_ui_v1` preferences and are never committed or written to the research log.
+
+## Catalog without user keys (Turn 5)
+
+- **Root cause of the empty catalog:** movie and TV rows were built only when a TMDB key existed on the device. No build shipped one (`local.properties` had none), so `TmdbCatalogSource.ready()` was false, no rows synced, and Home/TV Shows asked the viewer to add a key.
+- **Now:** `App → Saandio Catalog API → TMDB`. The app picks a route (`TmdbRoute`): the catalog service when `catalog.api.base` is set at build time, a developer key in debug builds, otherwise none. Release builds never contain a TMDB key.
+- **Keyless open data** keeps a fresh install useful when no catalog service is configured, or before TMDB rows have ever loaded:
+  - Recent Telugu, Tamil, Hindi, Malayalam and Kannada films from the Wikidata Query Service (CC0), refreshed every 6 hours.
+  - Recently aired episodes from the TVMaze schedule (CC BY-SA 4.0), refreshed hourly.
+  - Both are metadata only and never playable. Release dates are the sources' publication dates, not the date Saandio saw them. Films without a free poster show their title on the card.
+- **Fallback:** an empty TMDB row with a same-meaning open row (for example Latest Telugu Movies) shows the open row until TMDB data arrives. Trending and Hollywood have no stand-in, because the title would no longer be true.
+- **Developer setup:** deploy `backend/` (see [backend/README.md](backend/README.md)), then add `catalog.api.base=https://<project>.vercel.app` to `local.properties` (or set `SAANDIO_CATALOG_API_BASE`) and rebuild. Settings shows which catalog route the build uses.
 
 Home shelves use language and genre titles. Provider names stay on Add-ons and in a small "Source" line on each title. Einthusan is not connected: there is no official third-party API, and the app does not scrape it. A clearly labelled **Einthusan (simulation)** add-on (off by default) exercises the integration contract with Creative Commons films; see [docs/EINTHUSAN.md](docs/EINTHUSAN.md). See [docs/SECURITY.md](docs/SECURITY.md).
 
@@ -58,7 +69,7 @@ Home shelves use language and genre titles. Provider names stay on Add-ons and i
 
 - **Navigation:** six tabs (Home, All Movies, HD Movies, TV Shows, Live TV, Sports Live) plus Search, Watchlist and Settings icons. Each tab remembers its focused card, scroll position and filters. Back from a detail page returns to the same card.
 - **Sources:** these are synced into a local SQLite catalog (`catalog_v2.db`, WAL mode):
-  - TMDB movies and series, if you add a free key
+  - TMDB movies and series, through the Saandio Catalog API (Turn 5), with Wikidata films and TVMaze episodes as keyless open data
   - Licensed playback partners (only the clearly labelled Einthusan simulation today, off by default)
   - The iptv-org public channel directory
   - TheSportsDB match schedules (the shared free key works; a personal key adds yesterday's results)

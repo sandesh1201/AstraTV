@@ -55,7 +55,7 @@ final class MetadataRepository {
     /** TMDB movie trending for "day" or "week", ranked 1..n. Cached for 3 hours. Empty without a TMDB key. */
     List<CatalogRanking.Trend> trending(String window)throws Exception{
         List<CatalogRanking.Trend> out=new ArrayList<>();
-        if(ApiKeys.tmdb(context).isEmpty()||!(window.equals("day")||window.equals("week")))return out;
+        if(!ApiKeys.metadataReady(context)||!(window.equals("day")||window.equals("week")))return out;
         android.content.SharedPreferences ui=context.getSharedPreferences("astra_ui_v1",0);String cacheKey="trending."+window+".v1";
         JSONObject cache=null;try{cache=new JSONObject(ui.getString(cacheKey,"{}"));}catch(JSONException ignored){/* refetch */}
         JSONArray items=cache!=null&&System.currentTimeMillis()-cache.optLong("at")<3L*60*60*1000?cache.optJSONArray("items"):null;
@@ -137,10 +137,11 @@ final class MetadataRepository {
         }catch(Exception ignored){}
     }
     private JSONObject tmdb(String path)throws Exception{
-        throttle();String key=ApiKeys.tmdb(context);
+        throttle();TmdbRoute route=ApiKeys.tmdbRoute(context);
+        if(route==null)throw new IllegalStateException("No catalog service configured");
         Exception last=null;
         for(int attempt=0;attempt<3;attempt++){
-            try{return new JSONObject(ProviderRepository.request("https://api.themoviedb.org/3"+path+(path.contains("?")?"&":"?")+"api_key="+enc(key),"").body);}
+            try{return new JSONObject(ProviderRepository.request(route.url(path),"",route.headers()).body);}
             catch(Exception e){last=e;if(e.getMessage()!=null&&e.getMessage().contains("HTTP 429"))Thread.sleep(1500L*(attempt+1));else throw e;}
         }
         throw last;

@@ -15,6 +15,9 @@ final class PlaybackSourceResolver {
         boolean playable(){return kind!=Kind.NOT_AVAILABLE;}
     }
     private static final Set<String> DIRECT=new HashSet<>(Arrays.asList("library","samples",EinthusanSimulatedProvider.ID));
+    /** Catalog metadata sources: they describe titles but never supply a stream. */
+    static final Set<String> METADATA=Collections.unmodifiableSet(new HashSet<>(Arrays.asList("tmdb",WikidataFilmSource.PROVIDER,TvMazeSource.PROVIDER,"thesportsdb")));
+    static boolean metadataOnly(Library.Title t){return t!=null&&METADATA.contains(t.provider);}
     private final CatalogStorage store;
     PlaybackSourceResolver(CatalogStorage store){this.store=store;}
 
@@ -27,11 +30,11 @@ final class PlaybackSourceResolver {
             return new Resolution(Kind.CHANNEL,t,"ok".equals(c.health)?"Stream answered the last playback check.":"Stream has not been checked yet.");
         }
         if(DIRECT.contains(t.provider))return new Resolution(Kind.DIRECT,t,"");
-        if(!"tmdb".equals(t.provider))return new Resolution(Kind.DIRECT,t,"");
+        if(!METADATA.contains(t.provider))return new Resolution(Kind.DIRECT,t,"");
         List<CatalogItem> matches=store.playable(MetadataMatcher.normalize(CatalogDeduplication.baseName(t.name)),c.year(),c.kind);
         CatalogItem best=null;
         for(CatalogItem m:matches)if(best==null||CatalogDeduplication.better(m,best))best=m;
         if(best!=null)return new Resolution(Kind.LICENSED_MATCH,best.title,"Available from "+best.title.providerName+(best.verifiedHeight>0?" · "+PlaybackPolicy.heightLabel(best.verifiedHeight):""));
-        return new Resolution(Kind.NOT_AVAILABLE,null,"Not available to stream in Saandio. See where to watch below.");
+        return new Resolution(Kind.NOT_AVAILABLE,null,"tmdb".equals(t.provider)?"Not available to stream in Saandio. See where to watch below.":"Not available to stream in Saandio. No authorized provider lists this title.");
     }
 }

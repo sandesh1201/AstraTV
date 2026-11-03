@@ -247,7 +247,7 @@ public class MainActivity extends Activity implements CatalogViews.Host {
     }
     private void refreshNotes(CatalogViews.RowsAdapter target,String onlySource){
         Map<String,List<String>> bySource=new LinkedHashMap<>();
-        for(CatalogViews.RowSpec s:target.specs()){String src=CatalogRepository.sourceFor(s.id);if(src==null||onlySource!=null&&!onlySource.equals(src))continue;bySource.computeIfAbsent(src,k->new ArrayList<>()).add(s.id);}
+        for(CatalogViews.RowSpec s:target.specs()){String src=CatalogRepository.sourceFor(s.id);if(src==null||onlySource!=null&&!onlySource.equals(src)&&!onlySource.equals(CatalogFallback.source(s.id)))continue;bySource.computeIfAbsent(src,k->new ArrayList<>()).add(s.id);}
         for(Map.Entry<String,List<String>> e:bySource.entrySet())catalog.freshness(e.getValue().get(0),label->{if(rows!=target)return;for(String id:e.getValue())target.setNote(id,label);});
     }
     private List<CatalogItem> transform(String id,List<CatalogItem> items){
@@ -258,9 +258,11 @@ public class MainActivity extends Activity implements CatalogViews.Host {
         if(screen.equals("Home")&&!heroChosen&&!items.isEmpty()&&!id.equals(CatalogRepository.HOME_CONTINUE)){heroChosen=true;setHero(items.get(0));}
         if(id.equals(CatalogRepository.HOME_LIVE)&&!items.isEmpty())catalog.checkChannels(items.subList(0,Math.min(8,items.size())));
     }
-    private CatalogViews.RowsAdapter rowsScreen(String name,boolean cinematic,View header,List<CatalogViews.RowSpec> specs,boolean restore){
+    private CatalogViews.RowsAdapter rowsScreen(String name,boolean cinematic,View header,List<CatalogViews.RowSpec> specs,boolean restore){return rowsScreen(name,cinematic,()->header,specs,restore);}
+    /** The header is built after shell() resets per-screen fields such as the hero views. */
+    private CatalogViews.RowsAdapter rowsScreen(String name,boolean cinematic,java.util.function.Supplier<View> header,List<CatalogViews.RowSpec> specs,boolean restore){
         RecyclerView rv=shellList(name,cinematic);
-        rows=views.new RowsAdapter(header,specs);
+        rows=views.new RowsAdapter(header.get(),specs);
         LinearLayoutManager lm=new LinearLayoutManager(this);lm.setInitialPrefetchItemCount(2);rv.setLayoutManager(lm);rv.setAdapter(rows);
         restoreTab(name,restore);loadRows();return rows;
     }
@@ -269,18 +271,21 @@ public class MainActivity extends Activity implements CatalogViews.Host {
         boolean tmdb=ApiKeys.metadataReady(this);
         List<CatalogViews.RowSpec> specs=new ArrayList<>();
         specs.add(new CatalogViews.RowSpec(CatalogRepository.HOME_CONTINUE,"Continue Watching",CatalogViews.POSTER,true));
-        if(tmdb){
-            specs.add(new CatalogViews.RowSpec(CatalogRepository.HOME_RECENT,"Recently Added",CatalogViews.POSTER,false));
-            specs.add(new CatalogViews.RowSpec(TmdbCatalogSource.ROW_TRENDING_IN,"Trending in India",CatalogViews.POSTER,false));
-            for(String code:new String[]{"te","ta","hi","ml","en","kn"})specs.add(new CatalogViews.RowSpec(TmdbCatalogSource.latestRow(code),"Latest "+(code.equals("en")?"Hollywood":TmdbCatalogSource.languageName(code))+" Movies",CatalogViews.POSTER,code.equals("kn")));
+        specs.add(new CatalogViews.RowSpec(CatalogRepository.HOME_RECENT,"Recently Added",CatalogViews.POSTER,false));
+        if(tmdb)specs.add(new CatalogViews.RowSpec(TmdbCatalogSource.ROW_TRENDING_IN,"Trending in India",CatalogViews.POSTER,false));
+        else specs.add(new CatalogViews.RowSpec(WikidataFilmSource.ROW_LATEST,"Latest Indian Releases",CatalogViews.POSTER,false));
+        for(String code:new String[]{"te","ta","hi","ml","en","kn"}){
+            String row=tmdb?TmdbCatalogSource.latestRow(code):code.equals("en")?null:WikidataFilmSource.row(code);
+            if(row!=null)specs.add(new CatalogViews.RowSpec(row,"Latest "+(code.equals("en")?"Hollywood":TmdbCatalogSource.languageName(code))+" Movies",CatalogViews.POSTER,code.equals("kn")||!tmdb));
         }
         specs.add(new CatalogViews.RowSpec(HdCatalogSource.ROW_HD,"Latest HD Movies",CatalogViews.POSTER,true));
         specs.add(new CatalogViews.RowSpec(CatalogRepository.HOME_LIVE,"Live TV",CatalogViews.WIDE,false));
         specs.add(new CatalogViews.RowSpec(CatalogRepository.HOME_SPORTS,"Sports Live",CatalogViews.WIDE,false));
-        if(tmdb)specs.add(new CatalogViews.RowSpec(TmdbCatalogSource.ROW_RECENT_EPISODES,"Recently Updated TV Episodes",CatalogViews.POSTER,false));
+        specs.add(tmdb?new CatalogViews.RowSpec(TmdbCatalogSource.ROW_RECENT_EPISODES,"Recently Updated TV Episodes",CatalogViews.POSTER,false)
+            :new CatalogViews.RowSpec(TvMazeSource.ROW_WORLD,"New TV Episodes",CatalogViews.POSTER,false));
         specs.add(new CatalogViews.RowSpec(CatalogRepository.HOME_LIBRARY,"Your library",CatalogViews.POSTER,true));
         specs.add(new CatalogViews.RowSpec(CatalogRepository.HOME_SAMPLES,"Open cinema · free samples",CatalogViews.WIDE,true));
-        rowsScreen("Home",true,homeHeader(tmdb),specs,restore);
+        rowsScreen("Home",true,()->homeHeader(tmdb),specs,restore);
     }
     private View homeHeader(boolean tmdb){
         LinearLayout box=ui.column();
@@ -289,10 +294,10 @@ public class MainActivity extends Activity implements CatalogViews.Host {
         heroTitle=ui.bold("Your next great watch.",compact()?32:38);heroTitle.setMaxLines(compact()?1:2);heroTitle.setEllipsize(TextUtils.TruncateAt.END);hero.addView(heroTitle);ui.gap(hero,10);
         heroMeta=ui.text("Movies  ·  Shows  ·  Live TV  ·  Sports",13,TvUi.WHITE);hero.addView(heroMeta);ui.gap(hero,10);
         heroChips=new LinearLayout(this);heroChips.setGravity(Gravity.CENTER_VERTICAL);hero.addView(heroChips);ui.gap(hero,10);
-        heroDescription=ui.text(tmdb?"Loading the latest catalog…":"Movie and TV rows need a free TMDB API key (Settings → Metadata API keys). Live TV and Sports work without one.",13,TvUi.MUTED);heroDescription.setMaxLines(compact()?1:2);hero.addView(heroDescription,new LinearLayout.LayoutParams(ui.dp(470),-2));ui.gap(hero,16);
+        heroDescription=ui.text("Loading the latest catalog…",13,TvUi.MUTED);heroDescription.setMaxLines(compact()?1:2);hero.addView(heroDescription,new LinearLayout.LayoutParams(ui.dp(470),-2));ui.gap(hero,16);
         LinearLayout heroActions=new LinearLayout(this);heroActions.setClipChildren(false);
         LinearLayout.LayoutParams actionGap=new LinearLayout.LayoutParams(-2,-2);actionGap.leftMargin=ui.dp(10);
-        heroPlay=ui.action(tmdb?"More info":"Add TMDB key",true,()->{if(featuredItem!=null)playItem(featuredItem);else if(!ApiKeys.metadataReady(this))editApiKeys();});heroActions.addView(heroPlay);
+        heroPlay=ui.action("More info",true,()->{if(featuredItem!=null)playItem(featuredItem);});heroActions.addView(heroPlay);
         heroWatch=ui.action("+  Watchlist",false,()->{if(featured!=null)toggleWatchlist(featured);});heroActions.addView(heroWatch,actionGap);
         heroActions.addView(ui.action("More Info",false,()->{if(featuredItem!=null)openItem(featuredItem);}),actionGap);
         hero.addView(heroActions);box.addView(hero,new LinearLayout.LayoutParams(-1,ui.dp(compact()?210:300)));ui.gap(box,10);
@@ -306,11 +311,15 @@ public class MainActivity extends Activity implements CatalogViews.Host {
             specs.add(new CatalogViews.RowSpec(TmdbCatalogSource.ROW_RECENT_EPISODES,"Recently aired episodes",CatalogViews.POSTER,false));
             for(String[] l:TmdbCatalogSource.SERIAL_LANGUAGES)specs.add(new CatalogViews.RowSpec(TmdbCatalogSource.serialRow(l[0]),l[1]+" serials",CatalogViews.POSTER,false));
             specs.add(new CatalogViews.RowSpec(TmdbCatalogSource.ROW_TV_NEW,"New Indian series",CatalogViews.POSTER,false));
+        }else{
+            specs.add(new CatalogViews.RowSpec(TvMazeSource.ROW_INDIA,"Indian TV · latest episodes",CatalogViews.POSTER,false));
+            specs.add(new CatalogViews.RowSpec(TvMazeSource.ROW_WORLD,"New episodes worldwide",CatalogViews.POSTER,false));
         }
-        LinearLayout header=pageHeader("TV Shows","Telugu, Tamil and Hindi series with their latest aired episode, from TMDB. Episodes play only where an authorized provider streams them; otherwise Saandio shows where to watch.");
+        LinearLayout header=pageHeader("TV Shows",tmdb
+            ?"Telugu, Tamil and Hindi series with their latest aired episode, from TMDB. Episodes play only where an authorized provider streams them; otherwise Saandio shows where to watch."
+            :"Series with their latest aired episode, from the TVMaze schedule. Episodes play only where an authorized provider streams them.");
         LinearLayout actions=new LinearLayout(this);actions.setClipChildren(false);
-        if(tmdb)actions.addView(ui.action("Browse all series",true,()->{saveTabState();history.push(capture());showTvBrowse(false);}));
-        else{header.addView(ui.text("TV rows need a free TMDB API key.",14,TvUi.ACCENT));ui.gap(header,10);actions.addView(ui.action("Add TMDB key",true,this::editApiKeys));}
+        actions.addView(ui.action("Browse all series",true,()->{saveTabState();history.push(capture());showTvBrowse(false);}));
         header.addView(actions);ui.gap(header,12);
         rowsScreen("TV Shows",false,header,specs,restore);
     }
@@ -398,9 +407,11 @@ public class MainActivity extends Activity implements CatalogViews.Host {
     private void showTvBrowse(boolean restore){showDiscover("TV Browse","filter.tv_browse","tv",restore);}
     private void showDiscover(String name,String prefKey,String kind,boolean restore){
         if(isTab(name))tab=name;
-        DiscoverQuery q=DiscoverQuery.from(uiPrefs().getString(prefKey,""),kind);boolean movie=q.movie();
-        LinearLayout header=pageHeader(movie?"All Movies":"All TV Series",movie
-            ?"Movies released in India and in Indian languages, newest release first, from TMDB. Ratings are TMDB community scores. A Play button appears only when an authorized provider streams the title."
+        DiscoverQuery q=DiscoverQuery.from(uiPrefs().getString(prefKey,""),kind);boolean movie=q.movie(),tmdb=ApiKeys.metadataReady(this);
+        LinearLayout header=pageHeader(movie?"All Movies":"All TV Series",!tmdb
+            ?(movie?"Recent Indian-language films from Wikidata (CC0), newest release first. A Play button appears only when an authorized provider streams the title."
+                :"Series with recently aired episodes from TVMaze (CC BY-SA). A Play button appears only when an authorized provider streams the title.")
+            :movie?"Movies released in India and in Indian languages, newest release first, from TMDB. Ratings are TMDB community scores. A Play button appears only when an authorized provider streams the title."
             :"Indian and Indian-language series from TMDB, newest first. Episode lists include season, episode and air date.");
         if(!movie){header.addView(ui.action("‹ Back",false,this::back),new LinearLayout.LayoutParams(-2,-2));ui.gap(header,12);}
         LinearLayout bar=filterBar(header);
@@ -413,7 +424,7 @@ public class MainActivity extends Activity implements CatalogViews.Host {
             pick("Release year",labels,w->{q.year=w==0?0:years.get(w-1);saveQuery(prefKey,q);reopenGrid(name,"f.year");});
         }));
         filterButton(bar,"f.genre","Genre · "+(q.genreName.isEmpty()?"All":q.genreName),()->catalog.genres(movie,genres->{
-            if(genres.isEmpty()){notice("Genres unavailable","Genre names load from TMDB. Check the TMDB key and connection.");return;}
+            if(genres.isEmpty()){notice("Genres unavailable","Genre names appear once the catalog has loaded. Check the connection and try again shortly.");return;}
             List<Map.Entry<Integer,String>> entries=new ArrayList<>(genres.entrySet());String[] labels=new String[entries.size()+1];labels[0]="All genres";for(int i=0;i<entries.size();i++)labels[i+1]=entries.get(i).getValue();
             pick("Genre",labels,w->{q.genreId=w==0?0:entries.get(w-1).getKey();q.genreName=w==0?"":entries.get(w-1).getValue();saveQuery(prefKey,q);reopenGrid(name,"f.genre");});
         }));
@@ -421,9 +432,9 @@ public class MainActivity extends Activity implements CatalogViews.Host {
             String[] labels=new String[DiscoverQuery.SORTS.size()];for(int i=0;i<labels.length;i++)labels[i]=DiscoverQuery.sortLabel(DiscoverQuery.SORTS.get(i));
             pick("Sort",labels,w->{q.sort=DiscoverQuery.SORTS.get(w);saveQuery(prefKey,q);reopenGrid(name,"f.sort");});
         });
-        filterButton(bar,"f.rating","TMDB rating · "+(q.minRating>0?trim(q.minRating)+"+":"Any"),()->{
+        filterButton(bar,"f.rating",(tmdb?"TMDB rating · ":"Rating · ")+(q.minRating>0?trim(q.minRating)+"+":"Any"),()->{
             float[] values={0,5,6,7,8};String[] labels={"Any rating","5+","6+","7+","8+"};
-            pick("Minimum TMDB rating",labels,w->{q.minRating=values[w];saveQuery(prefKey,q);reopenGrid(name,"f.rating");});
+            pick(tmdb?"Minimum TMDB rating":"Minimum rating",labels,w->{q.minRating=values[w];saveQuery(prefKey,q);reopenGrid(name,"f.rating");});
         });
         if(movie)filterButton(bar,"f.quality","Quality · "+(q.minHeight>0?PlaybackPolicy.heightLabel(q.minHeight)+"+ verified":"Any"),()->{
             int[] values={0,720,1080,2160};String[] labels={"Any (metadata catalog)","720p+ verified","1080p+ verified","4K verified"};
@@ -433,8 +444,9 @@ public class MainActivity extends Activity implements CatalogViews.Host {
         if(!q.key().equals(defaults.key()))filterButton(bar,"f.reset","Reset filters",()->{uiPrefs().edit().remove(prefKey).apply();reopenGrid(name,"f.sort");});
         TextView status=ui.text("",12,TvUi.MUTED);header.addView(status);ui.gap(header,8);
         if(q.minHeight>0){header.addView(ui.text("Verified quality comes only from authorized playback partners, so this view lists partner titles rather than the full TMDB catalog.",12,TvUi.ACCENT));ui.gap(header,8);}
-        Grid g=buildGrid(name,header,CatalogViews.POSTER);g.query=q;g.status=status;g.local=!q.remote();
+        Grid g=buildGrid(name,header,CatalogViews.POSTER);g.query=q;g.status=status;g.local=!q.remote()||!tmdb;
         if(g.local)g.watches.addAll(Arrays.asList(HdCatalogSource.ROW_HD,HdCatalogSource.ROW_PLAYABLE));
+        if(!tmdb)g.watches.addAll(movie?Collections.singletonList(WikidataFilmSource.ROW_LATEST):Arrays.asList(TvMazeSource.ROW_INDIA,TvMazeSource.ROW_WORLD));
         restoreTab(name,restore);
         if(!restoreGridMemory(g))gridLoad(g,1);
         gridStatus(g);
@@ -518,7 +530,7 @@ public class MainActivity extends Activity implements CatalogViews.Host {
         heroDescription.setText(title.description.isEmpty()?"Open for details, availability and where to watch.":title.description);
         if(heroPlay!=null){
             heroPlay.setText(CatalogItem.EVENT.equals(c.kind)?"Match details":"…");
-            if(!CatalogItem.EVENT.equals(c.kind))catalog.resolve(c,r->{if(featuredItem!=c||heroPlay==null)return;heroPlay.setText(r.playable()?(CatalogItem.CHANNEL.equals(c.kind)?"▶  Watch live":"▶  Play"):"Where to watch");});
+            if(!CatalogItem.EVENT.equals(c.kind))catalog.resolve(c,r->{if(featuredItem!=c||heroPlay==null)return;heroPlay.setText(r.playable()?(CatalogItem.CHANNEL.equals(c.kind)?"▶  Watch live":"▶  Play"):"tmdb".equals(c.title.provider)?"Where to watch":"Details");});
         }
         String art=title.background.isEmpty()?title.poster:title.background;
         int known=ColorExtractor.cached(art);if(known!=0)tintHero(known);
@@ -628,6 +640,7 @@ public class MainActivity extends Activity implements CatalogViews.Host {
     }
     private void showDetails(Library.Title title){
         detailTitle=title;CatalogItem item=itemFor(title);detailItem=item;boolean tmdbTitle="tmdb".equals(title.provider);boolean channel=CatalogItem.CHANNEL.equals(item.kind);
+        boolean metaTitle=PlaybackSourceResolver.metadataOnly(title)&&!channel,openTitle=metaTitle&&!tmdbTitle;
         shell("Details",true);Artwork.load(backdrop,title.background.isEmpty()?title.poster:title.background);
         TextView back=ui.action("‹  Back",false,this::back);body.addView(back,new LinearLayout.LayoutParams(-2,ui.dp(38)));ui.gap(body,26);
         String kicker=join(LanguageTaxonomy.of(title),title.type.equals("series")?"Series":title.type.equals("episode")?"Episode":channel?"Live":"Movie").toUpperCase(Locale.ROOT);
@@ -635,24 +648,25 @@ public class MainActivity extends Activity implements CatalogViews.Host {
         TextView metaLine=ui.text(join(title.released.length()==10?title.released:title.year,title.language,title.genre,item.rating>0&&!item.ratingSource.isEmpty()?String.format(Locale.US,"★ %.1f %s",item.rating,item.ratingSource):title.rating.isEmpty()?"":"★ "+title.rating),14,TvUi.WHITE);body.addView(metaLine);ui.gap(body,16);
         TextView description=ui.text(title.description.isEmpty()?"Loading title details…":title.description,15,TvUi.MUTED);description.setMaxWidth(ui.dp(650));body.addView(description);ui.gap(body,22);
         LinearLayout actions=new LinearLayout(this);actions.setClipChildren(false);
-        final Library.Title[] target={tmdbTitle?null:title};
+        final Library.Title[] target={metaTitle?null:title};final String[] unavailable={""};
         TextView where=ui.bold("Where to watch",19);
-        String initial=tmdbTitle?"Checking availability…":title.type.equals("series")?"Browse episodes":channel?"▶  Watch live":position(title)>0?"▶  Resume":"▶  Play";
+        String initial=metaTitle?"Checking availability…":title.type.equals("series")?"Browse episodes":channel?"▶  Watch live":position(title)>0?"▶  Resume":"▶  Play";
         TextView play=ui.action(initial,true,()->{
-            if(!tmdbTitle){findStreams(detailTitle);return;}
+            if(!metaTitle){findStreams(detailTitle);return;}
             if(target[0]!=null)findStreams(target[0]);
+            else if(openTitle)notice("Not streaming in Saandio",unavailable[0].isEmpty()?"No authorized provider lists this title.":unavailable[0]);
             else if("series".equals(title.type))showTmdbEpisodes(item,-1,true);
             else{where.setFocusable(true);where.requestFocus();}
         });actions.addView(play);LinearLayout.LayoutParams next=new LinearLayout.LayoutParams(-2,-2);next.setMargins(ui.dp(12),0,0,0);
         TextView saved=ui.action(prefs.getBoolean("saved."+title.key(),false)?"✓  In watchlist":"+  Watchlist",false,()->{boolean value=!prefs.getBoolean("saved."+title.key(),false);prefs.edit().putBoolean("saved."+title.key(),value).apply();persist(title);showDetails(detailTitle);});actions.addView(saved,next);
-        TextView episodes=ui.action("Episodes",false,()->{if(tmdbTitle)showTmdbEpisodes(item,-1,true);else showEpisodes(detailTitle,-1);});if(title.type.equals("series"))actions.addView(episodes,next);
+        TextView episodes=ui.action("Episodes",false,()->{if(tmdbTitle)showTmdbEpisodes(item,-1,true);else showEpisodes(detailTitle,-1);});if(title.type.equals("series")&&!openTitle)actions.addView(episodes,next);
         if(channel)actions.addView(ui.action(catalog.favorite(title.key())?"★  Favorite":"☆  Add to favorites",false,()->{catalog.toggleFavorite(title.key());showDetails(title);}),next);
         body.addView(actions);ui.gap(body,12);
         TextView availability=ui.text(tmdbTitle?"Metadata from TMDB.":"Source: "+title.providerName+(channel?" · "+LiveTvSource.ATTRIBUTION:""),12,TvUi.MUTED);body.addView(availability);ui.gap(body,22);
         int version=generation;
-        if(tmdbTitle||channel)catalog.resolve(item,r->{
+        if(metaTitle||channel)catalog.resolve(item,r->{
             if(isDestroyed()||generation!=version)return;
-            if(tmdbTitle){if(r.playable()&&r.title!=null){target[0]=r.title;play.setText("▶  Play");}else play.setText("series".equals(title.type)?"Episodes":"Where to watch");}
+            if(metaTitle){if(r.playable()&&r.title!=null){target[0]=r.title;play.setText("▶  Play");}else{unavailable[0]=r.reason;play.setText(openTitle?"Not streaming here":"series".equals(title.type)?"Episodes":"Where to watch");}}
             availability.setText((tmdbTitle?"Metadata from TMDB. ":"Source: "+title.providerName+". ")+r.reason);
         });
         LinearLayout whereBox=ui.column();
@@ -660,7 +674,7 @@ public class MainActivity extends Activity implements CatalogViews.Host {
             body.addView(where);ui.gap(body,8);body.addView(whereBox);ui.gap(body,18);
             TextView wait=ui.text("Loading streaming services…",14,TvUi.MUTED);whereBox.addView(wait);
             catalog.watchProviders(title,lines->{if(isDestroyed()||generation!=version)return;whereBox.removeAllViews();
-                if(lines.isEmpty())whereBox.addView(ui.text(ApiKeys.metadataReady(this)?"No streaming service in India is listed for this title yet.":"Add a TMDB API key to see where this title streams.",14,TvUi.MUTED));
+                if(lines.isEmpty())whereBox.addView(ui.text(ApiKeys.metadataReady(this)?"No streaming service in India is listed for this title yet.":"Streaming services are unavailable right now.",14,TvUi.MUTED));
                 else for(String line:lines){whereBox.addView(ui.text(line,15,TvUi.WHITE));ui.gap(whereBox,6);}
                 ui.gap(whereBox,4);whereBox.addView(ui.text("Streaming availability data: JustWatch, via TMDB.",11,TvUi.MUTED));
             });
@@ -673,9 +687,9 @@ public class MainActivity extends Activity implements CatalogViews.Host {
         body.addView(ui.bold("Your review",19));ui.gap(body,8);TextView note=ui.text(prefs.getString("review."+title.key(),"You haven't reviewed this title yet."),14,TvUi.MUTED);body.addView(note);ui.gap(body,12);body.addView(ui.action("Write a review",false,()->review(title)));
         if(!channel){ui.gap(body,16);body.addView(ui.action("Correct metadata match",false,()->correctMatch(title)));}
         play.requestFocus();
-        if(!tmdbTitle)repository.io.execute(()->{try{Library.Title full=repository.details(title);runOnUiThread(()->{if(isDestroyed()||generation!=version)return;detailTitle=full;name.setText(full.name);metaLine.setText(join(full.year,full.language,full.genre,full.rating.isEmpty()?"":"★ "+full.rating));description.setText(full.description.isEmpty()?"No synopsis has been supplied by this source.":full.description);cast.setText(full.cast.isEmpty()?"Cast information has not been supplied by this source.":full.cast);persist(full);if(full.type.equals("series")&&episodes.getParent()==null)actions.addView(episodes,next);});}catch(Exception e){runOnUiThread(()->{if(generation==version)description.setText(title.description.isEmpty()?"Details unavailable. "+ProviderRepository.message(e):title.description);});}});
+        if(!metaTitle)repository.io.execute(()->{try{Library.Title full=repository.details(title);runOnUiThread(()->{if(isDestroyed()||generation!=version)return;detailTitle=full;name.setText(full.name);metaLine.setText(join(full.year,full.language,full.genre,full.rating.isEmpty()?"":"★ "+full.rating));description.setText(full.description.isEmpty()?"No synopsis has been supplied by this source.":full.description);cast.setText(full.cast.isEmpty()?"Cast information has not been supplied by this source.":full.cast);persist(full);if(full.type.equals("series")&&episodes.getParent()==null)actions.addView(episodes,next);});}catch(Exception e){runOnUiThread(()->{if(generation==version)description.setText(title.description.isEmpty()?"Details unavailable. "+ProviderRepository.message(e):title.description);});}});
         if(channel)return;
-        repository.io.execute(()->{try{org.json.JSONObject rec=ApiKeys.metadataReady(this)?metadata.enrich(title):null;runOnUiThread(()->{if(isDestroyed()||generation!=version||detailTitle==null||!detailTitle.key().equals(title.key()))return;bindMetadata(title,rec,ratings,tagline,description,cast,people,extra,metaLine);});}catch(Exception ignored){runOnUiThread(()->{if(generation==version)extra.addView(ui.text(ApiKeys.metadataReady(this)?"Additional metadata could not be loaded.":"Metadata unavailable. Add a TMDB API key in Settings.",13,TvUi.MUTED));});}});
+        repository.io.execute(()->{try{org.json.JSONObject rec=ApiKeys.metadataReady(this)?metadata.enrich(title):null;runOnUiThread(()->{if(isDestroyed()||generation!=version||detailTitle==null||!detailTitle.key().equals(title.key()))return;bindMetadata(title,rec,ratings,tagline,description,cast,people,extra,metaLine);});}catch(Exception ignored){runOnUiThread(()->{if(generation==version&&ApiKeys.metadataReady(this))extra.addView(ui.text("Additional metadata could not be loaded.",13,TvUi.MUTED));});}});
     }
     private void showEvent(CatalogItem e){
         detailItem=e;detailTitle=e.title;shell("Event",true);if(Library.https(e.title.background))Artwork.load(backdrop,e.title.background);
@@ -810,13 +824,15 @@ public class MainActivity extends Activity implements CatalogViews.Host {
         VpnHealth.State vpnState=VpnController.get(this).snapshot().state;
         body.addView(ui.action("VPN · "+(VpnHealth.claimsProtection(vpnState)?"Protected":vpnState==VpnHealth.State.NOT_CONFIGURED?(NetworkStatus.vpnActive(this)?"another VPN app is active":"not set up"):vpnState==VpnHealth.State.OFF?"Disconnected":"Not protected"),false,this::showConnection));ui.gap(body,14);
         body.addView(ui.action("Require VPN before playback · "+(appearance.getBoolean("vpn.required",false)?"On":"Off"),false,()->{appearance.edit().putBoolean("vpn.required",!appearance.getBoolean("vpn.required",false)).apply();showSettings();}));ui.gap(body,14);
-        body.addView(ui.action("Metadata API keys · "+(ApiKeys.metadataReady(this)?"configured":"not configured"),false,this::editApiKeys));ui.gap(body,14);
+        TmdbRoute route=ApiKeys.tmdbRoute(this);
+        body.addView(ui.text("Movie & TV catalog · "+(route==null?"open data (Wikidata, TVMaze)":"TMDB via "+route.label()),13,TvUi.MUTED));ui.gap(body,10);
+        body.addView(ui.action("Developer · metadata keys (optional)",false,this::editApiKeys));ui.gap(body,14);
         body.addView(ui.text("Einthusan: "+EinthusanAdapter.status().reason,13,TvUi.MUTED));ui.gap(body,14);
         body.addView(ui.action("Source health & research",false,this::showResearch));ui.gap(body,16);
         if(TesterGate.configured(BuildConfig.TESTER_PIN_HASH)){body.addView(ui.action("Security research (authorized testers)",false,()->startActivity(new Intent(this,SecurityDashboardActivity.class))));ui.gap(body,16);}
         body.addView(ui.text("Playback supports MP4, HLS and DASH, embedded audio tracks, and supplied subtitles. A source must expose playable media; website-only and protected sources can be unavailable.",14,TvUi.MUTED));
-        ui.gap(body,12);body.addView(ui.text("Metadata keys are stored on-device in app-private settings, or supplied at build time via local.properties. They are never written to the research log.",13,TvUi.MUTED));
-        ui.gap(body,12);body.addView(ui.text("Movie and TV metadata: TMDB. This product uses the TMDB API but is not endorsed or certified by TMDB. Streaming availability: JustWatch via TMDB. Sports schedules: TheSportsDB. Live channel directory: iptv-org.",12,TvUi.MUTED));
+        ui.gap(body,12);body.addView(ui.text("No key is needed to use Saandio. The movie catalog service holds its TMDB credential on the server; optional developer keys stay in app-private settings and are never written to the research log.",13,TvUi.MUTED));
+        ui.gap(body,12);body.addView(ui.text("Movie and TV metadata: TMDB. This product uses the TMDB API but is not endorsed or certified by TMDB. Streaming availability: JustWatch via TMDB. Open film data: Wikidata (CC0). TV schedules: TVMaze (CC BY-SA 4.0). Sports schedules: TheSportsDB. Live channel directory: iptv-org.",12,TvUi.MUTED));
     }
     private void showSyncStatus(){
         shell("Sync",false);heading("Catalog sync","The saved catalog appears instantly; each source then refreshes in the background on launch, when you return to the app, and every few minutes while it is open. A failing source keeps its last catalog and retries with increasing delays.");
@@ -917,13 +933,13 @@ public class MainActivity extends Activity implements CatalogViews.Host {
     }
     private void editApiKeys(){
         LinearLayout box=ui.column();box.setPadding(ui.dp(24),ui.dp(12),ui.dp(24),ui.dp(10));
-        box.addView(ui.text("TMDB powers the movie and TV catalogs, matches, cast and where-to-watch. OMDb adds IMDb / Rotten Tomatoes / Metacritic on details pages. Trakt is optional. YouTube Data is used only for trailer search. TheSportsDB's free key \"123\" is used for schedules unless you add your own.",13,TvUi.MUTED));ui.gap(box,12);
+        box.addView(ui.text("Optional, for developers testing their own accounts. Viewers do not need any key: the catalog loads from the Saandio catalog service or open data. A personal TMDB key here calls TMDB directly from this device. OMDb adds IMDb / Rotten Tomatoes / Metacritic on details pages. Trakt is optional. YouTube Data is used only for trailer search. TheSportsDB's free key \"123\" is used for schedules unless you add your own.",13,TvUi.MUTED));ui.gap(box,12);
         EditText tmdb=ui.input("TMDB API key",ApiKeys.tmdb(this));box.addView(tmdb);ui.gap(box,8);
         EditText omdb=ui.input("OMDb API key",ApiKeys.omdb(this));box.addView(omdb);ui.gap(box,8);
         EditText trakt=ui.input("Trakt client ID",ApiKeys.trakt(this));box.addView(trakt);ui.gap(box,8);
         EditText youtube=ui.input("YouTube Data API key",ApiKeys.youtube(this));box.addView(youtube);ui.gap(box,8);
         String sportsKey=ApiKeys.sportsDb(this);EditText sports=ui.input("TheSportsDB key (blank = free key)",sportsKey.equals(ApiKeys.SPORTSDB_FREE)?"":sportsKey);box.addView(sports);
-        new AlertDialog.Builder(this).setTitle("Metadata keys").setView(box).setPositiveButton("Save",(d,w)->{
+        new AlertDialog.Builder(this).setTitle("Developer metadata keys").setView(box).setPositiveButton("Save",(d,w)->{
             boolean tmdbChanged=!tmdb.getText().toString().trim().equals(ApiKeys.tmdb(this));
             ApiKeys.save(this,tmdb.getText().toString(),omdb.getText().toString(),trakt.getText().toString(),youtube.getText().toString());ApiKeys.saveSportsDb(this,sports.getText().toString());
             if(tmdbChanged){catalog.refresh(TmdbCatalogSource.MOVIES);catalog.refresh(TmdbCatalogSource.TV);}catalog.refresh(SportsSource.ID);
@@ -944,7 +960,7 @@ public class MainActivity extends Activity implements CatalogViews.Host {
     // ---- metadata ------------------------------------------------------------------------------------
     private void bindMetadata(Library.Title title,org.json.JSONObject rec,LinearLayout ratings,TextView tagline,TextView description,TextView cast,LinearLayout people,LinearLayout extra,TextView metaLine){
         extra.removeAllViews();ratings.removeAllViews();
-        if(rec==null||!ApiKeys.metadataReady(this)){extra.addView(ui.text("Metadata unavailable. Add a TMDB API key in Settings.",13,TvUi.MUTED));return;}
+        if(rec==null||!ApiKeys.metadataReady(this)){if(ApiKeys.metadataReady(this))extra.addView(ui.text("Additional metadata is unavailable for this title.",13,TvUi.MUTED));return;}
         if(rec.optString("status").equals("unmatched")||rec.optDouble("confidence")<MetadataMatcher.AUTO){extra.addView(ui.text("No confident metadata match. Use Correct metadata match if this title is wrong.",13,TvUi.MUTED));return;}
         String backdropUrl=rec.optString("backdrop");if(backdropUrl.isEmpty())backdropUrl=rec.optString("poster");final String art=backdropUrl;if(!art.isEmpty())Artwork.load(backdrop,art,bitmap->tintHero(ColorExtractor.extract(art,bitmap)));
         metaLine.setText(join(yearOf(rec.optString("year")),rec.optString("runtime").isEmpty()?"":rec.optInt("runtime")+" min",rec.optString("age"),rec.optString("genres"),rec.optString("languages")));
@@ -994,7 +1010,7 @@ public class MainActivity extends Activity implements CatalogViews.Host {
         });}catch(Exception e){runOnUiThread(()->{if(generation==version)notice("Filmography unavailable","TMDB did not return this person.");});}});
     }
     private void correctMatch(Library.Title title){
-        if(!ApiKeys.metadataReady(this)){notice("Metadata unavailable","Add a TMDB API key in Settings.");return;}
+        if(!ApiKeys.metadataReady(this)){notice("Matching unavailable","This build has no movie catalog service configured, so titles cannot be re-matched.");return;}
         EditText q=ui.input("Search TMDB",title.name);
         new AlertDialog.Builder(this).setTitle("Correct match").setView(q).setPositiveButton("Search",(d,w)->repository.io.execute(()->{try{
             Library.Title probe=Library.Title.from(title.json());probe.name=q.getText().toString().trim();if(probe.name.isEmpty())probe.name=title.name;

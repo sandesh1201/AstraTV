@@ -47,7 +47,7 @@ final class CatalogViews {
         LinearLayout card=ui.column();card.setPadding(ui.dp(4),ui.dp(4),ui.dp(4),ui.dp(6));
         RecyclerView.LayoutParams lp=new RecyclerView.LayoutParams(grid?-1:cardWidth(style),-2);if(!grid)lp.rightMargin=ui.dp(13);else lp.setMargins(ui.dp(4),0,ui.dp(9),ui.dp(14));card.setLayoutParams(lp);
         FrameLayout art=new FrameLayout(context);art.setClipToOutline(true);
-        TextView fallback=ui.bold("",style==WIDE?22:30);fallback.setGravity(Gravity.CENTER);art.addView(fallback,new FrameLayout.LayoutParams(-1,-1));
+        TextView fallback=ui.bold("",style==WIDE?22:30);fallback.setGravity(Gravity.CENTER);fallback.setPadding(ui.dp(10),ui.dp(10),ui.dp(10),ui.dp(10));fallback.setMaxLines(6);fallback.setEllipsize(TextUtils.TruncateAt.END);art.addView(fallback,new FrameLayout.LayoutParams(-1,-1));
         ImageView image=new ImageView(context);image.setScaleType(style==WIDE?ImageView.ScaleType.FIT_CENTER:ImageView.ScaleType.CENTER_CROP);art.addView(image,new FrameLayout.LayoutParams(-1,-1));
         TextView badge=ui.badge("",0xcc0b0d12);FrameLayout.LayoutParams bp=new FrameLayout.LayoutParams(-2,-2,Gravity.TOP|Gravity.START);bp.setMargins(ui.dp(6),ui.dp(6),0,0);art.addView(badge,bp);
         TextView status=ui.badge("",0xcc0b0d12);FrameLayout.LayoutParams sp=new FrameLayout.LayoutParams(-2,-2,Gravity.TOP|Gravity.END);sp.setMargins(0,ui.dp(6),ui.dp(6),0);art.addView(status,sp);
@@ -65,7 +65,9 @@ final class CatalogViews {
         h.item=c;h.rowId=rowId;h.index=index;Library.Title t=c.title;
         h.card.setTag(c.key());h.card.setContentDescription(t.name+", "+subtitle(c));
         h.art.setBackground(ui.shape(0xff1b2638|(t.name.hashCode()&0x00181818),0,18));
-        h.fallback.setText(t.name.isEmpty()?"":t.name.substring(0,Math.min(2,t.name.length())).toUpperCase(Locale.ROOT));
+        boolean noArt=t.poster.isEmpty()&&t.background.isEmpty();
+        h.fallback.setTextSize(noArt?(h.style==WIDE?16:17):(h.style==WIDE?22:30));
+        h.fallback.setText(noArt?t.name+(c.year()>0?"\n"+c.year():""):t.name.isEmpty()?"":t.name.substring(0,Math.min(2,t.name.length())).toUpperCase(Locale.ROOT));
         h.title.setText(t.name);h.subtitle.setText(subtitle(c));
         String badge=badge(c);h.badge.setText(badge);h.badge.setVisibility(badge.isEmpty()?View.GONE:View.VISIBLE);
         String status=status(c);h.status.setText(status);h.status.setVisibility(status.isEmpty()?View.GONE:View.VISIBLE);

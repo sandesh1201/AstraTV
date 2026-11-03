@@ -19,23 +19,23 @@ final class TmdbCatalogSource implements CatalogSource {
     static final String IMG="https://image.tmdb.org/t/p/";
     static String latestRow(String code){return "movies.latest."+code;}
     static String serialRow(String code){return "tv.serials."+code;}
-    interface Keys{String tmdb();}
+    interface Route{TmdbRoute get();}
     interface Today{LocalDate today();}
     static final class Page{
         final List<CatalogItem> items;final int page,totalPages;final boolean fromCache;
         Page(List<CatalogItem> items,int page,int totalPages,boolean fromCache){this.items=items;this.page=page;this.totalPages=totalPages;this.fromCache=fromCache;}
         boolean hasMore(){return page<totalPages;}
     }
-    private final boolean tv;private final Keys keys;private final Today today;
+    private final boolean tv;private final Route route;private final Today today;
     private final Map<String,Map<Integer,String>> genres=new ConcurrentHashMap<>();
-    TmdbCatalogSource(boolean tv,Keys keys,Today today){this.tv=tv;this.keys=keys;this.today=today;}
+    TmdbCatalogSource(boolean tv,Route route,Today today){this.tv=tv;this.route=route;this.today=today;}
 
     @Override public String id(){return tv?TV:MOVIES;}
     @Override public String label(){return tv?"TV series · TMDB":"Movies · TMDB";}
     @Override public long defaultTtlMs(){return (tv?30L:15L)*60_000L;}
     @Override public boolean checkOnForeground(){return true;}
-    @Override public boolean ready(){return !keys.tmdb().isEmpty();}
-    @Override public String notReadyReason(){return "Add a free TMDB API key in Settings → Metadata API keys to load movie and TV catalogs.";}
+    @Override public boolean ready(){return route.get()!=null;}
+    @Override public String notReadyReason(){return "This build has no movie catalog service configured, so open-data rows are shown instead (developers: set catalog.api.base, see backend/README.md).";}
 
     @Override public List<Batch> fetch(CatalogHttp http)throws Exception{
         String d=today.today().toString();Map<Integer,String> g;
@@ -57,7 +57,7 @@ final class TmdbCatalogSource implements CatalogSource {
             try{
                 List<CatalogItem> items=new ArrayList<>();boolean notModified=true;Set<String> seen=new HashSet<>();
                 for(int page=1;page<=2;page++){
-                    CatalogHttp.Result r=http.get(url(row.getValue()+"&page="+page));notModified&=r.notModified;
+                    CatalogHttp.Result r=get(http,url(row.getValue()+"&page="+page));notModified&=r.notModified;
                     JSONObject body=new JSONObject(r.body);
                     for(CatalogItem c:parse(body,tv,g))if(seen.add(c.key()))items.add(c);
                     if(body.optInt("total_pages",1)<=page)break;
@@ -74,7 +74,7 @@ final class TmdbCatalogSource implements CatalogSource {
     Page discover(CatalogHttp http,DiscoverQuery q,int page)throws Exception{
         String u=url(q.path(page,today.today().toString()));Map<Integer,String> g;
         try{g=genreMap(http,q.movie()?"movie":"tv");}catch(Exception e){g=Collections.emptyMap();}
-        try{JSONObject body=new JSONObject(http.get(u).body);return new Page(parse(body,!q.movie(),g),body.optInt("page",page),Math.min(500,body.optInt("total_pages",1)),false);}
+        try{JSONObject body=new JSONObject(get(http,u).body);return new Page(parse(body,!q.movie(),g),body.optInt("page",page),Math.min(500,body.optInt("total_pages",1)),false);}
         catch(Exception e){
             CatalogHttp.Entry saved=http.cached(u);if(saved==null||saved.body.isEmpty())throw e;
             JSONObject body=new JSONObject(saved.body);return new Page(parse(body,!q.movie(),g),body.optInt("page",page),Math.min(500,body.optInt("total_pages",1)),true);
@@ -90,7 +90,7 @@ final class TmdbCatalogSource implements CatalogSource {
     List<CatalogItem> search(CatalogHttp http,String query)throws Exception{
         Map<Integer,String> mg,tg;
         try{mg=genreMap(http,"movie");tg=genreMap(http,"tv");}catch(Exception e){mg=Collections.emptyMap();tg=Collections.emptyMap();}
-        JSONObject body=new JSONObject(http.get(url("/search/multi?include_adult=false&query="+enc(query))).body);
+        JSONObject body=new JSONObject(get(http,url("/search/multi?include_adult=false&query="+enc(query))).body);
         JSONArray results=body.optJSONArray("results");List<CatalogItem> out=new ArrayList<>();if(results==null)return out;
         JSONArray movies=new JSONArray(),shows=new JSONArray();
         for(int i=0;i<results.length();i++){JSONObject r=results.optJSONObject(i);if(r==null)continue;String type=r.optString("media_type");if(type.equals("movie"))movies.put(r);else if(type.equals("tv"))shows.put(r);}
@@ -100,14 +100,14 @@ final class TmdbCatalogSource implements CatalogSource {
     /** Genre names for filters, straight from TMDB rather than a fixed list. */
     Map<Integer,String> genreMap(CatalogHttp http,String kind)throws Exception{
         Map<Integer,String> hit=genres.get(kind);if(hit!=null&&!hit.isEmpty())return hit;
-        JSONArray list=new JSONObject(http.get(url("/genre/"+kind+"/list?language=en-US")).body).optJSONArray("genres");
+        JSONArray list=new JSONObject(get(http,url("/genre/"+kind+"/list?language=en-US")).body).optJSONArray("genres");
         Map<Integer,String> out=new LinkedHashMap<>();if(list!=null)for(int i=0;i<list.length();i++){JSONObject o=list.optJSONObject(i);if(o!=null&&o.optInt("id")>0)out.put(o.optInt("id"),str(o,"name"));}
         if(!out.isEmpty())genres.put(kind,out);return out;
     }
     /** Fills the latest aired episode (season, episode, air date) for a series card. */
     void lastEpisode(CatalogHttp http,CatalogItem c)throws Exception{
         if(c.tmdbId<=0)return;
-        JSONObject o=new JSONObject(http.get(url("/tv/"+c.tmdbId)).body);
+        JSONObject o=new JSONObject(get(http,url("/tv/"+c.tmdbId)).body);
         applyLastEpisode(c,o);
     }
     static void applyLastEpisode(CatalogItem c,JSONObject show){
@@ -122,7 +122,7 @@ final class TmdbCatalogSource implements CatalogSource {
         c.sourceUpdatedAt=epoch(air);
     }
     List<CatalogItem> season(CatalogHttp http,int tvId,int season,Library.Title show)throws Exception{
-        JSONObject o=new JSONObject(http.get(url("/tv/"+tvId+"/season/"+season)).body);
+        JSONObject o=new JSONObject(get(http,url("/tv/"+tvId+"/season/"+season)).body);
         return parseSeason(o,tvId,show);
     }
     static List<CatalogItem> parseSeason(JSONObject season,int tvId,Library.Title show){
@@ -141,7 +141,7 @@ final class TmdbCatalogSource implements CatalogSource {
     }
     /** "Where to watch" in a region: service names grouped by offer type. Data: JustWatch via TMDB. */
     List<String> watchProviders(CatalogHttp http,boolean series,int id,String region)throws Exception{
-        JSONObject o=new JSONObject(http.get(url("/"+(series?"tv":"movie")+"/"+id+"/watch/providers")).body);
+        JSONObject o=new JSONObject(get(http,url("/"+(series?"tv":"movie")+"/"+id+"/watch/providers")).body);
         return parseWatchProviders(o,region);
     }
     static List<String> parseWatchProviders(JSONObject body,String region){
@@ -186,7 +186,8 @@ final class TmdbCatalogSource implements CatalogSource {
     }
     static long epoch(String date){try{return date.length()==10?LocalDate.parse(date).atStartOfDay(java.time.ZoneOffset.UTC).toInstant().toEpochMilli():0;}catch(Exception e){return 0;}}
     static String shortDate(String date){try{LocalDate d=LocalDate.parse(date);return d.getDayOfMonth()+" "+d.getMonth().getDisplayName(java.time.format.TextStyle.SHORT,Locale.ENGLISH)+(d.getYear()==LocalDate.now().getYear()?"":" "+d.getYear());}catch(Exception e){return date;}}
-    private String url(String path){return "https://api.themoviedb.org/3"+path+(path.contains("?")?"&":"?")+"api_key="+enc(keys.tmdb());}
+    private String url(String path){TmdbRoute r=route.get();if(r==null)throw new IllegalStateException(notReadyReason());return r.url(path);}
+    private CatalogHttp.Result get(CatalogHttp http,String url)throws java.io.IOException{TmdbRoute r=route.get();return http.get(url,r==null?Collections.emptyMap():r.headers());}
     static String str(JSONObject o,String key){return o==null||o.isNull(key)?"":o.optString(key,"");}
     private static String enc(String s){try{return URLEncoder.encode(s==null?"":s,"UTF-8").replace("+","%20");}catch(java.io.UnsupportedEncodingException e){return "";}}
 }

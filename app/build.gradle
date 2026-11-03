@@ -9,13 +9,18 @@ if (testerPin) {
     def spec = new javax.crypto.spec.PBEKeySpec(testerPin.toCharArray(), testerSalt.getBytes('UTF-8'), 120000, 256)
     testerHash = javax.crypto.SecretKeyFactory.getInstance('PBKDF2WithHmacSHA256').generateSecret(spec).encoded.encodeHex().toString()
 }
+// Saandio Catalog API (backend/): holds the TMDB credential server-side. A personal tmdb.api.key is used by debug builds only.
+def catalogApiBase = (localProps.getProperty('catalog.api.base', System.getenv('SAANDIO_CATALOG_API_BASE') ?: '') ?: '').trim().replace('"', '')
+def catalogClientToken = (localProps.getProperty('catalog.client.token', System.getenv('SAANDIO_CATALOG_CLIENT_TOKEN') ?: '') ?: '').trim().replace('"', '')
+if (catalogApiBase && !catalogApiBase.startsWith('https://')) throw new GradleException('catalog.api.base must be an https:// URL')
 android {
     namespace 'com.astratv.app'
     compileSdk 35
     buildFeatures { buildConfig true }
     defaultConfig {
         applicationId 'com.astratv.app'; minSdk 26; targetSdk 35; versionCode 3; versionName '0.3.0'
-        buildConfigField 'String', 'TMDB_API_KEY', '"' + (localProps.getProperty('tmdb.api.key','') ?: '').replace('"','') + '"'
+        buildConfigField 'String', 'CATALOG_API_BASE', '"' + catalogApiBase + '"'
+        buildConfigField 'String', 'CATALOG_CLIENT_TOKEN', '"' + catalogClientToken + '"'
         buildConfigField 'String', 'OMDB_API_KEY', '"' + (localProps.getProperty('omdb.api.key','') ?: '').replace('"','') + '"'
         buildConfigField 'String', 'TRAKT_CLIENT_ID', '"' + (localProps.getProperty('trakt.client.id','') ?: '').replace('"','') + '"'
         buildConfigField 'String', 'YOUTUBE_API_KEY', '"' + (localProps.getProperty('youtube.api.key','') ?: '').replace('"','') + '"'
@@ -24,7 +29,11 @@ android {
     }
     compileOptions { sourceCompatibility JavaVersion.VERSION_17; targetCompatibility JavaVersion.VERSION_17 }
     buildTypes {
+        debug {
+            buildConfigField 'String', 'TMDB_API_KEY', '"' + (localProps.getProperty('tmdb.api.key','') ?: '').replace('"','') + '"'
+        }
         release {
+            buildConfigField 'String', 'TMDB_API_KEY', '""'
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'

@@ -13,7 +13,9 @@ final class ApiKeys {
     static final String SPORTSDB_FREE="123";
     static String sportsDb(Context c){return first(pref(c,"key.sportsdb"),SPORTSDB_FREE);}
     static void saveSportsDb(Context c,String key){c.getSharedPreferences("astra_ui_v1",0).edit().putString("key.sportsdb",key==null?"":key.trim()).apply();}
-    static boolean metadataReady(Context c){return !tmdb(c).isEmpty();}
+    static TmdbRoute tmdbRoute(Context c){return TmdbRoute.of(BuildConfig.CATALOG_API_BASE,BuildConfig.CATALOG_CLIENT_TOKEN,tmdb(c));}
+    /** TMDB is reachable through the catalog service or a developer key. Viewers are never asked for one. */
+    static boolean metadataReady(Context c){return tmdbRoute(c)!=null;}
     static void save(Context c,String tmdb,String omdb,String trakt,String youtube){
         c.getSharedPreferences("astra_ui_v1",0).edit().putString("key.tmdb",tmdb.trim()).putString("key.omdb",omdb.trim()).putString("key.trakt",trakt.trim()).putString("key.youtube",youtube.trim()).apply();
     }
