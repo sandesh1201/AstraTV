@@ -15,10 +15,11 @@ public final class MetadataMatcher {
             this.year=year==null?"":year;this.language=language==null?"":language;this.type=type==null?"movie":type;
         }
     }
+    private static final Pattern YEAR_TAG=Pattern.compile("\\((?:19|20)\\d{2}\\)"),NON_WORD=Pattern.compile("[^a-z0-9\\s]"),SPACES=Pattern.compile("\\s+"),YEAR=Pattern.compile("((?:19|20)\\d{2})");
     public static String normalize(String name){
         if(name==null)return "";
-        String n=name.toLowerCase(Locale.ROOT).replaceAll("\\((?:19|20)\\d{2}\\)","");
-        n=n.replaceAll("[^a-z0-9\\s]"," ").replaceAll("\\s+"," ").trim();
+        String n=YEAR_TAG.matcher(name.toLowerCase(Locale.ROOT)).replaceAll("");
+        n=SPACES.matcher(NON_WORD.matcher(n).replaceAll(" ")).replaceAll(" ").trim();
         return n;
     }
     public static float score(Library.Title t,Candidate c){
@@ -54,7 +55,7 @@ public final class MetadataMatcher {
         return "movie";
     }
     private static int year(String value){
-        Matcher m=Pattern.compile("((?:19|20)\\d{2})").matcher(value==null?"":value);
+        Matcher m=YEAR.matcher(value==null?"":value);
         return m.find()?Integer.parseInt(m.group(1)):0;
     }
 }

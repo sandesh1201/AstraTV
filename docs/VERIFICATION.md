@@ -1,5 +1,46 @@
 # Verification · research edition 0.3
 
+## Turn 4 · Catalog sync, six-tab navigation, performance (2026-11-02)
+
+**Automated checks:** `gradlew.bat testDebugUnitTest assembleDebug lintDebug` passes.
+- Unit tests: 140 passed, 0 failed. 59 of them are new, in these classes:
+  - `CatalogFreshnessTrackerTest`
+  - `CatalogDeduplicationTest`
+  - `DiscoverQueryTest`
+  - `TmdbParseTest`
+  - `SportsEventsTest`
+  - `CatalogHttpTest`
+  - `CatalogSyncCoordinatorTest`
+  - `PlaybackSourceResolverTest`
+  - `FocusAnchorTest`
+- Lint: 0 errors and 54 warnings. All 54 are categories the project already had: hardcoded UI strings, newer dependency versions, manifest orientation, the trailer WebView, the monochrome icon and draw allocation in the shimmer.
+
+**Emulator:** Android TV, 1280×720, API 35, host GPU emulation, timed with `am start -W`.
+
+| Measurement | Before | After |
+|---|---|---|
+| Cold start, debug APK as installed | 11.5–13.4 s, ~960 skipped frames | 4.3–5.2 s, 110–132 skipped frames |
+| Cold start after `cmd package compile -m speed` (similar to a store install) | — | 2.9–3.0 s |
+| Hot start from the launcher | — | 0.4–1.2 s |
+| Tab switch (All Movies, TV Shows, Live TV, Sports Live) | — | no skipped-frame warnings |
+| Memory after browsing | — | 88 MB PSS (Java heap 20 MB, native heap 34 MB) |
+
+For comparison, the system Settings app cold-starts in 3.6–5.5 s on the same emulator. Its stall around the first frame is the emulator's GPU setup (`HardwareRenderer`), not app code.
+
+**Runtime checks:**
+- D-pad moves between tabs and icons.
+- Card focus survives row refreshes.
+- Back from an event detail page restores the focused card.
+- Live TV probes show Online.
+- TheSportsDB events show LIVE only for HT, 1H or 2H statuses confirmed against the API.
+- Without a TMDB key, movie and TV tabs show an "Add TMDB key" prompt instead of placeholder content.
+- Search keeps focus in the text field while results load.
+
+**Not verified here:**
+- TMDB rows, since this emulator has no TMDB key.
+- Real licensed-partner playback, since no partner is connected.
+- An EPG, since none is configured.
+
 ## Turn 3 · Einthusan simulation, VPN, catalog, player, security (2026-11-02)
 
 **Automated gate:** `assembleDebug lintDebug testDebugUnitTest` passed with **81 tests, 0 failures**,

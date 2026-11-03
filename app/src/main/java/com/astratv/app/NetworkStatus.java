@@ -34,6 +34,21 @@ final class NetworkStatus {
         }
         return false;
     }
+    /**
+     * A VPN network created by another app. From API 30 the owner UID tells our tunnel apart; before
+     * that ownership is unknown, so another VPN is only trusted while this app's tunnel is down.
+     */
+    static boolean otherVpnActive(Context context,boolean ownTunnelUp){
+        ConnectivityManager cm=(ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        if(cm==null)return false;
+        for(Network network:cm.getAllNetworks()){
+            NetworkCapabilities caps=cm.getNetworkCapabilities(network);
+            if(caps==null||!caps.hasTransport(NetworkCapabilities.TRANSPORT_VPN))continue;
+            if(android.os.Build.VERSION.SDK_INT>=30){if(caps.getOwnerUid()!=android.os.Process.myUid())return true;}
+            else if(!ownTunnelUp)return true;
+        }
+        return false;
+    }
     static List<String> dns(Context context){
         List<String> out=new ArrayList<>();
         ConnectivityManager cm=(ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);

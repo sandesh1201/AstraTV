@@ -20,9 +20,25 @@ public final class TvTheme {
         if(font==null)font=Typeface.createFromAsset(context.getAssets(),"fonts/Inter.ttf");
         return android.os.Build.VERSION.SDK_INT>=28?Typeface.create(font,weight,false):Typeface.create(font,weight>=600?Typeface.BOLD:Typeface.NORMAL);
     }
+    private static volatile boolean reducedValue;
+    private static volatile long reducedAt;
+    private static Boolean lowRam;
+    /** Called on every focus change and shimmer frame, so the settings lookup is cached briefly. */
     public static boolean reduced(Context context){
-        return context.getSharedPreferences("astra_ui_v1",0).getBoolean("reduce_motion",false)
+        long now=android.os.SystemClock.uptimeMillis();
+        if(now-reducedAt<5000&&reducedAt!=0)return reducedValue;
+        reducedValue=context.getSharedPreferences("astra_ui_v1",0).getBoolean("reduce_motion",constrained(context))
             ||Settings.Global.getFloat(context.getContentResolver(),Settings.Global.ANIMATOR_DURATION_SCALE,1f)==0f;
+        reducedAt=now;return reducedValue;
+    }
+    public static void invalidate(){reducedAt=0;}
+    /** Low-RAM or small-heap TV hardware: heavy motion and trailer previews default to off. */
+    public static boolean constrained(Context context){
+        if(lowRam==null){
+            android.app.ActivityManager am=(android.app.ActivityManager)context.getApplicationContext().getSystemService(Context.ACTIVITY_SERVICE);
+            lowRam=am!=null&&(am.isLowRamDevice()||am.getMemoryClass()<192);
+        }
+        return lowRam;
     }
     public static int dp(Context c,float value){return Math.round(value*c.getResources().getDisplayMetrics().density);}
     public static GradientDrawable panel(Context c,int color,int radius){

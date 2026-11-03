@@ -19,7 +19,9 @@ final class MetadataRepository {
         String kind=MetadataMatcher.kind(title);
         MetadataMatcher.Candidate pick;
         float confidence;
+        int[] known=forceTmdbId==null?TmdbCatalogSource.ids(title):null;
         if(forceTmdbId!=null){pick=new MetadataMatcher.Candidate(forceTmdbId,title.name,"",title.year,"",kind);confidence=1f;}
+        else if(known!=null){kind=known[0]==1?"tv":"movie";pick=new MetadataMatcher.Candidate(String.valueOf(known[1]),title.name,"",title.year,"",kind);confidence=1f;}
         else{
             List<MetadataMatcher.Candidate> found=search(title,kind);
             pick=MetadataMatcher.best(title,found);

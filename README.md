@@ -54,10 +54,34 @@ API keys are read from `local.properties` (`tmdb.api.key`, `omdb.api.key`, `trak
 
 Home shelves use language and genre titles. Provider names stay on Add-ons and in a small "Source" line on each title. Einthusan is not connected: there is no official third-party API, and the app does not scrape it. A clearly labelled **Einthusan (simulation)** add-on (off by default) exercises the integration contract with Creative Commons films; see [docs/EINTHUSAN.md](docs/EINTHUSAN.md). See [docs/SECURITY.md](docs/SECURITY.md).
 
+## Catalog sync, navigation and performance (Turn 4)
+
+- **Navigation:** six tabs (Home, All Movies, HD Movies, TV Shows, Live TV, Sports Live) plus Search, Watchlist and Settings icons. Each tab remembers its focused card, scroll position and filters. Back from a detail page returns to the same card.
+- **Sources:** these are synced into a local SQLite catalog (`catalog_v2.db`, WAL mode):
+  - TMDB movies and series, if you add a free key
+  - Licensed playback partners (only the clearly labelled Einthusan simulation today, off by default)
+  - The iptv-org public channel directory
+  - TheSportsDB match schedules (the shared free key works; a personal key adds yesterday's results)
+- **Sync:** the saved catalog shows immediately. Each source then refreshes in the background on launch, when the app returns to the foreground, and every 5 minutes while open. Requests use ETag / Last-Modified, so unchanged sources cost a 304.
+  - Rows are replaced in one transaction, only when a fetch succeeds.
+  - A failing source keeps its last catalog and retries with increasing delays.
+  - Duplicates across sources and dubbed editions are merged.
+  - Every row shows when it was last updated. Settings → Catalog sync & freshness lists each source's status, has Sync now buttons, and lets you change its refresh interval.
+- **Honesty rules:** Play appears only for user-owned titles, the open-movie samples, or titles an authorized partner streams with verified renditions. TMDB titles otherwise show "Where to watch" (JustWatch data via TMDB, region IN).
+  - HD means a partner's stream reported 720p or more. A title or web page saying "HDRip" never counts.
+  - Channels show Online, Offline or Unchecked from a real playback probe.
+  - Matches are never playable. LIVE appears only while TheSportsDB reports a match in play, from a sync less than 30 minutes old.
+- **Performance:**
+  - No database or network work runs on the main thread.
+  - Home rows load in on-screen order, and card lists update through DiffUtil without losing focus.
+  - Image requests are cancelled when a card is recycled. Posters decode at display size, with RGB_565 for opaque JPEGs, and the memory cache is trimmed when Android asks.
+  - The legacy add-ons no longer refresh at startup.
+  - Measured results are in [docs/VERIFICATION.md](docs/VERIFICATION.md).
+
 ## Browsing, player and VPN (Turn 3)
 
-- **Navigation:** Search, Home, Movies, Trending, Latest Releases, Languages, Genres, Watchlist, Shows, Live TV, Settings. Add-ons stay reachable from Settings → Add-ons & sources.
-- **Home order:** Trending Now, Latest Releases, Recently Added, Popular This Week, Telugu/Tamil/Hindi/Malayalam/Kannada/… Movies, Hollywood Movies, Top Rated, Browse by Genre, then the existing shelves. A shelf appears only when the data supports it. Trending and Popular This Week need a TMDB key (daily and weekly charts matched to titles you actually have). Recently Added uses a local first-seen index (`catalog_index_v1.db`). Popularity is never invented.
+- **Navigation (superseded by Turn 4):** Search, Home, Movies, Trending, Latest Releases, Languages, Genres, Watchlist, Shows, Live TV, Settings. Add-ons stay reachable from Settings → Add-ons & sources.
+- **Home order (superseded by Turn 4):** Trending Now, Latest Releases, Recently Added, Popular This Week, Telugu/Tamil/Hindi/Malayalam/Kannada/… Movies, Hollywood Movies, Top Rated, Browse by Genre, then the existing shelves. A shelf appears only when the data supports it. Trending and Popular This Week need a TMDB key (daily and weekly charts matched to titles you actually have). Recently Added uses a local first-seen index (`catalog_index_v1.db`). Popularity is never invented.
 - **Filters and sorts:** 10 language buckets, 14 genres (multi-select). Sorts: Trending, Newest Release, Recently Added, Most Popular, Highest Rated, Language, Genre, A–Z. The same film from different sources is merged only when name and known year match; other copies stay under "Other sources".
 - **Player:** Quality menu built from the stream's real renditions (Auto or fixed), speed 0.75–2×, and automatic retry with backoff for network errors. Labels follow the decoded rendition. Unknown quality is never called HD.
 - **VPN:** optional WireGuard tunnel from a config you import (Settings → VPN). It shows live status, traffic, tunnel latency, exit-address check, IPv6 leak protection and auto-reconnect. "Protected" is shown only when Android reports the VPN, a recent handshake exists, and the tunnel is full. No servers are bundled. Details and limits: [docs/VPN.md](docs/VPN.md).

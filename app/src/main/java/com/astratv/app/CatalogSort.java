@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 /** Default order is newest first. Unknown dates sort last, never invented. */
 public final class CatalogSort {
     private CatalogSort(){}
-    private static final Pattern YEAR=Pattern.compile("\\b((?:19|20)\\d{2})\\b");
+    private static final Pattern YEAR=Pattern.compile("\\b((?:19|20)\\d{2})\\b"),PLAIN_YEAR=Pattern.compile("(?:19|20)\\d{2}"),ISO_DATE=Pattern.compile("\\d{4}-\\d{2}-\\d{2}"),NOT_NUMBER=Pattern.compile("[^0-9.]");
     public static final List<String> MODES=Collections.unmodifiableList(Arrays.asList("trending","newest","added","popularity","rating","language","genre","az"));
 
     /** External ordering evidence. Every value defaults to "unknown" (0). */
@@ -61,18 +61,18 @@ public final class CatalogSort {
         String l=LanguageTaxonomy.of(t);int i=LanguageTaxonomy.ALL.indexOf(l);return l.isEmpty()?LanguageTaxonomy.ALL.size():i;
     }
     public static int year(Library.Title t){
-        if(t.year!=null&&t.year.matches("(?:19|20)\\d{2}"))return Integer.parseInt(t.year);
+        if(t.year!=null&&PLAIN_YEAR.matcher(t.year).matches())return Integer.parseInt(t.year);
         Matcher m=YEAR.matcher(t.name==null?"":t.name);
         return m.find()?Integer.parseInt(m.group(1)):0;
     }
     static int dateKey(Library.Title t,ToIntFunction<Library.Title> tmdbYear){
         String released=t.released==null?"":t.released.trim();
-        if(released.matches("\\d{4}-\\d{2}-\\d{2}"))return Integer.parseInt(released.replace("-",""));
+        if(ISO_DATE.matcher(released).matches())return Integer.parseInt(released.replace("-",""));
         int y=year(t);if(y>0)return y*10000;
         int matched=tmdbYear.applyAsInt(t);return matched>0?matched*10000:0;
     }
     static double popularity(Library.Title t){
         if(t.rating==null||t.rating.isEmpty())return 0;
-        try{return Double.parseDouble(t.rating.replaceAll("[^0-9.]",""));}catch(NumberFormatException e){return 0;}
+        try{return Double.parseDouble(NOT_NUMBER.matcher(t.rating).replaceAll(""));}catch(NumberFormatException e){return 0;}
     }
 }

@@ -30,10 +30,11 @@ public final class GenreTaxonomy {
         alias("trailer",OTHER);alias("entertainment",OTHER);alias("general",OTHER);alias("religious",OTHER);
         alias("sports",OTHER);alias("sport",OTHER);alias("education",OTHER);alias("culture",OTHER);alias("business",OTHER);alias("live",OTHER);
     }
+    private static final java.util.regex.Pattern SPACES=java.util.regex.Pattern.compile("\\s+"),SEPARATORS=java.util.regex.Pattern.compile("[;,/·|]");
     private static void alias(String from,String to){ALIASES.put(from.toLowerCase(Locale.ROOT),to);}
     public static String canonical(String token){
         if(token==null)return OTHER;
-        String key=token.trim().toLowerCase(Locale.ROOT).replaceAll("\\s+"," ");
+        String key=SPACES.matcher(token.trim().toLowerCase(Locale.ROOT)).replaceAll(" ");
         if(key.isEmpty())return OTHER;
         String mapped=ALIASES.get(key);if(mapped!=null)return mapped;
         for(String g:ALL)if(g.equalsIgnoreCase(token.trim()))return g;
@@ -42,7 +43,7 @@ public final class GenreTaxonomy {
     public static List<String> normalize(String raw){
         LinkedHashSet<String> out=new LinkedHashSet<>();
         if(raw==null||raw.trim().isEmpty()){out.add(OTHER);return new ArrayList<>(out);}
-        for(String part:raw.split("[;,/·|]")){
+        for(String part:SEPARATORS.split(raw)){
             String token=part.trim();if(token.isEmpty())continue;out.add(canonical(token));
         }
         if(out.isEmpty())out.add(OTHER);
@@ -54,7 +55,7 @@ public final class GenreTaxonomy {
         List<String> have=normalize(join(t.group,t.genre));
         if(have.contains(want)||have.contains(genre))return true;
         String haystack=(t.group+" "+t.genre);
-        for(String part:haystack.split("[;,/·|]"))if(part.trim().equalsIgnoreCase(genre))return true;
+        for(String part:SEPARATORS.split(haystack))if(part.trim().equalsIgnoreCase(genre))return true;
         return false;
     }
     public static List<String> of(Library.Title t){return normalize(join(t.group,t.genre));}

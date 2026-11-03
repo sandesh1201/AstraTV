@@ -27,6 +27,7 @@ public class PlayerActivity extends Activity {
     private boolean active=false;
     private int retries=0;
     private final Handler handler=new Handler(Looper.getMainLooper());
+    private Runnable retryTask;
     private static final float[] SPEEDS={0.75f,1f,1.25f,1.5f,2f};
     @Override public void onCreate(Bundle b){
         super.onCreate(b);getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -38,7 +39,7 @@ public class PlayerActivity extends Activity {
         if(basic!=null){basic.addView(quality,0);basic.addView(speed,1);}
         LinearLayout message=new LinearLayout(this);message.setOrientation(LinearLayout.VERTICAL);message.setPadding(40,20,40,20);message.setBackgroundColor(0xe6080b12);
         error=new TextView(this);error.setTextColor(0xffedf1f6);error.setTextSize(17);message.addView(error);message.setVisibility(View.GONE);
-        Button retry=new Button(this);retry.setText("Retry playback");retry.setOnClickListener(v->{if(controller!=null){retries=0;controller.prepare();controller.play();message.setVisibility(View.GONE);}});message.addView(retry);
+        Button retry=new Button(this);retry.setText("Retry playback");retry.setOnClickListener(v->{if(retryTask!=null){handler.removeCallbacks(retryTask);retryTask=null;}if(controller!=null){retries=0;controller.prepare();controller.play();message.setVisibility(View.GONE);}});message.addView(retry);
         Button back=new Button(this);back.setText("Back to title");back.setOnClickListener(v->finish());message.addView(back);
         FrameLayout.LayoutParams p=new FrameLayout.LayoutParams(-1,-2,Gravity.TOP);root.addView(message,p);setContentView(root);
         view.setErrorMessageProvider(e->android.util.Pair.create(e.errorCode,"Playback failed. Check this source or choose another one."));
@@ -64,7 +65,10 @@ public class PlayerActivity extends Activity {
                     long delay=PlaybackPolicy.retryDelayMs(retries,e.errorCode);
                     if(delay>=0){
                         retries++;error.setText("Connection interrupted. Retrying in "+Math.max(1,delay/1000)+" s (attempt "+retries+" of "+PlaybackPolicy.MAX_RETRIES+")…");((View)error.getTag()).setVisibility(View.VISIBLE);
-                        handler.postDelayed(()->{if(controller==null)return;if(e.errorCode==PlaybackException.ERROR_CODE_BEHIND_LIVE_WINDOW)controller.seekToDefaultPosition();controller.prepare();controller.play();},delay);
+                        if(retryTask!=null)handler.removeCallbacks(retryTask);
+                        boolean behindLive=e.errorCode==PlaybackException.ERROR_CODE_BEHIND_LIVE_WINDOW;
+                        retryTask=()->{retryTask=null;if(controller==null)return;if(behindLive)controller.seekToDefaultPosition();controller.prepare();controller.play();};
+                        handler.postDelayed(retryTask,delay);
                         return;
                     }
                     error.setText("This source could not play ("+e.getErrorCodeName()+"). Try another source or retry.");((View)error.getTag()).setVisibility(View.VISIBLE);

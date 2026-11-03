@@ -24,6 +24,10 @@ public final class VpnController {
         public int reconnects;public String error="",label="",endpoint="";
         public Boolean alwaysOn,lockdown;
         public VpnConfigAnalysis analysis;
+        Snapshot copy(){
+            Snapshot s=new Snapshot();s.state=state;s.lastHandshakeMs=lastHandshakeMs;s.rxBytes=rxBytes;s.txBytes=txBytes;s.rxRate=rxRate;s.txRate=txRate;s.latencyMs=latencyMs;s.connectMs=connectMs;
+            s.reconnects=reconnects;s.error=error;s.label=label;s.endpoint=endpoint;s.alwaysOn=alwaysOn;s.lockdown=lockdown;s.analysis=analysis;return s;
+        }
     }
     @android.annotation.SuppressLint("StaticFieldLeak")
     private static VpnController instance;
@@ -55,7 +59,8 @@ public final class VpnController {
     public VpnConfigStore store(){return store;}
     public void addListener(Listener l){listeners.add(l);}
     public void removeListener(Listener l){listeners.remove(l);}
-    public synchronized Snapshot snapshot(){return snapshot;}
+    /** A copy: callers render from it while the controller keeps updating its own state. */
+    public synchronized Snapshot snapshot(){return snapshot.copy();}
     public boolean claimsProtection(){return VpnHealth.claimsProtection(snapshot.state);}
     /** Non-null when Android must show its VPN consent dialog first. */
     public Intent consentIntent(){return VpnService.prepare(context);}

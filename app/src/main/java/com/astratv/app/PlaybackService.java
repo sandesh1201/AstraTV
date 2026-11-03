@@ -18,6 +18,7 @@ public class PlaybackService extends MediaSessionService {
     static final String EXTRA_VIDEO_HEIGHT="astra.videoHeight";
     private ExoPlayer player;
     private MediaSession session;
+    private String currentUrl="";
     private final Handler handler=new Handler(Looper.getMainLooper());
     private final Runnable checkpoint=new Runnable(){@Override public void run(){save();handler.postDelayed(this,4000);}};
 
@@ -44,8 +45,8 @@ public class PlaybackService extends MediaSessionService {
         if(intent!=null&&"pause".equals(intent.getAction())){player.pause();save();}
         if(intent!=null&&intent.hasExtra("url")){
             String id=intent.getStringExtra("id"),url=intent.getStringExtra("url");
-            if(Library.https(url)&&(player.getCurrentMediaItem()==null||!player.getCurrentMediaItem().mediaId.equals(id)||intent.getBooleanExtra("retry",false))){
-                save();Map<String,String> headers=new HashMap<>();
+            if(Library.https(url)&&(player.getCurrentMediaItem()==null||!player.getCurrentMediaItem().mediaId.equals(id)||!url.equals(currentUrl)||intent.getBooleanExtra("retry",false))){
+                save();currentUrl=url;Map<String,String> headers=new HashMap<>();
                 try{headers.putAll(PlaylistParser.safeHeaders(new JSONObject(intent.getStringExtra("headers"))));}catch(Exception ignored){}
                 DefaultHttpDataSource.Factory http=new DefaultHttpDataSource.Factory().setConnectTimeoutMs(10000).setReadTimeoutMs(12000).setAllowCrossProtocolRedirects(false).setDefaultRequestProperties(headers).setUserAgent("AstraTV/0.3");
                 MediaItem.Builder item=new MediaItem.Builder().setMediaId(id).setUri(url).setMediaMetadata(new MediaMetadata.Builder().setTitle(intent.getStringExtra("title")).build());
@@ -64,7 +65,10 @@ public class PlaybackService extends MediaSessionService {
     }
     private void save(){
         if(player==null||player.getCurrentMediaItem()==null||player.getPlaybackState()==Player.STATE_IDLE||player.getPlaybackState()==Player.STATE_ENDED)return;
-        getSharedPreferences("astra",0).edit().putInt("position."+player.getCurrentMediaItem().mediaId,(int)Math.max(0,player.getCurrentPosition())).apply();
+        String id=player.getCurrentMediaItem().mediaId;long duration=player.getDuration();
+        android.content.SharedPreferences.Editor edit=getSharedPreferences("astra",0).edit().putInt("position."+id,(int)Math.max(0,player.getCurrentPosition())).putLong("watched_at."+id,System.currentTimeMillis());
+        if(duration!=C.TIME_UNSET&&duration>0)edit.putInt("duration."+id,(int)Math.min(Integer.MAX_VALUE,duration));
+        edit.apply();
     }
     @Override public void onDestroy(){handler.removeCallbacksAndMessages(null);save();if(session!=null)session.release();if(player!=null)player.release();super.onDestroy();}
 }
