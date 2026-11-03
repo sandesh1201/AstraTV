@@ -30,7 +30,8 @@ final class IndianTvProvider {
         Set<String> known=new HashSet<>();for(Library.Title t:result.values())known.add(t.id.split("~")[0]);List<PlaylistParser.Entry> remainder=new ArrayList<>();Set<String> remainderIds=new HashSet<>();
         for(PlaylistParser.Entry e:india){String raw=e.id.split("@")[0];if(!known.contains(raw)){remainder.add(e);remainderIds.add(raw);}}
         for(Library.Title t:PlaylistParser.channels(remainder,"Other Indian languages",remainderIds))result.putIfAbsent(t.id,t);
-        return new Directory(new ArrayList<>(result.values()),successful);
+        List<Library.Title> channels=new ArrayList<>();for(Library.Title t:result.values())if(!SunNetworkChannels.rightsAsserted(t))channels.add(t);
+        return new Directory(channels,successful);
     }
     ProviderRepository.Catalog catalog(String search,int page,String language,String genre)throws Exception{
         ProviderRepository.Catalog result=CatalogQuery.page(CatalogSort.newestFirst(CatalogQuery.filter(all(),search,language,genre)),page,"channels");

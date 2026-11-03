@@ -13,9 +13,13 @@ if (testerPin) {
 def catalogApiBase = (localProps.getProperty('catalog.api.base', System.getenv('SAANDIO_CATALOG_API_BASE') ?: '') ?: '').trim().replace('"', '')
 def catalogClientToken = (localProps.getProperty('catalog.client.token', System.getenv('SAANDIO_CATALOG_CLIENT_TOKEN') ?: '') ?: '').trim().replace('"', '')
 if (catalogApiBase && !catalogApiBase.startsWith('https://')) throw new GradleException('catalog.api.base must be an https:// URL')
+// Live TV / Catch-Up rollback switches (also overridable at runtime in Settings → Developer). EPG stays off until a permitted XMLTV source is set.
+def flag = { String name, boolean dflt -> (localProps.getProperty(name, String.valueOf(dflt)) ?: String.valueOf(dflt)).trim().toBoolean() }
+def epgXmltvUrl = (localProps.getProperty('epg.xmltv.url', '') ?: '').trim().replace('"', '')
+if (epgXmltvUrl && !epgXmltvUrl.startsWith('https://')) throw new GradleException('epg.xmltv.url must be an https:// URL')
 android {
     namespace 'com.astratv.app'
-    compileSdk 35
+    compileSdk 36
     buildFeatures { buildConfig true }
     defaultConfig {
         applicationId 'com.astratv.app'; minSdk 26; targetSdk 35; versionCode 3; versionName '0.3.0'
@@ -23,17 +27,25 @@ android {
         buildConfigField 'String', 'CATALOG_CLIENT_TOKEN', '"' + catalogClientToken + '"'
         buildConfigField 'String', 'OMDB_API_KEY', '"' + (localProps.getProperty('omdb.api.key','') ?: '').replace('"','') + '"'
         buildConfigField 'String', 'TRAKT_CLIENT_ID', '"' + (localProps.getProperty('trakt.client.id','') ?: '').replace('"','') + '"'
-        buildConfigField 'String', 'YOUTUBE_API_KEY', '"' + (localProps.getProperty('youtube.api.key','') ?: '').replace('"','') + '"'
         buildConfigField 'String', 'TESTER_PIN_HASH', '"' + testerHash + '"'
         buildConfigField 'String', 'TESTER_PIN_SALT', '"' + testerSalt + '"'
+        buildConfigField 'boolean', 'ENABLE_NEW_LIVE_SOURCES', String.valueOf(flag('feature.new_live_sources', true))
+        buildConfigField 'boolean', 'ENABLE_SUN_NETWORK_INTEGRATION', String.valueOf(flag('feature.sun_network', true))
+        buildConfigField 'boolean', 'ENABLE_CATCHUP_TV', String.valueOf(flag('feature.catchup_tv', true))
+        buildConfigField 'boolean', 'ENABLE_OFFICIAL_CATCHUP_ARCHIVES', String.valueOf(flag('feature.official_catchup_archives', false))
+        buildConfigField 'boolean', 'ENABLE_EXTENDED_EPG', String.valueOf(flag('feature.extended_epg', false))
+        buildConfigField 'String', 'EPG_XMLTV_URL', '"' + epgXmltvUrl + '"'
     }
     compileOptions { sourceCompatibility JavaVersion.VERSION_17; targetCompatibility JavaVersion.VERSION_17 }
     buildTypes {
         debug {
             buildConfigField 'String', 'TMDB_API_KEY', '"' + (localProps.getProperty('tmdb.api.key','') ?: '').replace('"','') + '"'
+            buildConfigField 'String', 'YOUTUBE_API_KEY', '"' + (localProps.getProperty('youtube.api.key','') ?: '').replace('"','') + '"'
         }
         release {
             buildConfigField 'String', 'TMDB_API_KEY', '""'
+            // Release builds search trailers through the Saandio Catalog API (/api/trailer); no YouTube key ships in the APK.
+            buildConfigField 'String', 'YOUTUBE_API_KEY', '""'
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
@@ -45,11 +57,11 @@ dependencies {
     implementation 'androidx.palette:palette:1.0.0'
     implementation 'androidx.annotation:annotation:1.9.1'
     implementation 'androidx.recyclerview:recyclerview:1.3.2'
-    implementation 'androidx.media3:media3-exoplayer:1.8.0'
-    implementation 'androidx.media3:media3-exoplayer-hls:1.8.0'
-    implementation 'androidx.media3:media3-exoplayer-dash:1.8.0'
-    implementation 'androidx.media3:media3-ui:1.8.0'
-    implementation 'androidx.media3:media3-session:1.8.0'
+    implementation 'androidx.media3:media3-exoplayer:1.11.1'
+    implementation 'androidx.media3:media3-exoplayer-hls:1.11.1'
+    implementation 'androidx.media3:media3-exoplayer-dash:1.11.1'
+    implementation 'androidx.media3:media3-ui:1.11.1'
+    implementation 'androidx.media3:media3-session:1.11.1'
     implementation 'org.jsoup:jsoup:1.18.3'
     implementation 'com.wireguard.android:tunnel:1.0.20260102'
     testImplementation 'junit:junit:4.13.2'

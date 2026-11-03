@@ -48,6 +48,7 @@ final class CatalogSyncCoordinator {
     int syncDue(boolean foreground){
         long now=clock.getAsLong();int started=0;
         for(CatalogSource s:sources()){
+            if(!s.ready()&&(s instanceof SourceMovieCatalog||s instanceof SerialCatchupProvider))Diagnostics.get().unsupported(s.id(),s.notReadyReason());
             if(!s.ready()||running.contains(s.id()))continue;
             if(CatalogFreshnessTracker.due(store.state(s.id()),ttl(s),now,foreground&&s.checkOnForeground())&&start(s))started++;
         }
@@ -73,7 +74,9 @@ final class CatalogSyncCoordinator {
                 changed=store.replaceRows(s.id(),batches,clock.getAsLong());
                 store.saveState(s.id(),CatalogFreshnessTracker.succeeded(state,clock.getAsLong(),items));
             }catch(Exception e){
-                store.saveState(s.id(),CatalogFreshnessTracker.failed(state,clock.getAsLong(),ttl(s),describe(e)));
+                String reason=describe(e);Diagnostics.get().metadataFailure(s.id(),reason,e instanceof SocketTimeoutException);
+                Diagnostics.get().provider(Diagnostics.ofCatalog(e),s.id(),reason);
+                store.saveState(s.id(),CatalogFreshnessTracker.failed(state,clock.getAsLong(),ttl(s),reason));
             }
         }catch(RuntimeException storageFailure){
             /* Database unavailable: keep whatever the UI already shows; the next window retries. */
@@ -111,10 +114,19 @@ final class CatalogSyncCoordinator {
         return queued;
     }
     static boolean healthExpired(long[] h,long now){
-        long okAt=h[0],failAt=h[1];
+        long okAt=h[0],failAt=h[1];int fails=h.length>2?(int)h[2]:0;
         if(okAt>=failAt)return now-okAt>HEALTH_TTL_MS;
-        return now-failAt>FAILED_HEALTH_TTL_MS;
+        return now-failAt>(retired(okAt,fails,now)?RETIRED_HEALTH_TTL_MS:FAILED_HEALTH_TTL_MS);
     }
+    static final int RETIRE_AFTER_FAILS=3;
+    static final long RETIRE_AFTER_MS=3L*24*60*60_000L,RETIRED_HEALTH_TTL_MS=24L*60*60_000L;
+    /**
+     * A channel whose last {@value #RETIRE_AFTER_FAILS}+ checks failed and that has not worked for
+     * three days leaves the main listing. Its record and history stay, it is re-checked daily, and
+     * one successful check brings it back.
+     */
+    static boolean retired(long okAt,int fails,long now){return fails>=RETIRE_AFTER_FAILS&&(okAt<=0||now-okAt>RETIRE_AFTER_MS);}
+    static boolean retired(CatalogItem c,long now){return CatalogItem.CHANNEL.equals(c.kind)&&retired(c.healthOkAt,c.healthFails,now);}
     /** Viewer-facing failure text. Never includes request URLs or keys. */
     static String describe(Throwable e){
         if(e instanceof UnknownHostException)return "No internet connection";

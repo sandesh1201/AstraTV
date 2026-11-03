@@ -108,6 +108,7 @@ final class MetadataRepository {
         }
         if(similar.length()>0)out.put("similar",similar);
         String trailer=trailerKey(o.optJSONObject("videos"));if(!trailer.isEmpty())out.put("trailerKey",trailer);
+        String official=officialTrailerKey(o.optJSONObject("videos"));if(!official.isEmpty())out.put("officialTrailerKey",official);
         if(o.has("imdb_id")&&!o.optString("imdb_id").isEmpty())out.put("imdbId",o.optString("imdb_id"));
         return out;
     }
@@ -161,6 +162,15 @@ final class MetadataRepository {
             if(trailer&&fallback.isEmpty())fallback=v.optString("key");
         }
         return fallback;
+    }
+    /** A YouTube trailer TMDB marks as official (uploaded by the studio or distributor); empty otherwise. */
+    static String officialTrailerKey(JSONObject videos){
+        JSONArray results=videos==null?null:videos.optJSONArray("results");if(results==null)return "";
+        for(int i=0;i<results.length();i++){
+            JSONObject v=results.optJSONObject(i);if(v==null)continue;
+            if("YouTube".equalsIgnoreCase(v.optString("site"))&&"Trailer".equalsIgnoreCase(v.optString("type"))&&v.optBoolean("official")&&v.optString("key").matches("[A-Za-z0-9_-]{11}"))return v.optString("key");
+        }
+        return "";
     }
     private static String image(String path,String size){return path==null||path.isEmpty()?"":"https://image.tmdb.org/t/p/"+size+path;}
     private static String names(JSONArray a){return names(a,"name");}

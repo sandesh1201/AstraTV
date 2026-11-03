@@ -18,12 +18,6 @@ public class PlaybackPolicyTest {
         assertEquals("1080p · HLS",PlaybackPolicy.sourceChoice("1080p · HLS"));
         assertEquals("Mirror 720 · 720p",PlaybackPolicy.sourceChoice("Mirror 720"));
     }
-    @Test public void einthusanStaysUnavailableWithoutAnOfficialApi(){
-        assertFalse(EinthusanAdapter.status().available);
-        String reason=EinthusanAdapter.status().reason.toLowerCase();
-        assertTrue(reason.contains("no third-party catalog or playback api"));
-        assertTrue(reason.contains("scraping"));
-    }
     @Test public void retriesOnlyTransientErrorsWithBoundedBackoff(){
         assertEquals(2000,PlaybackPolicy.retryDelayMs(0,2001));
         assertEquals(4000,PlaybackPolicy.retryDelayMs(1,2002));

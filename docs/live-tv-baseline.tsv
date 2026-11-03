@@ -1,0 +1,803 @@
+# Saandio Live TV baseline · captured 2026-11-03T07:23:35.709Z from https://iptv-org.github.io/iptv/ (14/15 language feeds)
+# 800 channels held by the app. Stream hosts only; full URLs are not recorded. Health is per device and not included.
+id	name	language	category	logo	streams	hosts	types
+AsomLive24.in~Assamese	Asom Live 24	Assamese	News	logo	1	mumt06.tangotv.in	hls
+DDAssam.in~Assamese	DD Assam	Assamese	General	logo	1	fta.ektv.in	hls
+DY365.in~Assamese	DY 365	Assamese	News	logo	1	cdn.smartstream.video	hls
+Jonack.in~Assamese	Jonack	Assamese	General	logo	1	cdn.pishow.tv	hls
+NewsLive.in~Assamese	News Live	Assamese	News	logo	1	prideeast.thelegitpro.in	hls
+News18AssamNorthEast.in~Assamese	News18 Assam North-East	Assamese	News	logo	1	n18syndication.akamaized.net	hls
+NKTV24x7.in~Assamese	NK TV 24x7	Assamese	News	logo	1	nktv.smartstream.video	hls
+PearTV.in~Assamese	Pear TV	Assamese	Entertainment	logo	1	mumt01.tangotv.in	hls
+PragNews.in~Assamese	Prag News	Assamese	News	logo	1	streams.tangotv.in	hls
+PrathamKhabar24x7.in~Assamese	Pratham Khabar 24x7	Assamese	News	logo	1	livelegitpro.in	hls
+PratidinTime.in~Assamese	Pratidin Time	Assamese	News	logo	1	server.thelegitpro.in	hls
+Ramdhenu.in~Assamese	Ramdhenu	Assamese	Undefined	logo	1	mumt01.tangotv.in	hls
+Rang.in~Assamese	Rang	Assamese	Undefined	logo	1	cdn.pishow.tv	hls
+Rengoni.in~Assamese	Rengoni	Assamese	Undefined	logo	1	streams.tangotv.in	hls
+Spondon.in~Assamese	Spondon	Assamese	Entertainment	logo	1	nktv.smartstream.video	hls
+AamarBangla.in~Bengali	Aamar Bangla	Bengali	Entertainment	logo	1	app.ncare.live	hls
+ABPAnanda.in~Bengali	ABP Ananda	Bengali	News	logo	1	d2l4ar6y3mrs4k.cloudfront.net	hls
+AKDCalcuttaNews.in~Bengali	AKD Calcutta News	Bengali	News	logo	1	live.legitpro.co.in	hls
+AkhonKolkata.in~Bengali	Akhon Kolkata	Bengali	News	logo	1	server.playontv.in	hls
+AnandaBarta.in~Bengali	Ananda Barta	Bengali	News	logo	1	account19.livebox.co.in	hls
+BanglaJago.in~Bengali	Bangla Jago	Bengali	News	logo	1	banglajagotv.livebox.co.in	hls
+BHIChannel.in~Bengali	BHI Channel	Bengali	News	logo	1	server.livelegitpro.in	hls
+CineJomjomat.in~Bengali	Cine Jomjomat	Bengali	Entertainment	logo	1	amg13779-amg13779c1-amgplt0016.playout.now3.amagi.tv	hls
+CTVNAKDPlus.in~Bengali	CTVN AKD Plus	Bengali	News	logo	1	live.legitpro.co.in	hls
+DDBangla.in~Bengali	DD Bangla	Bengali	General	logo	1	fta.ektv.in	hls
+DDSports.in~Bengali	DD Sports HD	Bengali	Sports	logo	1	cdn.pishow.tv	hls
+DDTripura.in~Bengali	DD Tripura	Bengali	General	logo	1	fta.ektv.in	hls
+DhoomMusic.in~Bengali	Dhoom Music	Bengali	Music	logo	1	cdn.pishow.tv	hls
+DiscoveryChannel.in~Bengali	Discovery Channel	Bengali	Entertainment	logo	2	drk6xq0vhn.gpcdn.net	hls
+Enterr10Bangla.in~Bengali	Enterr 10 Bangla	Bengali	Entertainment	logo	1	amg01448-samsungin-enterr10bangla-samsungin-ad-gg.amagi.tv	hls
+FriendsTV.in~Bengali	Friends TV	Bengali	Entertainment	logo	1	server.playontv.in	hls
+GlobeTV.in~Bengali	Globe TV	Bengali	News	logo	1	mumbai-edge.smartplaytv.in	hls
+HeadlinesTripura.in~Bengali	Headlines Tripura	Bengali	News	logo	1	distro.ottlive.co.in	hls
+HighNews.in~Bengali	High News	Bengali	News	logo	1	highmedia.livebox.co.in	hls
+JTBSClassic.in~Bengali	JTBS Classic	Bengali	Culture;Religious	logo	1	jtbsclassic.dpdns.org	hls
+KhushbooBangla.in~Bengali	Khushboo Bangla	Bengali	Entertainment	logo	1	cdn.pishow.tv	hls
+KolkataTV.in~Bengali	Kolkata TV	Bengali	News	logo	1	cdn.ottlive.co.in	hls
+KTVBangla.in~Bengali	KTV Bangla	Bengali	General	logo	1	server.livelegitpro.in:9899	hls
+NewsLiveBangla.in~Bengali	News Live Bangla	Bengali	News	logo	1	mumt06.tangotv.in	hls
+News18Bangla.in~Bengali	News18 Bangla	Bengali	News	logo	1	n18syndication.akamaized.net	hls
+NKTVBangla.in~Bengali	NK TV Bangla	Bengali	News	logo	1	nktv.smartstream.video	hls
+OrangeBanglaTV.in~Bengali	Orange Bangla TV	Bengali	Music	logo	1	cdn.pishow.tv	hls
+PeaceTVBangla.ae~Bengali	Peace TV Bangla	Bengali	Religious	logo	1	dzkyvlfyge.erbvr.com	hls
+RPlus.in~Bengali	R Plus	Bengali	Undefined	logo	1	thelegitpro.in	hls
+RPlusGold.in~Bengali	R Plus Gold	Bengali	Undefined	logo	1	cdn.pishow.tv	hls
+RaatdinBangla.in~Bengali	Raatdin Bangla	Bengali	News	logo	1	server.playontv.in	hls
+RepublicBangla.in~Bengali	Republic Bangla	Bengali	News	logo	1	streams.tangotv.in	hls
+RupasiBangla.in~Bengali	Rupasi Bangla	Bengali	Entertainment	logo	1	cdn.pishow.tv	hls
+SamayKolkata.in~Bengali	Samay Kolkata	Bengali	News	logo	1	server.livelegitpro.in	hls
+SangeetBangla.in~Bengali	Sangeet Bangla	Bengali	Music	logo	1	cdn.pishow.tv	hls
+SonarBangla.in~Bengali	Sonar Bangla	Bengali	Movies	logo	1	samitaorigin.tangotv.in	hls
+StarJalsha.in~Bengali	Star Jalsha	Bengali	Entertainment	logo	2	103.151.60.162:2122 da86m1sqpm3o0.cloudfront.net	hls
+Travelxp.in~Bengali	Travelxp 4K HDR [Geo-blocked]	Bengali	Travel	logo	2	deltatesttatasky.akamaized.net 103.151.60.162:2122	hls
+TV9Bangla.in~Bengali	TV9 Bangla	Bengali	News	logo	1	dyjmyiv3bp2ez.cloudfront.net	hls
+UBangla.in~Bengali	U Bangla	Bengali	Undefined	logo	1	stream.ottlive.co.in	hls
+ZBBhakti.in~Bengali	ZB Bhakti	Bengali	Religious	logo	1	server.zillarbarta.com	hls
+ZBCartoon.in~Bengali	ZB Cartoon	Bengali	Kids	logo	1	server.zillarbarta.com	hls
+ZBCinema.in~Bengali	ZB Cinema	Bengali	Classic;Movies	logo	1	server.zillarbarta.com	hls
+ZBMusic.in~Bengali	ZB Music	Bengali	Music	logo	1	server.zillarbarta.com	hls
+Zee24Ghanta.in~Bengali	Zee 24 Ghanta	Bengali	News	logo	1	tvsen6.aynaott.com	hls
+ZeeBangla.in~Bengali	Zee Bangla	Bengali	Entertainment	logo	2	103.151.60.162:2122 raw.githubusercontent.com	hls
+ZeeBanglaSonar.in~Bengali	Zee Bangla Sonar	Bengali	Entertainment	logo	1	d1g8wgjurz8via.cloudfront.net	hls
+ZillarBartaNews.in~Bengali	ZillarBarta News	Bengali	Classic;News	logo	1	server.zillarbarta.com	hls
+ZodiakTV.in~Bengali	Zodiak TV	Bengali	Entertainment	logo	1	ranacable.duckdns.org	hls
+B4UBhojpuri.in~Bhojpuri	B4U Bhojpuri	Bhojpuri	Movies	logo	2	cdnb4u.wiseplayout.com cc-t2mudtkmuz4wb.akamaized.net	hls
+BhojpuriCinema.in~Bhojpuri	Bhojpuri Cinema	Bhojpuri	Movies	logo	1	live-bhojpuri.akamaized.net	hls
+Captain.in~Bhojpuri	Captain	Bhojpuri	Entertainment	logo	1	mumbai-edge.smartplaytv.in	hls
+DDSports.in~Bhojpuri	DD Sports HD	Bhojpuri	Sports	logo	1	cdn.pishow.tv	hls
+EpicBhojpuri.in~Bhojpuri	Epic Bhojpuri	Bhojpuri	Movies	logo	2	mumt01.tangotv.in cc-8hy4a26pz2uos.akamaized.net	hls
+MahuaKhabar.in~Bhojpuri	Mahua Khabar	Bhojpuri	News	logo	1	cdn.ottlive.co.in	hls
+MahuaPlay.in~Bhojpuri	Mahua Play	Bhojpuri	Movies	logo	1	cdn.ottlive.co.in	hls
+ManoranjanPrime.in~Bhojpuri	Manoranjan Prime	Bhojpuri	Entertainment	logo	1	mumt06.tangotv.in	hls
+OscarMoviesBhojpuri.in~Bhojpuri	Oscar Movies Bhojpuri	Bhojpuri	Movies	logo	1	cdn.pishow.tv	hls
+PasandTV.in~Bhojpuri	Pasand TV	Bhojpuri	Entertainment	logo	1	d1msejlow1t3l4.cloudfront.net	hls
+SangeetBhojpuri.in~Bhojpuri	Sangeet Bhojpuri	Bhojpuri	Music	logo	1	mumt01.tangotv.in	hls
+ZeeBiharJharkhand.in~Bhojpuri	Zee Bihar Jharkhand	Bhojpuri	News	logo	1	raw.githubusercontent.com	hls
+ABPNews.in~English	ABP News	English	News	logo	1	d1rc86nwwc9fag.cloudfront.net	hls
+AngelTV.in~English	Angel TV Africa	English	Religious	logo	7	janya-digimix.akamaized.net	hls
+AnimalPlanet.in~English	Animal Planet	English	Documentary	logo	2	drk6xq0vhn.gpcdn.net	hls
+AnimaxAsia.sg~English	Animax Asia India [Geo-blocked]	English	Animation	logo	2	amg02159-kcglobal-amg02159c1-samsung-in-521.playouts.now.amagi.tv 125.227.210.55:3056	hls other
+BharatExpress.in~English	Bharat Express	English	News	logo	1	mumt07.tangotv.in	hls
+BTTV.in~English	BT TV	English	Business;News	logo	1	feeds.intoday.in	hls
+CNBCTV18.in~English	CNBC TV18	English	Business	logo	1	n18syndication.akamaized.net	hls
+CNBCTV18PrimeHD.in~English	CNBC TV18 Prime HD	English	Business	logo	1	n18syndication.akamaized.net	hls
+CNNNews18.in~English	CNN News 18	English	News	logo	1	n18syndication.akamaized.net	hls
+CVREnglish.in~English	CVR English	English	News	logo	1	cdn.pishow.tv	hls
+DDAssam.in~English	DD Assam	English	General	logo	1	fta.ektv.in	hls
+DDIndia.in~English	DD India	English	General	logo	1	mumbai-edge.smartplaytv.in	hls
+DDMeghalaya.in~English	DD Meghalaya	English	General	logo	1	d3qs3d2rkhfqrt.cloudfront.net	hls
+DDMizoram.in~English	DD Mizoram	English	Culture;News	logo	1	fta.ektv.in	hls
+DDNagaland.in~English	DD Nagaland	English	General	logo	1	fta.ektv.in	hls
+DDSports.in~English	DD Sports HD	English	Sports	logo	1	cdn.pishow.tv	hls
+DDUrdu.in~English	DD Urdu	English	General	logo	1	cdn.pishow.tv	hls
+DiscoveryChannel.in~English	Discovery Channel	English	Entertainment	logo	2	drk6xq0vhn.gpcdn.net	hls
+DiscoveryKids.in~English	Discovery Kids	English	Kids	logo	1	drk6xq0vhn.gpcdn.net	hls
+DiscoveryScience.in~English	Discovery Science	English	Science	logo	1	drk6xq0vhn.gpcdn.net	hls
+DiscoveryTurbo.in~English	Discovery Turbo	English	Auto	logo	1	drk6xq0vhn.gpcdn.net	hls
+DocuBayTV.in~English	DocuBay TV	English	Documentary	logo	1	cc-mgr91yrk4pehy.akamaized.net	hls
+ETNow.in~English	ET Now [Geo-blocked]	English	Business	logo	1	dztlhgid9me95.cloudfront.net	hls
+ETNowSwadesh.in~English	ET Now Swadesh [Geo-blocked]	English	Business	logo	1	dztlhgid9me95.cloudfront.net	hls
+Eurosport.in~English	Eurosport	English	Sports	logo	1	drk6xq0vhn.gpcdn.net	hls
+GoodNewsTV.in~English	GoodNews TV	English	Religious	logo	1	bpgdlwwar3ze-hls-live.wmncdn.net	hls
+GraceTV.in~English	Grace TV	English	Religious	logo	1	samitaorigin.tangotv.in	hls
+HarvestUSA.in~English	Harvest USA	English	Religious		1	7mbd4ogkr3gx-hls-live.wmncdn.net	hls
+HiDost.in~English	Hi Dost!	English	Entertainment	logo	1	cdn.pishow.tv	hls
+HistoryTV18.in~English	History TV18 HD [Geo-blocked]	English	Documentary	logo	1	amg01448-amg01448c16-samsung-in-3495.playouts.now.amagi.tv	hls
+HopeChannelIndia.in~English	Hope Channel India	English	Religious	logo	1	mumt01.tangotv.in	hls
+HornbillTV.in~English	Hornbill TV	English	News	logo	1	mumt01.tangotv.in	hls
+HosannaTV.in~English	Hosanna TV Global	English	Religious	logo	1	ktismaservers.in:3349	hls
+HSTV.in~English	HSTV	English	Undefined	logo	1	live.castmaxcloud.com	hls
+IndiaAhead.in~English	India Ahead	English	News	logo	1	mumt05.tangotv.in	hls
+IndiaToday.in~English	India Today	English	News	logo	1	d1rc86nwwc9fag.cloudfront.net	hls
+IndywoodTV.in~English	Indywood TV	English	Movies;News	logo	1	43wrzjnpqoxe-hls-live.wmncdn.net	hls
+INFAST.nl~English	INFAST	English	Lifestyle	logo	1	amg00861-terninternation-lifestyle-samsungau-kdlyy.amagi.tv	hls
+InvestigationDiscovery.in~English	Investigation Discovery	English	Documentary	logo	1	drk6xq0vhn.gpcdn.net	hls
+INWILD.nl~English	INWILD	English	Documentary	logo	1	amg00861-terninternation-inwild-samsunguk-w5wic.amagi.tv	hls
+InWonder.nl~English	InWonder	English	Science	logo	1	amg00861-terninternation-inwonder-samsungau-1k63k.amagi.tv	hls
+JTBSClassic.in~English	JTBS Classic	English	Culture;Religious	logo	1	jtbsclassic.dpdns.org	hls
+KCM.sg~English	KCM India [Geo-blocked]	English	Entertainment;Movies	logo	1	amg02159-amg02159c7-samsung-in-4001.playouts.now.amagi.tv	hls
+MediBizTV.in~English	MediBizTV	English	Education;News;Science	logo	1	43wrzjnpqoxe-hls-live.wmncdn.net	hls
+MirrorNow.in~English	Mirror Now	English	News	logo	1	dai.google.com	hls
+MrBeanAnimated.uk~English	Mr Bean Animated	English	Animation;Kids	logo	1	amg00627-amg00627c23-samsung-au-4110.playouts.now.amagi.tv	hls
+NDTV.in~English	NDTV	English	News	logo	1	cdn.pishow.tv	hls
+NDTV24x7.in~English	NDTV 24x7	English	News	logo	1	raw.githubusercontent.com	hls
+NDTVGoodTimes.in~English	NDTV Good Times	English	Lifestyle	logo	1	amg01448-samsungin-ndtvgoodtimes-samsungin-ad-gp.amagi.tv	hls
+NDTVProfit.in~English	NDTV Profit	English	Business	logo	1	ndtvprofit.akamaized.net	hls
+News18AssamNorthEast.in~English	News18 Assam North-East	English	News	logo	1	n18syndication.akamaized.net	hls
+News9Live.in~English	News9Live	English	News	logo	1	amg01106-amg01106c3-amgplt0844.playout.now3.amagi.tv	hls
+NewsX.in~English	NewsX	English	News	logo	1	mumbai-edge.smartplaytv.in	hls
+NewsXWorld.in~English	NewsX World	English	News	logo	1	mumt03.tangotv.in	hls
+NortheastLive.in~English	Northeast Live	English	News	logo	1	server.thelegitpro.in	hls
+PrudentMedia.in~English	Prudent Media	English	News	logo	1	prudentmcdn.rixcast.com	hls
+QelloConcertsbyStingray.ca~English	Qello Concerts by Stingray	English	Music	logo	1	lotus.stingray.com	hls
+RepublicTV.in~English	Republic TV	English	News	logo	1	raw.githubusercontent.com	hls
+RTIndia.in~English	RT India	English	News	logo	1	rt-india.rttv.com	hls
+SalvationTV.in~English	Salvation TV	English	Religious	logo	1	ktismaservers.in:3902	hls
+SansadTV1.in~English	Sansad TV 1	English	Legislative	logo	2	playhls.media.nic.in d2lk5u59tns74c.cloudfront.net	hls
+SansadTV2.in~English	Sansad TV 2	English	Legislative	logo	2	cdn.pishow.tv d2lk5u59tns74c.cloudfront.net	hls
+StingrayClassicRock.ca~English	Stingray Classic Rock	English	Music	logo	1	lotus.stingray.com	hls
+StingrayDJAZZ.ca~English	Stingray DJAZZ	English	Music	logo	1	lotus.stingray.com	hls
+StingrayEasyListening.ca~English	Stingray Easy Listening	English	Music	logo	1	lotus.stingray.com	hls
+StingrayNaturescape.ca~English	Stingray Naturescape	English	Music	logo	1	lotus.stingray.com	hls
+StingrayTheSpa.ca~English	Stingray The Spa	English	Music	logo	1	lotus.stingray.com	hls
+StingrayTodaysKPop.ca~English	Stingray Today's K-Pop	English	Music	logo	1	lotus.stingray.com	hls
+ThePetCollective.us~English	The Pet Collective	English	Family	logo	7	the-pet-collective-international-dk.samsung.wurl.tv the-pet-collective-international-au.samsung.wurl.tv the-pet-collective-international-in.samsung.wurl.tv the-pet-collective-international-mx.samsung.wurl.tv 6ec8627d.wurl.com the-pet-collective-international-se.samsung.wurl.tv the-pet-collective-international-gb.samsung.wurl.tv	hls
+TimesNow.in~English	Times Now [Geo-blocked]	English	News	logo	1	dztlhgid9me95.cloudfront.net	hls
+TLC.in~English	TLC	English	Lifestyle	logo	2	drk6xq0vhn.gpcdn.net	hls
+Travelxp.in~English	Travelxp 4K HDR [Geo-blocked]	English	Travel	logo	2	deltatesttatasky.akamaized.net 103.151.60.162:2122	hls
+TVBRICSEnglish.in~English	TV BRICS English	English	General	logo	1	engbrics.mediacdn.ru	hls
+VyasChannel.in~English	Vyas Channel	English	Education	logo	1	playhls.media.nic.in	hls
+ZainabiaChannel.in~English	Zainabia Channel	English	Religious		1	zainabia.livebox.co.in	hls
+AasthaGujarati.in~Gujarati	Aastha Gujarati	Gujarati	Religious	logo	1	mumt04.tangotv.in	hls
+ABPAsmita.in~Gujarati	ABP Asmita	Gujarati	News	logo	1	d2l4ar6y3mrs4k.cloudfront.net	hls
+CNBCBajar.in~Gujarati	CNBC Bajar	Gujarati	Business	logo	1	n18syndication.akamaized.net	hls
+ColorsGujarati.in~Gujarati	Colors Gujarati	Gujarati	Entertainment	logo	1	raw.githubusercontent.com	hls
+DDGirnar.in~Gujarati	DD Girnar	Gujarati	General	logo	1	fta.ektv.in	hls
+GSTV.in~Gujarati	GS TV	Gujarati	News	logo	1	mumt05.tangotv.in	hls
+GujaratFirst.in~Gujarati	Gujarat First	Gujarati	News	logo	1	mumt03.tangotv.in	hls
+IndiaNewsGujarati.in~Gujarati	India News Gujarati	Gujarati	News	logo	1	fta.ektv.in	hls
+MantavyaNews.in~Gujarati	Mantavya News	Gujarati	News	logo	1	d1msejlow1t3l4.cloudfront.net	hls
+NewsCapitalGujarat.in~Gujarati	News Capital Gujarat	Gujarati	News	logo	1	newscapital.com	hls
+NewsCapitalMarket.in~Gujarati	News Capital Market	Gujarati	Business	logo	1	newscapital.com	hls
+News18Gujarati.in~Gujarati	News18 Gujarati	Gujarati	News	logo	1	n18syndication.akamaized.net	hls
+Pradesh24Gujarati.in~Gujarati	Pradesh24 Gujarati	Gujarati	News	logo	1	stream2.livebox.co.in	hls
+SandeshNews.in~Gujarati	Sandesh News	Gujarati	News	logo	1	mumt01.tangotv.in	hls
+TV13Gujarati.in~Gujarati	TV13 Gujarati	Gujarati	News	logo	1	live.wrencdn.in	hls
+TV9Gujarati.in~Gujarati	TV9 Gujarati	Gujarati	News	logo	1	dyjmyiv3bp2ez.cloudfront.net	hls
+ValamTVDayro.in~Gujarati	Valam TV Dayro	Gujarati	Religious	logo	1	mumt03.tangotv.in	hls
+VRLive.in~Gujarati	VR Live	Gujarati	News	logo	1	channel.vrlivegujarat.com	hls
+VTVNews.in~Gujarati	VTV News	Gujarati	News	logo	1	live1.ottlive.co.in	hls
+Zee24Kalak.in~Gujarati	Zee 24 Kalak	Gujarati	News	logo	1	vg-zeefta.akamaized.net	hls
+AndTV.in~Hindi	&TV	Hindi	Movies	logo	2	drk6xq0vhn.gpcdn.net amg01117-amg01117c1-amgplt0029.playout.now3.amagi.tv	hls
+22ScopeNews.in~Hindi	22Scope News	Hindi	News	logo	1	thelegitpro.in	hls
+7XMusic.in~Hindi	7X Music	Hindi	Music	logo	1	cdn2.in	hls
+9XJalwa.in~Hindi	9X Jalwa	Hindi	Music	logo	1	wiselp.wiseplayout.com	hls
+9XM.in~Hindi	9XM	Hindi	Music	logo	1	9xjio.wiseplayout.com	hls
+AadinathTV.in~Hindi	Aadinath TV	Hindi	Religious	logo	1	mumt01.tangotv.in	hls
+AagaazTimes.in~Hindi	Aagaaz Times	Hindi	News	logo	1	live1.ottlive.co.in	hls
+AajKiKhabar.in~Hindi	Aaj Ki Khabar	Hindi	News	logo	1	stream.ottlive.co.in	hls
+AajTak.in~Hindi	Aaj Tak	Hindi	News	logo	2	103.213.31.109:90 feeds.intoday.in	hls
+Aastha.in~Hindi	Aastha	Hindi	Religious	logo	2	103.175.73.12:8080 aasthaott.akamaized.net	hls
+AasthaPrime1.in~Hindi	Aastha Prime 1	Hindi	Religious	logo	1	aasthaott.akamaized.net	hls
+ABNTVIndia.us~Hindi	ABN TV India	Hindi	Religious	logo	1	mediaserver.abnvideos.com	hls
+ABPGanga.in~Hindi	ABP Ganga	Hindi	News	logo	1	d2l4ar6y3mrs4k.cloudfront.net	hls
+ABPNews.in~Hindi	ABP News	Hindi	News	logo	1	d1rc86nwwc9fag.cloudfront.net	hls
+AdhyatmTV.in~Hindi	Adhyatm TV	Hindi	Religious	logo	1	mumbai-edge.smartplaytv.in	hls
+AllTimeMovies.in~Hindi	All Time Movies	Hindi	Movies	logo	1	tvsen6.aynaott.com	hls
+AlrightTV.in~Hindi	Alright! TV	Hindi	Entertainment	logo	1	d3c7vdfq3tyeyw.cloudfront.net	hls
+AmarUjala.in~Hindi	AmarUjala	Hindi	News	logo	1	amarujala.ottlive.co.in	hls
+AnandTV.in~Hindi	Anand TV	Hindi	Religious	logo	1	live.legitpro.co.in	hls
+AnandWariTV.in~Hindi	Anand Wari TV	Hindi	Religious	logo	1	mumt03.tangotv.in	hls
+ANBNews.in~Hindi	ANB News	Hindi	News	logo	1	server.livelegitpro.in:9899	hls
+AndyHaryana.in~Hindi	Andy Haryana	Hindi	Culture;Music	logo	1	mumt03.tangotv.in	hls
+AnimalPlanet.in~Hindi	Animal Planet	Hindi	Documentary	logo	2	drk6xq0vhn.gpcdn.net	hls
+AnjanTV.in~Hindi	Anjan TV	Hindi	Entertainment	logo	1	anjan.vstream.online	hls
+AnmolTV.in~Hindi	Anmol TV	Hindi	Entertainment	logo	1	drk6xq0vhn.gpcdn.net	hls
+APN.in~Hindi	APN	Hindi	News	logo	1	mumt01.tangotv.in	hls
+ApnaPunjabTV.ca~Hindi	Apna Punjab TV	Hindi	Entertainment	logo	1	plus.gigabitcdn.net	hls
+AradanaTV.in~Hindi	Aradana TV	Hindi	Religious	logo	1	mumbai-edge.smartplaytv.in	hls
+ArgusNews.in~Hindi	Argus News	Hindi	News	logo	1	mumt05.tangotv.in	hls
+AryanTVNational.in~Hindi	Aryan TV National	Hindi	Undefined	logo	1	mumt04.tangotv.in	hls
+AsianNews.in~Hindi	Asian News	Hindi	News	logo	1	stream.ottlive.co.in	hls
+Astroscience.in~Hindi	Astroscience	Hindi	Undefined	logo	1	yuppnimrestreammum.akamaized.net	hls
+ATNSamachar.in~Hindi	ATN Samachar	Hindi	News	logo	1	newsliveindia.com:4433	hls
+AwaazIndiaTV.in~Hindi	Awaaz India TV [Not 24/7]	Hindi	News	logo	1	awaazindia.livebox.co.in	hls
+AwakeningTV.in~Hindi	Awakening TV	Hindi	Religious	logo	1	mumt03.tangotv.in	hls
+B4UKadak.in~Hindi	B4U Kadak	Hindi	Movies	logo	1	streams.tangotv.in	hls
+B4UMovies.in~Hindi	B4U Movies	Hindi	Movies	logo	1	streams.tangotv.in	hls
+B4UMusic.in~Hindi	B4U Music	Hindi	Music	logo	1	amg01408-amg01408c5-amgplt0747.playout.now3.amagi.tv	hls
+BalleBalle.in~Hindi	Balle Balle	Hindi	Music	logo	2	mcncdndigital.com	hls
+BansalNews.in~Hindi	Bansal News	Hindi	News	logo	1	8yzmq2gbdvax-hls-live.wmncdn.net	hls
+BhaktiDhara.in~Hindi	Bhakti Dhara	Hindi	Religious	logo	1	newsliveindia.com:4433	hls
+BhaktiSagar.in~Hindi	Bhakti Sagar	Hindi	Religious	logo	1	mumt05.tangotv.in	hls
+BharatAtoZ.in~Hindi	Bharat AtoZ	Hindi	News	logo	1	live.ekamraott.com	hls
+BharatSamachar.in~Hindi	Bharat Samachar	Hindi	News	logo	1	mumt03.tangotv.in	hls
+BharatUpdate.in~Hindi	Bharat Update	Hindi	News	logo	1	cdn.pishow.tv	hls
+Bharat24.in~Hindi	Bharat24	Hindi	News	logo	1	cdn.ottlive.co.in	hls
+Bollygold.in~Hindi	Bollygold	Hindi	Movies	logo	1	jmp2.uk	other
+BoogleBollywood.in~Hindi	Boogle Bollywood	Hindi	Music	logo	1	yuppnimrestreammum.akamaized.net	hls
+BSTV.in~Hindi	BSTV	Hindi	News	logo	1	samitaorigin.tangotv.in	hls
+BVG.in~Hindi	BVG	Hindi	Education	logo	1	mumt05.tangotv.in	hls
+CartoonNetwork.in~Hindi	Cartoon Network	Hindi	Animation;Kids	logo	1	drk6xq0vhn.gpcdn.net	hls
+ChannelDivya.in~Hindi	Channel Divya	Hindi	Religious	logo	1	vg-pitaaratvlive.akamaized.net	hls
+CNBCAwaaz.in~Hindi	CNBC Awaaz	Hindi	Business	logo	1	n18syndication.akamaized.net	hls
+CnewsBharat.in~Hindi	Cnews Bharat	Hindi	News	logo	1	legitpro.co.in	hls
+Colors.in~Hindi	Colors	Hindi	Entertainment	logo	2	raw.githubusercontent.com 103.151.60.162:2122	hls
+ColorsCineplex.in~Hindi	Colors Cineplex	Hindi	Movies	logo	2	raw.githubusercontent.com 103.151.60.162:2122	hls
+ColorsRishteyAmericas.in~Hindi	Colors Rishtey Americas	Hindi	General	logo	1	manatv.akamaized.net	hls
+Dangal2.in~Hindi	Dangal 2	Hindi	Entertainment	logo	1	live-dangal2.akamaized.net	hls
+DangalTV.in~Hindi	Dangal TV	Hindi	General	logo	1	live-dangal.akamaized.net	hls
+Darshan24.in~Hindi	Darshan 24	Hindi	Religious	logo	1	mumt05.tangotv.in	hls
+DDArunPrabha.in~Hindi	DD Arun Prabha	Hindi	General	logo	1	fta.ektv.in	hls
+DDBharati.in~Hindi	DD Bharati	Hindi	Culture	logo	1	cdn.pishow.tv	hls
+DDBihar.in~Hindi	DD Bihar	Hindi	General	logo	1	cdn.pishow.tv	hls
+DDChhattisgarh.in~Hindi	DD Chhattisgarh	Hindi	General	logo	1	cdn.pishow.tv	hls
+DDHaryana.in~Hindi	DD Haryana	Hindi	General	logo	1	fta.ektv.in	hls
+DDHimachalPradesh.in~Hindi	DD Himachal Pradesh	Hindi	General	logo	1	fta.ektv.in	hls
+DDJharkhand.in~Hindi	DD Jharkhand	Hindi	General	logo	1	fta.ektv.in	hls
+DDKashir.in~Hindi	DD Kashir	Hindi	General	logo	1	fta.ektv.in	hls
+DDKisan.in~Hindi	DD Kisan	Hindi	Education;Outdoor	logo	1	mumbai-edge.smartplaytv.in	hls
+DDMadhyaPradesh.in~Hindi	DD Madhya Pradesh	Hindi	General	logo	1	mumbai-edge.smartplaytv.in	hls
+DDManipur.in~Hindi	DD Manipur	Hindi	General	logo	1	fta.ektv.in	hls
+DDNational.in~Hindi	DD National	Hindi	Entertainment	logo	2	cdn.pishow.tv mumbai-edge.smartplaytv.in	hls
+DDNews.in~Hindi	DD News	Hindi	News	logo	2	mumbai-edge.smartplaytv.in fta.ektv.in	hls
+DDRajasthan.in~Hindi	DD Rajasthan	Hindi	General	logo	1	cdn.pishow.tv	hls
+DDSports.in~Hindi	DD Sports	Hindi	Sports	logo	2	d3qs3d2rkhfqrt.cloudfront.net cdn.pishow.tv	hls
+DDUrdu.in~Hindi	DD Urdu	Hindi	General	logo	1	cdn.pishow.tv	hls
+DDUttarPradesh.in~Hindi	DD Uttar Pradesh	Hindi	General	logo	1	cdn.pishow.tv	hls
+DDUttarakhand.in~Hindi	DD Uttarakhand	Hindi	General	logo	1	cdn.pishow.tv	hls
+DeewanaHD.in~Hindi	Deewana HD	Hindi	Music	logo	1	live20.bozztv.com	hls
+Dhamaal.in~Hindi	Dhamaal [Geo-blocked]	Hindi	Music	logo	1	tvsen6.aynaott.com	hls
+DharmSandesh.in~Hindi	Dharm Sandesh	Hindi	Religious	logo	1	fta.ektv.in	hls
+DheeranTV.in~Hindi	Dheeran TV	Hindi	Religious	logo	1	live.we2live.in	hls
+DiscoveryChannel.in~Hindi	Discovery Channel	Hindi	Entertainment	logo	2	drk6xq0vhn.gpcdn.net	hls
+DiscoveryKids.in~Hindi	Discovery Kids	Hindi	Kids	logo	1	drk6xq0vhn.gpcdn.net	hls
+DiscoveryScience.in~Hindi	Discovery Science	Hindi	Science	logo	1	drk6xq0vhn.gpcdn.net	hls
+DishaTV.in~Hindi	Disha TV	Hindi	Undefined	logo	1	d1msejlow1t3l4.cloudfront.net	hls
+DNN.in~Hindi	DNN	Hindi	News	logo	1	samitaorigin.tangotv.in	hls
+E24.in~Hindi	E 24	Hindi	Entertainment	logo	1	mumt04.tangotv.in	hls
+EpicBharat.in~Hindi	Epic Bharat	Hindi	Entertainment	logo	2	mumt06.tangotv.in cc-p1izg43bk7sj5.akamaized.net	hls
+EpicCrimes.in~Hindi	Epic Crimes	Hindi	Documentary	logo	1	cc-wsuyg2uxeak04.akamaized.net	hls
+EpicKids.in~Hindi	Epic Kids Digital	Hindi	Kids	logo	1	cc-t8lqe1o99pszu.akamaized.net	hls
+EpicMusic.in~Hindi	Epic Music	Hindi	Music	logo	2	mumt04.tangotv.in cc-3cyxq80qusspd.akamaized.net	hls
+EpicTV.in~Hindi	Epic TV Digital	Hindi	Entertainment	logo	1	cc-czbq30x55knit.akamaized.net	hls
+FatehTV.in~Hindi	Fateh TV	Hindi	Religious	logo	1	cdn.pishow.tv	hls
+FGNChannel.in~Hindi	FGN Channel	Hindi	Religious	logo	1	samitaorigin.tangotv.in	hls
+FirstIndiaNews.in~Hindi	First India News	Hindi	News	logo	1	mumt03.tangotv.in	hls
+FoodFood.in~Hindi	Food Food	Hindi	Cooking;Lifestyle	logo	1	mumt03.tangotv.in	hls
+GangaurTV.in~Hindi	Gangaur TV	Hindi	Entertainment	logo	1	pbgangaur.wiseplayout.com	hls
+GlobalIndia.in~Hindi	Global India	Hindi	News	logo	1	server.livelegitpro.in	hls
+Goldmines.in~Hindi	Goldmines	Hindi	Movies	logo	1	streams.tangotv.in	hls
+Goldmines2.in~Hindi	Goldmines 2	Hindi	Movies		1	mumt03.tangotv.in	hls
+GoldminesAction.in~Hindi	Goldmines Action	Hindi	Movies	logo	1	mumt03.tangotv.in	hls
+GoldminesBollywood.in~Hindi	Goldmines Bollywood	Hindi	Movies	logo	1	mumt03.tangotv.in	hls
+GoodNewsToday.in~Hindi	Good News Today	Hindi	News	logo	1	aajtaklive.vgcdn.net	hls
+GreenGoldTV.in~Hindi	Green Gold TV	Hindi	Kids	logo	1	cc-szrmqvu8zkg16.akamaized.net	hls
+Gyandarshan.in~Hindi	Gyandarshan	Hindi	Education	logo	2	cdn.pishow.tv mumt05.tangotv.in	hls
+HareKrsnaTV.in~Hindi	Hare Krsna TV	Hindi	Religious	logo	1	hktv.harekrsnatv.com	dash
+HindiHits.in~Hindi	Hindi Hits	Hindi	Music	logo	1	samitaorigin.tangotv.in	hls
+HindiKhabar.in~Hindi	Hindi Khabar	Hindi	News	logo	1	stream.ottlive.co.in	hls
+HistoryTV18.in~Hindi	History TV18 HD [Geo-blocked]	Hindi	Documentary	logo	1	amg01448-amg01448c16-samsung-in-3495.playouts.now.amagi.tv	hls
+HNN24x7.in~Hindi	HNN 24x7	Hindi	News	logo	1	ott.livelegitpro.in:9899	hls
+HosannaTV.in~Hindi	Hosanna TV Hindi	Hindi	Religious	logo	1	mumbai-edge.smartplaytv.in	hls
+HSTV.in~Hindi	HSTV	Hindi	Undefined	logo	1	live.castmaxcloud.com	hls
+HyderTV.ca~Hindi	Hyder TV	Hindi	Culture	logo	1	cdn.live247stream.com	hls
+IBC24.in~Hindi	IBC 24	Hindi	News	logo	1	mumt05.tangotv.in	hls
+Ind24.in~Hindi	Ind 24	Hindi	News	logo	1	livestream.jswk.online	hls
+IndiaDailyLive.in~Hindi	India Daily Live	Hindi	News	logo	1	indiadaily.ottlive.co.in	hls
+IndiaNews.in~Hindi	India News	Hindi	News	logo	1	mumt03.tangotv.in	hls
+IndiaNewsHaryana.in~Hindi	India News Haryana	Hindi	News	logo	1	fta.ektv.in	hls
+IndiaNewsMadhyaPradeshChhattisgarh.in~Hindi	India News Madhya Pradesh/Chhattisgarh	Hindi	News	logo	1	fta.ektv.in	hls
+IndiaNewsRajasthan.in~Hindi	India News Rajasthan	Hindi	News	logo	1	fta.ektv.in	hls
+IndiaNewsUttarPradesh.in~Hindi	India News Uttar Pradesh	Hindi	News	logo	1	fta.ektv.in	hls
+IndiaTalkies.in~Hindi	India Talkies	Hindi	Movies	logo	1	samitaorigin.tangotv.in	hls
+IndiaTV.in~Hindi	India TV	Hindi	News	logo	1	pl-indiatvnews.akamaized.net	hls
+IndiaTVSpeedNews.in~Hindi	India TV Speed News	Hindi	News	logo	1	cc-lyf4c0hwzg5dd.akamaized.net	hls
+IndiaVoice.in~Hindi	India Voice	Hindi	News	logo	1	d1msejlow1t3l4.cloudfront.net	hls
+INH24x7.in~Hindi	INH 24x7	Hindi	News	logo	1	fta.ektv.in	hls
+Insync.in~Hindi	Insync	Hindi	Music	logo	1	mumt04.tangotv.in	hls
+InvestigationDiscovery.in~Hindi	Investigation Discovery	Hindi	Documentary	logo	1	drk6xq0vhn.gpcdn.net	hls
+IshwarBhaktiTV.in~Hindi	Ishwar Bhakti TV	Hindi	Religious	logo	1	6n3yow8pl9ok-hls-live.5centscdn.com	hls
+JanTV.in~Hindi	Jan TV	Hindi	General	logo	1	d1msejlow1t3l4.cloudfront.net	hls
+JantaTV.in~Hindi	Janta TV	Hindi	News	logo	1	live.jswk.online	hls
+JantantraTV.in~Hindi	Jantantra TV	Hindi	News	logo	1	mumt05.tangotv.in	hls
+JinvaniChannel.in~Hindi	Jinvani Channel	Hindi	Religious	logo	1	cdn.pishow.tv	hls
+KNewsIndia.in~Hindi	K News India	Hindi	News	logo	1	legitpro.co.in	hls
+Kabaddi24x7.in~Hindi	Kabaddi 24x7	Hindi	Sports	logo	1	samitaorigin.tangotv.in	hls
+Kadak.in~Hindi	Kadak	Hindi	News	logo	1	n18syndication.akamaized.net	hls
+KashishNews.in~Hindi	Kashish News	Hindi	News	logo	1	server.thelegitpro.in	hls
+KaumudyTV.in~Hindi	Kaumudy TV	Hindi	General	logo	1	oqgdrkxby4rm-hls-live.5centscdn.com	hls
+KBCNews.in~Hindi	KBC News	Hindi	News	logo	1	stream.ottlive.co.in	hls
+KBPTimes.in~Hindi	KBP Times	Hindi	News	logo	1	kbpnews.cloud	hls
+KhabarFast.in~Hindi	Khabar Fast	Hindi	News	logo	1	mumt04.tangotv.in	hls
+KhabrainAbhiTak.in~Hindi	Khabrain Abhi Tak	Hindi	News	logo	1	mumt05.tangotv.in	hls
+LiveTimes.in~Hindi	Live Times	Hindi	News	logo	1	stream.ottlive.co.in	hls
+MahaMovie.in~Hindi	Maha Movie	Hindi	Movies	logo	1	fta.ektv.in	hls
+MahotsavTV.in~Hindi	Mahotsav TV	Hindi	Religious	logo	1	livetv.mahotsavtv.com	hls
+MangalmayTV.in~Hindi	Mangalmay TV	Hindi	Religious	logo	1	yupplivegcpusa.yuppcdn.net	hls
+Mango.in~Hindi	Mango	Hindi	Entertainment	logo	1	stmv6.voxtvhd.com.br	hls
+ManoranjanGrand.in~Hindi	Manoranjan Grand	Hindi	Movies	logo	1	cdn.pishow.tv	hls
+ManoranjanTV.in~Hindi	Manoranjan TV	Hindi	Entertainment	logo	1	cdn.pishow.tv	hls
+Mastiii.in~Hindi	Mastiii	Hindi	Music	logo	1	mumbai-edge.smartplaytv.in	hls
+MercyTV.in~Hindi	Mercy TV	Hindi	Religious	logo	1	5dd3981940faa.streamlock.net	hls
+Mh1Prime.in~Hindi	Mh 1 Prime	Hindi	General		1	streams.tangotv.in	hls
+MHOneDilSe.in~Hindi	MH One Dil Se	Hindi	Entertainment	logo	1	streams.tangotv.in	hls
+MHOneMovies.in~Hindi	MH One Movies	Hindi	Movies		1	mumt03.tangotv.in	hls
+MHOneShraddha.in~Hindi	MH One Shraddha	Hindi	Religious	logo	1	mumt01.tangotv.in	hls
+MTV.in~Hindi	MTV	Hindi	Entertainment	logo	2	yupp-music.keralive.workers.dev maamusic.keralive.workers.dev	hls
+MusicIndia.in~Hindi	Music India	Hindi	Music	logo	1	streams.tangotv.in	hls
+NagalandTV.in~Hindi	Nagaland TV	Hindi	News	logo	1	mumt06.tangotv.in	hls
+NationNews.in~Hindi	Nation News	Hindi	News	logo	1	server.playontv.in	hls
+NaxatraNewsHindi.in~Hindi	Naxatra News Hindi	Hindi	News	logo	1	d2gvyg6lvauoko.cloudfront.net	hls
+NDTVGoodTimes.in~Hindi	NDTV Good Times	Hindi	Lifestyle	logo	1	amg01448-samsungin-ndtvgoodtimes-samsungin-ad-gp.amagi.tv	hls
+NDTVIndia.in~Hindi	NDTV India	Hindi	News	logo	1	raw.githubusercontent.com	hls
+NDTVMadhyaPradeshChhattisgarh.in~Hindi	NDTV Madhya Pradesh Chhattisgarh	Hindi	News	logo	1	ndtvregional.akamaized.net	hls
+NDTVRajasthan.in~Hindi	NDTV Rajasthan	Hindi	News	logo	1	ndtvregional.akamaized.net	hls
+NENews.in~Hindi	NE News	Hindi	News	logo	1	mumt05.tangotv.in	hls
+Network10.in~Hindi	Network 10	Hindi	General	logo	1	mumbai-edge.smartplaytv.in	hls
+News1India.in~Hindi	News 1 India	Hindi	News	logo	1	mumt07.tangotv.in	hls
+News11.in~Hindi	News 11	Hindi	General	logo	1	mumt07.tangotv.in	hls
+News24.in~Hindi	News 24	Hindi	News	logo	1	vidcdn.vidgyor.com	hls
+News24MPChhattisgarh.in~Hindi	News 24 MP & Chhattisgarh	Hindi	News	logo	1	mumt04.tangotv.in	hls
+NewsDaily24.in~Hindi	News Daily 24	Hindi	News	logo	1	mumt01.tangotv.in	hls
+NewsHour.in~Hindi	News Hour	Hindi	News	logo	1	mumt07.tangotv.in	hls
+NewsIndia24x7.in~Hindi	News India 24x7	Hindi	News	logo	1	samitaorigin.tangotv.in	hls
+NewsLeader.in~Hindi	News Leader	Hindi	News	logo	1	stream.ottlive.co.in	hls
+NewsNation.in~Hindi	News Nation	Hindi	News	logo	1	d3qs3d2rkhfqrt.cloudfront.net	hls
+NewsNation81.in~Hindi	News Nation 81	Hindi	News	logo	1	live.newsnation81.com	hls
+NewsStateMPCHG.in~Hindi	News State MP & CHG	Hindi	News	logo	1	jmp2.uk	other
+NewsStatePunjabHaryanaHimachal.in~Hindi	News State Punjab Haryana Himachal	Hindi	News		1	jmp2.uk	other
+NewsStateUPUK.in~Hindi	News State UP & UK	Hindi	News	logo	1	jmp2.uk	other
+News18BiharJharkhand.in~Hindi	News18 Bihar Jharkhand	Hindi	News	logo	1	n18syndication.akamaized.net	hls
+News18DelhiNCRJK.in~Hindi	News18 Delhi NCR JK	Hindi	News	logo	1	n18syndication.akamaized.net	hls
+News18India.in~Hindi	News18 India	Hindi	News	logo	1	n18syndication.akamaized.net	hls
+News18MadhyaPradeshChhattisgarh.in~Hindi	News18 Madhya Pradesh/Chhattisgarh	Hindi	News	logo	1	n18syndication.akamaized.net	hls
+News18PunjabHaryanaHimachal.in~Hindi	News18 Punjab/Haryana/Himachal	Hindi	News	logo	1	n18syndication.akamaized.net	hls
+News18Rajasthan.in~Hindi	News18 Rajasthan	Hindi	News	logo	1	n18syndication.akamaized.net	hls
+News18UttarPradeshUttarakhand.in~Hindi	News18 Uttar Pradesh Uttarakhand	Hindi	News	logo	1	n18syndication.akamaized.net	hls
+NHBollyFlix.in~Hindi	NH BollyFlix	Hindi	Movies	logo	1	jmp2.uk	other
+NHBollyGold.in~Hindi	NH BollyGold	Hindi	Movies	logo	1	0dc330e6408b4c3b9ac31fd37b121368.mediatailor.ap-south-1.amazonaws.com	hls
+NHBollyRaga.in~Hindi	NH BollyRaga	Hindi	Music	logo	1	jmp2.uk	other
+NortheastLive.in~Hindi	Northeast Live	Hindi	News	logo	1	server.thelegitpro.in	hls
+NSC9News.in~Hindi	NSC9 News	Hindi	News	logo	1	legitpro.co.in	hls
+OnlyBharat.in~Hindi	Only Bharat	Hindi	News	logo	1	mumt07.tangotv.in	hls
+PadharoSA.in~Hindi	Padharo SA	Hindi	Religious	logo	1	samitaorigin.tangotv.in	hls
+ParasGold.in~Hindi	Paras Gold	Hindi	Religious	logo	1	mumt04.tangotv.in	hls
+PeaceofMindTV.in~Hindi	Peace of Mind TV	Hindi	Religious	logo	1	yuppnimrestreammum.akamaized.net	hls
+PocketFilms.in~Hindi	Pocket Films	Hindi	Movies	logo	1	vglivessai.akamaized.net	hls
+PrarthanaBhawanTV.in~Hindi	Prarthana Bhawan TV	Hindi	Undefined	logo	1	mumt03.tangotv.in	hls
+PrathamNews.in~Hindi	Pratham News	Hindi	News	logo	1	mumt03.tangotv.in	hls
+PrimeNews.in~Hindi	Prime News	Hindi	News	logo	1	stream.ottlive.co.in	hls
+PublicFirst.in~Hindi	Public First	Hindi	News	logo	1	samitaorigin.tangotv.in	hls
+QTV.in~Hindi	Q TV	Hindi	Entertainment	logo	1	samitaorigin.tangotv.in	hls
+RaftaarMedia.in~Hindi	Raftaar Media	Hindi	Undefined	logo	1	mumt04.tangotv.in	hls
+RepublicBharat.in~Hindi	Republic Bharat	Hindi	News	logo	1	raw.githubusercontent.com	hls
+RongeenTV.in~Hindi	Rongeen TV	Hindi	Undefined	logo	1	server.thelegitpro.in	hls
+SaamTV.in~Hindi	Saam TV	Hindi	Undefined	logo	1	streams.tangotv.in	hls
+SachBedhadak.in~Hindi	Sach Bedhadak	Hindi	News	logo	1	sbnews.nexcdn.online	hls
+Sadhna.in~Hindi	Sadhna	Hindi	Religious	logo	1	6n3yow8pl9ok-hls-live.5centscdn.com	hls
+SadhnaNewsMadhyaPradeshChhattisgarh.in~Hindi	Sadhna News Madhya Pradesh/Chhattisgarh	Hindi	News	logo	1	mumt04.tangotv.in	hls
+SadhnaPlusNews.in~Hindi	Sadhna Plus News	Hindi	News	logo	1	6n3yow8pl9ok-hls-live.5centscdn.com	hls
+SadhnaTV.in~Hindi	Sadhna TV	Hindi	Religious	logo	1	mumt05.tangotv.in	hls
+SahanaNews.in~Hindi	Sahana News	Hindi	News	logo	1	mumt03.tangotv.in	hls
+SamacharPlus24x7.in~Hindi	Samachar Plus 24x7	Hindi	News	logo	1	mumt05.tangotv.in	hls
+SansadTV1.in~Hindi	Sansad TV 1	Hindi	Legislative	logo	2	playhls.media.nic.in d2lk5u59tns74c.cloudfront.net	hls
+SansadTV2.in~Hindi	Sansad TV 2	Hindi	Legislative	logo	2	cdn.pishow.tv d2lk5u59tns74c.cloudfront.net	hls
+SanskarTV.in~Hindi	Sanskar TV	Hindi	Culture;Religious	logo	1	d26idhjf0y1p2g.cloudfront.net	hls
+SanskarWebTV.in~Hindi	Sanskar Web TV	Hindi	Religious	logo	1	deatfcv3xdvi3.cloudfront.net	hls
+SantvaniChannel.in~Hindi	Santvani Channel	Hindi	Undefined	logo	1	d1msejlow1t3l4.cloudfront.net	hls
+SarvDharmSangam.in~Hindi	Sarv Dharm Sangam	Hindi	Undefined	logo	1	mumt01.tangotv.in	hls
+SatsangTV.in~Hindi	Satsang TV	Hindi	Religious	logo	1	d2vfwvjxwtwq1t.cloudfront.net	hls
+SatsangWebTV.in~Hindi	Satsang Web TV	Hindi	Religious	logo	1	d1ji7e9jbzm5g8.cloudfront.net	hls
+SharnamTV.in~Hindi	Sharnam TV	Hindi	Undefined	logo	1	mumt06.tangotv.in	hls
+ShemarooFilmiGaane.in~Hindi	Shemaroo Filmi Gaane	Hindi	Movies;Music	logo	1	prod-runn.cdn.runn.tv	hls
+ShemarooJosh.in~Hindi	Shemaroo Josh	Hindi	Movies	logo	1	mumt04.tangotv.in	hls
+ShemarooTV.in~Hindi	Shemaroo TV	Hindi	Entertainment	logo	1	airtelapp.shemaroo.com	hls
+ShemarooUmang.in~Hindi	Shemaroo Umang	Hindi	Entertainment	logo	1	airtelapp.shemaroo.com	hls
+ShubhCinemaTV.in~Hindi	Shubh Cinema TV	Hindi	Movies	logo	1	d393sxaxig6bax.cloudfront.net	hls
+ShubhTV.in~Hindi	Shubh TV	Hindi	Undefined	logo	1	d2g1vdc6ozl2o8.cloudfront.net	hls
+ShubhsandeshTV.in~Hindi	Shubhsandesh TV	Hindi	Religious	logo	1	mumt03.tangotv.in	hls
+SindhTV.in~Hindi	Sindh TV	Hindi	Religious	logo	1	samitaorigin.tangotv.in	hls
+SohamTV.in~Hindi	Soham TV	Hindi	Religious	logo	1	mumt03.tangotv.in	hls
+SongdewTV.in~Hindi	Songdew TV	Hindi	Music	logo	1	yuppnimrestreammum.akamaized.net	hls
+SonySAB.in~Hindi	Sony SAB	Hindi	Entertainment	logo	1	drk6xq0vhn.gpcdn.net	hls
+SonyWah.in~Hindi	Sony Wah [Geo-blocked]	Hindi	Movies	logo	1	sl.vodep39240327.workers.dev	hls
+SouthStation.in~Hindi	South Station	Hindi	Movies	logo	1	cc-yw7ztecy8do3q.akamaized.net	hls
+StarSports2Hindi.in~Hindi	Star Sports 2 Hindi	Hindi	Sports	logo	1	tvsen5.aynaott.com	hls
+SteelbirdMusic.in~Hindi	Steelbird Music [Not 24/7]	Hindi	Music	logo	1	cdn2.in	hls
+STVHaryanaNews.in~Hindi	STV Haryana News	Hindi	News	logo	1	fta.ektv.in	hls
+SudarshanNews.in~Hindi	Sudarshan News	Hindi	News	logo	1	ott.livelegitpro.in	hls
+SVBC4.in~Hindi	SVBC 4	Hindi	Religious	logo	1	player.mslivestream.net	hls
+SwadeshNews.in~Hindi	Swadesh News	Hindi	News	logo	1	cdn.pishow.tv	hls
+SwarajExpressSMBC.in~Hindi	Swaraj Express SMBC	Hindi	News	logo	1	d1msejlow1t3l4.cloudfront.net	hls
+SwastikTV.in~Hindi	Swastik TV	Hindi	Religious	logo	1	server.playontv.in	hls
+TaazaTV.in~Hindi	Taaza TV	Hindi	Undefined	logo	1	live.we2live.in	hls
+TehzeebTV.in~Hindi	Tehzeeb TV	Hindi	Undefined	logo	1	cdn.pishow.tv	hls
+TheJungleBook.in~Hindi	The Jungle Book	Hindi	Kids	logo	1	cc-4bhi5osabejc9.akamaized.net	hls
+TheMovieClub.in~Hindi	The Movie Club	Hindi	Movies	logo	2	sis-global.prod.samsungtv.plus d3gnyty2vddhsg.cloudfront.net	hls
+TheVoiceTV.in~Hindi	The Voice TV	Hindi	News	logo	1	legitpro.co.in	hls
+TimesNow.in~Hindi	Times Now [Geo-blocked]	Hindi	News	logo	1	dztlhgid9me95.cloudfront.net	hls
+TimesNowNavbharat.in~Hindi	Times Now Navbharat	Hindi	News	logo	2	raw.githubusercontent.com yupprestreamliveus.akamaized.net	hls
+TLC.in~Hindi	TLC	Hindi	Lifestyle	logo	2	drk6xq0vhn.gpcdn.net	hls
+TNPNews.in~Hindi	TNP News	Hindi	News	logo	1	server.thelegitpro.in	hls
+TotalBhakti.in~Hindi	Total Bhakti	Hindi	Religious	logo	1	d34z4embz0hjf6.cloudfront.net	hls
+TotalTVHaryana.in~Hindi	Total TV Haryana	Hindi	Undefined	logo	1	mumt04.tangotv.in	hls
+Travelxp.in~Hindi	Travelxp 4K HDR [Geo-blocked]	Hindi	Travel	logo	2	deltatesttatasky.akamaized.net 103.151.60.162:2122	hls
+TTN24.in~Hindi	TTN24	Hindi	News	logo	1	stream.joytvindia.com	hls
+TV100.in~Hindi	TV 100	Hindi	Undefined	logo	1	fta.ektv.in	hls
+TV27News.in~Hindi	TV27 News	Hindi	News	logo	1	mumt04.tangotv.in	hls
+TV30India.in~Hindi	TV30 India	Hindi	News	logo	1	stream.tv30bharat.com	hls
+TV45.in~Hindi	TV45	Hindi	News	logo	1	server.livelegitpro.in	hls
+TV7Bharat.in~Hindi	TV7 Bharat	Hindi	News	logo	1	stream.ottlive.co.in	hls
+TV9Bharatvarsh.in~Hindi	TV9 Bharatvarsh	Hindi	News	logo	1	dyjmyiv3bp2ez.cloudfront.net	hls
+UniqueTV.in~Hindi	Unique TV	Hindi	Entertainment;Kids	logo	1	mumt05.tangotv.in	hls
+Vedic.in~Hindi	Vedic	Hindi	Religious	logo	1	mumt05.tangotv.in	hls
+VIPNews.in~Hindi	VIP News	Hindi	News	logo	1	live.vipnews24x7.co.in	hls
+VistaarNews.in~Hindi	Vistaar News	Hindi	News	logo	1	stream.ottlive.co.in	hls
+VTU.in~Hindi	VTU	Hindi	Undefined	logo	1	lbgo.bozztv.com	hls
+WeatherSpy.in~Hindi	WeatherSpy	Hindi	Weather	logo	1	jukin-weatherspy-2-in.samsung.wurl.tv	hls
+WOWKidz.in~Hindi	WOW Kidz	Hindi	Animation;Kids	logo	1	yuppparoriglin.akamaized.net	hls
+YRFMusic.in~Hindi	YRF Music	Hindi	Music	logo	2	cdn-uw2-prod.tsv2.amagi.tv vidaa.kableone.com	hls
+ZeeAction.in~Hindi	Zee Action	Hindi	Movies	logo	1	fta.ektv.in	hls
+ZeeBharat.in~Hindi	Zee Bharat	Hindi	News	logo	1	vg-zeefta.akamaized.net	hls
+ZeeBusiness.in~Hindi	Zee Business	Hindi	Business	logo	1	dwby15d04agvq.cloudfront.net	hls
+ZeeCineClassic.in~Hindi	Zee Cine Classic	Hindi	Classic	logo	1	amg00862-amg00862c8-amgplt0173.playout.now3.amagi.tv	hls
+ZeeCinema.in~Hindi	Zee Cinema	Hindi	Movies	logo	3	d1g8wgjurz8via.cloudfront.net raw.githubusercontent.com 103.151.60.162:2122	hls
+ZeeComedyNation.in~Hindi	Zee Comedy Nation	Hindi	Comedy	logo	1	amg00862-amg00862c5-amgplt0173.playout.now3.amagi.tv	hls
+ZeeDelhiNCRHaryana.in~Hindi	Zee Delhi NCR Haryana	Hindi	News	logo	1	vg-zeefta.akamaized.net	hls
+ZeeDilSe.in~Hindi	Zee Dil Se	Hindi	Entertainment	logo	1	amg00862-amg00862c6-amgplt0173.playout.now3.amagi.tv	hls
+ZeeHorrorNights.in~Hindi	Zee Horror Nights	Hindi	Entertainment	logo	1	amg00862-amg00862c7-amgplt0173.playout.now3.amagi.tv	hls
+ZeeMadhyaPradeshChhattisgarh.in~Hindi	Zee Madhya Pradesh Chhattisgarh	Hindi	News	logo	1	vg-zeefta.akamaized.net	hls
+ZeeNews.in~Hindi	Zee News	Hindi	News	logo	1	dknttpxmr0dwf.cloudfront.net	hls
+ZeeRajasthan.in~Hindi	Zee Rajasthan	Hindi	News	logo	1	vg-zeefta.akamaized.net	hls
+ZeeSouthFlix.in~Hindi	Zee South Flix	Hindi	Movies	logo	1	amg00862-amg00862c9-amgplt0173.playout.now3.amagi.tv	hls
+ZeeUttarPradeshUttarakhand.in~Hindi	Zee Uttar Pradesh/Uttarakhand	Hindi	News	logo	1	duw35ict5q7th.cloudfront.net	hls
+Zingabad.in~Hindi	Zingabad	Hindi	Entertainment	logo	1	stream.ottlive.co.in	hls
+Zoom.in~Hindi	Zoom	Hindi	Music	logo	2	dai.google.com pubads.g.doubleclick.net	hls
+AasthaKannada.in~Kannada	Aastha Kannada	Kannada	Religious	logo	1	aasthaott.akamaized.net	hls
+AshwaveegaNews24x7.in~Kannada	Ashwaveega News 24x7	Kannada	News	logo	1	mars.streambridge.cloud	hls
+AsianetSuvarnaNews.in~Kannada	Asianet Suvarna News	Kannada	News	logo	1	fta.ektv.in	hls
+BhakthiSiri.in~Kannada	Bhakthi Siri	Kannada	Religious	logo	1	mumbai-edge.smartplaytv.in	hls
+CartoonNetwork.in~Kannada	Cartoon Network	Kannada	Animation;Kids	logo	1	drk6xq0vhn.gpcdn.net	hls
+ColorsKannada.in~Kannada	Colors Kannada HD	Kannada	Entertainment	logo	1	da86m1sqpm3o0.cloudfront.net	hls
+ColorsSuper.in~Kannada	Colors Super	Kannada	Entertainment	logo	1	d1rc86nwwc9fag.cloudfront.net	hls
+DDChandana.in~Kannada	DD Chandana	Kannada	General	logo	1	d2lk5u59tns74c.cloudfront.net	hls
+DDSports.in~Kannada	DD Sports HD	Kannada	Sports	logo	1	cdn.pishow.tv	hls
+DiscoveryChannel.in~Kannada	Discovery Channel	Kannada	Entertainment	logo	2	drk6xq0vhn.gpcdn.net	hls
+GuaranteeNews.in~Kannada	Guarantee News	Kannada	News	logo	1	guaranteenews.in:8443	hls
+News1st.in~Kannada	News 1st	Kannada	News	logo	1	d1msejlow1t3l4.cloudfront.net	hls
+News18Kannada.in~Kannada	News18 Kannada	Kannada	News	logo	1	n18syndication.akamaized.net	hls
+NKRTVKannada.in~Kannada	NKR TV Kannada	Kannada	General	logo	1	stream.ottlive.co.in	hls
+PowerTV.in~Kannada	Power TV	Kannada	News	logo	1	powertvkannada.com	hls
+PublicMovies.in~Kannada	Public Movies	Kannada	Movies	logo	1	mumt04.tangotv.in	hls
+PublicMusic.in~Kannada	Public Music	Kannada	Music	logo	1	mumt04.tangotv.in	hls
+PublicTV.in~Kannada	Public TV	Kannada	News	logo	1	cdn.pishow.tv	hls
+RajMusixKannada.in~Kannada	Raj Musix Kannada	Kannada	Music	logo	1	mumt01.tangotv.in	hls
+RajNewsKannada.in~Kannada	Raj News Kannada	Kannada	News	logo	1	mumt03.tangotv.in	hls
+RepublicKannada.in~Kannada	Republic Kannada	Kannada	News	logo	1	mumbai-edge.smartplaytv.in	hls
+SankaraTV.in~Kannada	Sankara TV	Kannada	Religious	logo	1	mumt05.tangotv.in	hls
+SiriKannada.in~Kannada	Siri Kannada	Kannada	Entertainment	logo	1	mumt03.tangotv.in	hls
+SiriKannadaAllTime.in~Kannada	Siri Kannada All Time	Kannada	Entertainment	logo	1	mumt07.tangotv.in	hls
+SuvarnaNews.in~Kannada	Suvarna News SD	Kannada	News	logo	1	streams.tangotv.in	hls
+SVBC3.in~Kannada	SVBC 3	Kannada	Religious	logo	1	player.mslivestream.net	hls
+TV5Kannada.in~Kannada	TV5 Kannada	Kannada	News	logo	1	mumt07.tangotv.in	hls
+TV9Kannada.in~Kannada	TV9 Kannada	Kannada	News	logo	1	streams.tangotv.in	hls
+ZeeKannada.in~Kannada	Zee Kannada HD	Kannada	Entertainment	logo	1	yuppnimresmum.akamaized.net	hls
+ZeeKannadaNews.in~Kannada	Zee Kannada News	Kannada	News	logo	1	d3vzwoqcbpfm8p.cloudfront.net	hls
+24News.in~Malayalam	24 News	Malayalam	News	logo	1	mumt07.tangotv.in	hls
+AmritaTV.in~Malayalam	Amrita TV	Malayalam	Entertainment	logo	1	ddash74r36xqp.cloudfront.net	hls
+Asianet.in~Malayalam	Asianet HD	Malayalam	Entertainment	logo	1	da86m1sqpm3o0.cloudfront.net	hls
+AsianetMovies.in~Malayalam	Asianet Movies	Malayalam	Movies	logo	1	da86m1sqpm3o0.cloudfront.net	hls
+AsianetNews.in~Malayalam	Asianet News	Malayalam	News	logo	1	amg13737-amg13737c1-amgplt0016.playout.now3.amagi.tv	hls
+BigTV24x7.in~Malayalam	Big TV 24x7	Malayalam	News	logo	1	stream.ottlive.co.in	hls
+CartoonNetwork.in~Malayalam	Cartoon Network	Malayalam	Animation;Kids	logo	1	drk6xq0vhn.gpcdn.net	hls
+CCV.in~Malayalam	CCV	Malayalam	General	logo	1	5a1178b42cc03.streamlock.net	hls
+DarshanaTV.in~Malayalam	Darshana TV	Malayalam	Entertainment	logo	1	mumt04.tangotv.in	hls
+DDMalayalam.in~Malayalam	DD Malayalam	Malayalam	Entertainment	logo	1	fta.ektv.in	hls
+DiscoveryChannel.in~Malayalam	Discovery Channel	Malayalam	Entertainment	logo	2	drk6xq0vhn.gpcdn.net	hls
+DiscoveryKids.in~Malayalam	Discovery Kids	Malayalam	Kids	logo	1	drk6xq0vhn.gpcdn.net	hls
+GoodnessTV.in~Malayalam	Goodness TV	Malayalam	Religious	logo	1	mumt07.tangotv.in	hls
+HarvestTV.in~Malayalam	Harvest TV	Malayalam	Religious	logo	1	mumbai-edge.smartplaytv.in	hls
+HarvestTVKeralam.in~Malayalam	Harvest TV Keralam	Malayalam	Religious	logo	1	7mbd4ogkr3gx-hls-live.wmncdn.net	hls
+JaihindTV.in~Malayalam	Jaihind TV	Malayalam	Entertainment	logo	1	mumt03.tangotv.in	hls
+JanamTV.in~Malayalam	Janam TV	Malayalam	News	logo	1	mumt03.tangotv.in	hls
+JeevanTV.in~Malayalam	Jeevan TV	Malayalam	General	logo	1	raw.githubusercontent.com	hls
+KairaliArabia.in~Malayalam	Kairali Arabia	Malayalam	General	logo	1	mumt03.tangotv.in	hls
+KairaliNews.in~Malayalam	Kairali News	Malayalam	News	logo	1	cdn.pishow.tv	hls
+KairaliTV.in~Malayalam	Kairali TV	Malayalam	General	logo	1	mumt01.tangotv.in	hls
+KairaliWe.in~Malayalam	Kairali We	Malayalam	Movies	logo	1	streams.tangotv.in	hls
+KappaTV.in~Malayalam	Kappa TV	Malayalam	Lifestyle	logo	1	mumt03.tangotv.in	hls
+KCLTV.in~Malayalam	KCL TV	Malayalam	Entertainment	logo	1	kcltv.livebox.co.in	hls
+KeralaVision.in~Malayalam	Kerala Vision	Malayalam	Entertainment	logo	1	mumt03.tangotv.in	hls
+KiteVicters.in~Malayalam	Kite Victers [Not 24/7]	Malayalam	Education	logo	1	932y4x26ljv8-hls-live.5centscdn.com	hls
+ManoramaNews.in~Malayalam	Manorama News	Malayalam	News	logo	1	mmtvnews1.akamaized.net	hls
+MathrubhumiNews.in~Malayalam	Mathrubhumi News	Malayalam	News	logo	1	streams.tangotv.in	hls
+MazhavilManorama.in~Malayalam	Mazhavil Manorama	Malayalam	Entertainment	logo	2	mumt03.tangotv.in mmtv-vglivessai.akamaized.net	hls
+MediaOne.in~Malayalam	Media One	Malayalam	News	logo	1	cdn.pishow.tv	hls
+NewsMalayalam24x7.in~Malayalam	News Malayalam 24x7	Malayalam	News	logo	1	cdn.pishow.tv	hls
+News18Kerala.in~Malayalam	News18 Kerala	Malayalam	News	logo	1	n18syndication.akamaized.net	hls
+PowervisionTV.in~Malayalam	Powervision TV	Malayalam	Religious	logo	1	mumbai-edge.smartplaytv.in	hls
+PravasiChannel.in~Malayalam	Pravasi Channel	Malayalam	Undefined	logo	1	m6gdavepdn93-hls-live.5centscdn.com	hls
+PulariTV.in~Malayalam	Pulari TV	Malayalam	Entertainment	logo	1	mumbai-edge.smartplaytv.in	hls
+RajMusixMalayalam.in~Malayalam	Raj Musix Malayalam	Malayalam	Music	logo	1	cdn.pishow.tv	hls
+RajNewsMalayalam.in~Malayalam	Raj News Malayalam	Malayalam	News	logo	1	mumt04.tangotv.in	hls
+RealNewsKerala.in~Malayalam	Real News Kerala [Not 24/7]	Malayalam	News	logo	1	bk7l298nyx53-hls-live.5centscdn.com	hls
+ReporterTV.in~Malayalam	Reporter TV	Malayalam	News	logo	1	segment.yuppcdn.net	hls
+SafariTV.in~Malayalam	Safari TV	Malayalam	Documentary	logo	1	mumt04.tangotv.in	hls
+Shalom.in~Malayalam	Shalom	Malayalam	Religious	logo	2	d2c4zqo2rb5uf1.cloudfront.net d28xtgmk9tfk6b.cloudfront.net	hls
+ShekinahTV.in~Malayalam	Shekinah TV	Malayalam	Undefined	logo	1	livetv.timeiptv.in	hls
+Starnet.in~Malayalam	Starnet	Malayalam	General	logo	1	5a1178b42cc03.streamlock.net	hls
+SunSurya.in~Malayalam	Sun Surya HD	Malayalam	Entertainment	logo	1	d3dt6rg724ecr3.cloudfront.net	hls
+UTVPalakkad.in~Malayalam	UTV Palakkad	Malayalam	General	logo	1	em4qj6nedyvg-hls-live.wmncdn.net	hls
+VCV.in~Malayalam	VCV [Not 24/7]	Malayalam	General	logo	1	5a1178b42cc03.streamlock.net	hls
+9XJhakaas.in~Marathi	9X Jhakaas	Marathi	Music	logo	1	amg01281-9xmediapvtltd-9xjhakaas-samsungin-ci2cs.amagi.tv	hls
+ABPMajha.in~Marathi	ABP Majha	Marathi	News	logo	1	mumbai-edge.smartplaytv.in	hls
+CartoonNetwork.in~Marathi	Cartoon Network	Marathi	Animation;Kids	logo	1	drk6xq0vhn.gpcdn.net	hls
+ColorsMarathi.in~Marathi	Colors Marathi HD	Marathi	Entertainment	logo	1	da86m1sqpm3o0.cloudfront.net	hls
+DDGoa.in~Marathi	DD Goa	Marathi	General	logo	1	fta.ektv.in	hls
+DDSahyadri.in~Marathi	DD Sahyadri	Marathi	General	logo	1	fta.ektv.in	hls
+DiscoveryChannel.in~Marathi	Discovery Channel	Marathi	Entertainment	logo	1	drk6xq0vhn.gpcdn.net	hls
+FaktMarathi.in~Marathi	Fakt Marathi	Marathi	Entertainment	logo	1	mumt07.tangotv.in	hls
+JaiMaharashtra.in~Marathi	Jai Maharashtra	Marathi	News	logo	1	d1msejlow1t3l4.cloudfront.net	hls
+LokshahiNews.in~Marathi	Lokshahi News	Marathi	News	logo	1	mumt05.tangotv.in	hls
+NDTVMarathi.in~Marathi	NDTV Marathi	Marathi	News	logo	1	web-ndtv-marathi.akamaized.net	hls
+NewsMarathi24x7.in~Marathi	News Marathi 24x7	Marathi	News	logo	1	live1.ottlive.co.in	hls
+News18Marathi.in~Marathi	News18 Marathi	Marathi	News	logo	1	n18syndication.akamaized.net	hls
+PudhariNews.in~Marathi	Pudhari News	Marathi	News	logo	1	streams.tangotv.in	hls
+SaamTV.in~Marathi	Saam TV	Marathi	Undefined	logo	1	streams.tangotv.in	hls
+SangeetMarathi.in~Marathi	Sangeet Marathi	Marathi	Music	logo	1	cdn.pishow.tv	hls
+ShemarooMarathiBana.in~Marathi	Shemaroo Marathi Bana	Marathi	Undefined	logo	1	airtelapp.shemaroo.com	hls
+SoneriCinema.in~Marathi	Soneri Cinema	Marathi	Movies	logo	1	samitaorigin.tangotv.in	hls
+StarPravah.in~Marathi	Star Pravah HD	Marathi	Entertainment	logo	1	da86m1sqpm3o0.cloudfront.net	hls
+TopNewsMarathi.in~Marathi	Top News Marathi	Marathi	News	logo	1	live1.ottlive.co.in	hls
+TV9Marathi.in~Marathi	TV9 Marathi	Marathi	News	logo	1	dyjmyiv3bp2ez.cloudfront.net	hls
+Zee24Taas.in~Marathi	Zee 24 Taas	Marathi	News	logo	1	dgrvlduwztkd4.cloudfront.net	hls
+ZeeMarathi.in~Marathi	Zee Marathi HD	Marathi	Entertainment	logo	1	raw.githubusercontent.com	hls
+AlankarTV.in~Odia	Alankar TV	Odia	Movies	logo	1	livetv.tarangplus.in	hls
+BadaKhabar.in~Odia	Bada Khabar	Odia	News	logo	1	mumbai-edge.smartplaytv.in	hls
+DDOdia.in~Odia	DD Odia	Odia	General	logo	1	mumbai-edge.smartplaytv.in	hls
+KalingaTV.in~Odia	Kalinga TV	Odia	News	logo	1	server.thelegitpro.in	hls
+KanakNews.in~Odia	Kanak News	Odia	News	logo	1	mumbai-edge.smartplaytv.in	hls
+MBCTV.in~Odia	MBC TV	Odia	General	logo	1	mumbai-edge.smartplaytv.in	hls
+NandighoshaTV.in~Odia	Nandighosha TV	Odia	General	logo	1	mumt05.tangotv.in	hls
+NaxatraNews.in~Odia	Naxatra News	Odia	News	logo	1	fta.ektv.in	hls
+News18Odia.in~Odia	News18 Odia	Odia	News	logo	1	n18syndication.akamaized.net	hls
+OdishaTV.in~Odia	Odisha TV	Odia	Culture	logo	1	livetv.tarangplus.in	hls
+PrameyaNews7.in~Odia	Prameya News7	Odia	News	logo	1	mumt03.tangotv.in	hls
+PrarthanaLife.in~Odia	Prarthana Life	Odia	Undefined	logo	1	livetv.tarangplus.in	hls
+TarangMusic.in~Odia	Tarang Music	Odia	Music	logo	1	livetv.tarangplus.in	hls
+TarangTV.in~Odia	Tarang TV	Odia	Entertainment	logo	1	livetv.tarangplus.in	hls
+EkamraBharatOdia.in	Ekamra Bharat Odia	Other Indian languages	News	logo	1	live.ekamraott.com	hls
+FashionTV.in	FashionTV	Other Indian languages	Lifestyle	logo	1	fta.ektv.in	hls
+Nepal1.in	Nepal 1	Other Indian languages	Entertainment	logo	1	mumt05.tangotv.in	hls
+OnePaschima.in	One Paschima	Other Indian languages	Entertainment	logo	1	live.ekamraott.com	hls
+RDXGoa.in	RDX Goa [Geo-blocked]	Other Indian languages	News	logo	1	g5nl6xoalpq6-hls-live.5centscdn.com	hls
+9XTashan.in~Punjabi	9X Tashan	Punjabi	Music	logo	1	amg01281-9xmediapvtltd-9xtashan-samsungin-xz1sd.amagi.tv	hls
+ABPSanjha.in~Punjabi	ABP Sanjha	Punjabi	News	logo	1	fta.ektv.in	hls
+AmritGurbani.in~Punjabi	Amrit Gurbani	Punjabi	Religious	logo	1	samitaorigin.tangotv.in	hls
+AnandpurLive.in~Punjabi	Anandpur Live	Punjabi	Religious	logo	1	mumt05.tangotv.in	hls
+ChardiklaGurbaaniTV.in~Punjabi	Chardikla Gurbaani TV	Punjabi	News	logo	1	chardikalatimestv.gigabitcdn.net	hls
+ChardiklaTimeTV.in~Punjabi	Chardikla Time TV	Punjabi	News	logo	1	chardikalagurbanitv.gigabitcdn.net	hls
+ChardiklaTimeTVNorthAmerica.in~Punjabi	Chardikla Time TV North America	Punjabi	News	logo	1	chardikalanorthamerica.gigabitcdn.net	hls
+ChintpurniLive.in~Punjabi	Chintpurni Live	Punjabi	Religious	logo	1	samitaorigin.tangotv.in	hls
+DailyPostTV.in~Punjabi	Daily Post TV	Punjabi	News	logo	1	vglivessai.akamaized.net	hls
+DDPunjabi.in~Punjabi	DD Punjabi	Punjabi	Culture	logo	1	fta.ektv.in	hls
+DesiChannel.in~Punjabi	Desi Channel	Punjabi	Entertainment	logo	1	livestream.unlimitedcdn.com	hls
+DivyaBhajan.in~Punjabi	Divya Bhajan	Punjabi	Religious	logo	1	jmp2.uk	other
+DukhnivaranPatialaLive.in~Punjabi	Dukhnivaran Patiala Live	Punjabi	Religious	logo	1	samitaorigin.tangotv.in	hls
+Dukhniwaran.in~Punjabi	Dukhniwaran	Punjabi	Religious	logo	1	mumt03.tangotv.in	hls
+Fast1.in~Punjabi	Fast1	Punjabi	Undefined	logo	1	cdn.pishow.tv	hls
+GlobalPunjab.in~Punjabi	Global Punjab	Punjabi	News	logo	1	server.livelegitpro.in	hls
+GTCNews.in~Punjabi	GTC News	Punjabi	News	logo	1	vglivessai.akamaized.net	hls
+GTCPunjabi.in~Punjabi	GTC Punjabi	Punjabi	Entertainment	logo	3	gtc-yupp.vgcdn.net neotv.ottlive.co.in	hls
+GulistanNews.in~Punjabi	Gulistan News	Punjabi	News	logo	1	fta.ektv.in	hls
+HamdardTV.ca~Punjabi	Hamdard TV	Punjabi	News	logo	1	tv.hamdardtv.com	hls
+IndiaNewsPunjabHimachal.in~Punjabi	India News Punjab/Himachal	Punjabi	News	logo	1	mumt03.tangotv.in	hls
+KnockBhakti.in~Punjabi	Knock Bhakti	Punjabi	Religious	logo	1	knocktv2.wiseplayout.com	hls
+LivingIndiaNews.in~Punjabi	Living India News	Punjabi	News	logo	1	stream.ottlive.co.in	hls
+MahaPunjabi.in~Punjabi	Maha Punjabi	Punjabi	Entertainment	logo	1	fta.ektv.in	hls
+ManoranjanMovies.in~Punjabi	Manoranjan Movies	Punjabi	Movies	logo	1	mumt04.tangotv.in	hls
+Mh1Music.in~Punjabi	Mh 1 Music	Punjabi	Music	logo	1	livestream.jswk.online	hls
+Mh1News.in~Punjabi	Mh 1 News	Punjabi	News	logo	1	streams.tangotv.in	hls
+MHOne.in~Punjabi	MH One	Punjabi	General	logo	1	fta.ektv.in	hls
+MoviePunjab.in~Punjabi	Movie Punjab	Punjabi	Movies	logo	1	samitaorigin.tangotv.in	hls
+NamdhariTV.in~Punjabi	Namdhari TV [Not 24/7]	Punjabi	Religious	logo	1	namdhari.tv	hls
+NanaksarLive.in~Punjabi	Nanaksar Live	Punjabi	Religious	logo	1	samitaorigin.tangotv.in	hls
+NewsStatePunjabHaryanaHimachal.in~Punjabi	News State Punjab Haryana Himachal	Punjabi	News		1	jmp2.uk	other
+Pankh.in~Punjabi	Pankh	Punjabi	Music	logo	1	samitaorigin.tangotv.in	hls
+Pitaara.in~Punjabi	Pitaara	Punjabi	Movies	logo	1	d2lk5u59tns74c.cloudfront.net	hls
+PTCChakde.in~Punjabi	PTC Chakde	Punjabi	Music	logo	1	cdn.pishow.tv	hls
+PTCMusic.in~Punjabi	PTC Music	Punjabi	Music	logo	1	d2lk5u59tns74c.cloudfront.net	hls
+PTCNews.in~Punjabi	PTC News	Punjabi	News	logo	1	streams.tangotv.in	hls
+PTCPunjabi.in~Punjabi	PTC Punjabi	Punjabi	Entertainment	logo	2	streams.tangotv.in d3qs3d2rkhfqrt.cloudfront.net	hls
+PTCPunjabiGold.in~Punjabi	PTC Punjabi Gold	Punjabi	Entertainment	logo	1	d3qs3d2rkhfqrt.cloudfront.net	hls
+PTCSimran.in~Punjabi	PTC Simran	Punjabi	Religious	logo	1	streams.tangotv.in	hls
+PunjabiBeatsHD.in~Punjabi	Punjabi Beats HD	Punjabi	Music	logo	1	mumt01.tangotv.in	hls
+PunjabiHits.in~Punjabi	Punjabi Hits	Punjabi	Music	logo	1	stream.ottlive.co.in	hls
+PunjabiMusicHD.in~Punjabi	Punjabi Music HD	Punjabi	Music	logo	1	samitaorigin.tangotv.in	hls
+PunjabiShorts.in~Punjabi	Punjabi Shorts	Punjabi	Movies	logo	1	vglivessai.akamaized.net	hls
+PunjabiTV.in~Punjabi	Punjabi TV	Punjabi	Entertainment	logo	1	samitaorigin.tangotv.in	hls
+Ragni.in~Punjabi	Ragni	Punjabi	Religious	logo	1	samitaorigin.tangotv.in	hls
+RozanaSpokesman.in~Punjabi	Rozana Spokesman	Punjabi	News	logo	1	live1.ottlive.co.in	hls
+Saang.in~Punjabi	Saang	Punjabi	Religious	logo	1	samitaorigin.tangotv.in	hls
+ShaheedanLive.in~Punjabi	Shaheedan Live	Punjabi	Religious	logo	1	mumt06.tangotv.in	hls
+ShaheedanShahib.in~Punjabi	Shaheedan Shahib	Punjabi	Religious	logo	1	mumt03.tangotv.in	hls
+ShreeHazurSahibji.in~Punjabi	Shree Hazur Sahibji	Punjabi	Religious	logo	1	samitaorigin.tangotv.in	hls
+TabbarHits.in~Punjabi	Tabbar Hits	Punjabi	Music	logo	1	vglivessai.akamaized.net	hls
+TVPunjab.ca~Punjabi	TV Punjab [Geo-blocked]	Punjabi	News	logo	1	932y483pdjv8-hls-live.5centscdn.com	hls
+WahPunjabi.in~Punjabi	Wah Punjabi	Punjabi	Music	logo	1	yuppnimrestreammum.akamaized.net	hls
+WorldPunjabiTV.in~Punjabi	World Punjabi TV	Punjabi	News	logo	1	live1.ottlive.co.in	hls
+ZeePunjabHaryanaHimachal.in~Punjabi	Zee Punjab Haryana Himachal	Punjabi	News	logo	1	vg-zeefta.akamaized.net	hls
+7SMusic.in~Tamil	7S Music	Tamil	Music	logo	1	cdn.pishow.tv	hls
+AaryaaTV.in~Tamil	Aaryaa TV	Tamil	Music	logo	1	stream.ottlive.co.in	hls
+AaseervathamTV.in~Tamil	Aaseervatham TV	Tamil	Religious	logo	1	mumt04.tangotv.in	hls
+AasthaTamil.in~Tamil	Aastha Tamil	Tamil	Religious	logo	1	aasthaott.akamaized.net	hls
+AMNTV.in~Tamil	AMN TV	Tamil	General	logo	1	live.onecloudlive.in	hls
+AngelTV.in~Tamil	Angel TV	Tamil	Religious	logo	4	cdn.pishow.tv janya-digimix.akamaized.net	hls
+AnimalPlanet.in~Tamil	Animal Planet	Tamil	Documentary	logo	2	drk6xq0vhn.gpcdn.net	hls
+ArputharYesuTV.in~Tamil	Arputhar Yesu TV	Tamil	Religious	logo	1	account33.livebox.co.in	hls
+BhagyamTV.in~Tamil	Bhagyam TV	Tamil	Religious	logo	1	ott.bhagyam.net	hls
+CartoonNetwork.in~Tamil	Cartoon Network	Tamil	Animation;Kids	logo	1	drk6xq0vhn.gpcdn.net	hls
+Chithiram.in~Tamil	Chithiram	Tamil	Kids	logo	1	cdn.pishow.tv	hls
+ColorsTamil.in~Tamil	Colors Tamil HD	Tamil	Entertainment	logo	1	da86m1sqpm3o0.cloudfront.net	hls
+DDSports.in~Tamil	DD Sports HD	Tamil	Sports	logo	1	cdn.pishow.tv	hls
+DDTamil.in~Tamil	DD Tamil	Tamil	General	logo	2	fta.ektv.in cdn.pishow.tv	hls
+DharsanTV.in~Tamil	Dharsan TV	Tamil	Religious	logo	1	cable91tataplay.akamaized.net	hls
+DhoolTV.in~Tamil	Dhool TV	Tamil	Music	logo	1	d1msejlow1t3l4.cloudfront.net	hls
+DiscoveryChannel.in~Tamil	Discovery Channel	Tamil	Entertainment	logo	2	drk6xq0vhn.gpcdn.net	hls
+DiscoveryKids.in~Tamil	Discovery Kids	Tamil	Kids	logo	1	drk6xq0vhn.gpcdn.net	hls
+HebronTV.in~Tamil	Hebron TV	Tamil	Religious	logo	1	account20.livebox.co.in	hls
+HistoryTV18.in~Tamil	History TV18 HD [Geo-blocked]	Tamil	Documentary	logo	1	amg01448-amg01448c16-samsung-in-3495.playouts.now.amagi.tv	hls
+HosannaTV.in~Tamil	Hosanna TV	Tamil	Religious	logo	1	yuppnimresmum.akamaized.net	hls
+IsaiAruvi.in~Tamil	Isai Aruvi	Tamil	Music	logo	1	segment.yuppcdn.net	hls
+JayaPlus.in~Tamil	Jaya Plus	Tamil	Culture;Entertainment	logo	1	mumbai-edge.smartplaytv.in	hls
+JoyTV.in~Tamil	Joy TV	Tamil	Religious	logo	1	ktismaservers.in:3412	hls
+KalaignarMurasu.in~Tamil	Kalaignar Murasu	Tamil	Entertainment	logo	1	yuppmedtaorire.akamaized.net	hls
+KalaignarSeithigal.in~Tamil	Kalaignar Seithigal	Tamil	News	logo	1	raw.githubusercontent.com	hls
+KalaignarTV.in~Tamil	Kalaignar TV	Tamil	General	logo	1	segment.yuppcdn.net	hls
+LifeTV.in~Tamil	Life TV	Tamil	Religious	logo	1	lifetv.livebox.co.in	hls
+MNaduTV.in~Tamil	M Nadu TV	Tamil	News	logo	1	cloudcdnplayer.mslivestream.net	hls
+MadhaTV.in~Tamil	Madha TV	Tamil	Religious	logo	1	mumt07.tangotv.in	hls
+MadhimugamTV.in~Tamil	Madhimugam TV	Tamil	News	logo	1	mumt01.tangotv.in	hls
+MahimaiTV.in~Tamil	Mahimai TV	Tamil	Religious	logo	1	mahimai.iptelevision.live	hls
+MakkalTV.in~Tamil	Makkal TV	Tamil	General	logo	1	5k8q87azdy4v-hls-live.wmncdn.net	hls
+MalaiMurasuTV.in~Tamil	Malai Murasu TV	Tamil	News	logo	1	streams.tangotv.in	hls
+MarutamTV.in~Tamil	Marutam TV	Tamil	Entertainment	logo	1	mntv.livebox.co.in	hls
+MeiAlaiTV.in~Tamil	Mei Alai TV	Tamil	General	logo	1	meialai.iptelevishion.com	hls
+MKSix.in~Tamil	MK Six	Tamil	Entertainment	logo	1	mumt06.tangotv.in	hls
+MoonTV.in~Tamil	Moon TV	Tamil	News	logo	1	d1msejlow1t3l4.cloudfront.net	hls
+NambikkaiTV.in~Tamil	Nambikkai TV	Tamil	Religious	logo	1	d1msejlow1t3l4.cloudfront.net	hls
+NDTVGoodTimes.in~Tamil	NDTV Good Times	Tamil	Lifestyle	logo	1	amg01448-samsungin-ndtvgoodtimes-samsungin-ad-gp.amagi.tv	hls
+News7Tamil.in~Tamil	News 7 Tamil	Tamil	News	logo	1	segment.yuppcdn.net	hls
+NewsJ.in~Tamil	News J [Not 24/7]	Tamil	News	logo	1	cdn.pishow.tv	hls
+NewsTamil24x7.in~Tamil	News Tamil 24x7	Tamil	News	logo	1	cdn.pishow.tv	hls
+News18TamilNadu.in~Tamil	News18 Tamil Nadu	Tamil	News	logo	1	n18syndication.akamaized.net	hls
+NHTamilGold.in~Tamil	NH Tamil Gold	Tamil	Movies	logo	1	d3arbp6l7f096k.cloudfront.net	hls
+NTCTV.in~Tamil	NTC TV	Tamil	Entertainment	logo	1	galaxyott.live	hls
+OliTV.in~Tamil	Oli TV	Tamil	Entertainment	logo	1	live.olidigital.in	hls
+OMTV.in~Tamil	OM TV	Tamil	Religious	logo	1	mumt01.tangotv.in	hls
+PeppersTV.in~Tamil	Peppers TV	Tamil	Music	logo	1	cdn.pishow.tv	hls
+PolimerNews.in~Tamil	Polimer News	Tamil	News	logo	1	segment.yuppcdn.net	hls
+PolimerTV.in~Tamil	Polimer TV	Tamil	Entertainment	logo	1	cdn.pishow.tv	hls
+PuthiyaThalaimurai.in~Tamil	Puthiya Thalaimurai	Tamil	News	logo	1	mumt07.tangotv.in	hls
+PuthiyaThalaimuraiExpress.in~Tamil	Puthiya Thalaimurai Express	Tamil	News	logo	1	samitaorigin.tangotv.in	hls
+PuthuyugamTV.in~Tamil	Puthuyugam TV	Tamil	Undefined	logo	1	mumt04.tangotv.in	hls
+RajDigitalPlus.in~Tamil	Raj Digital Plus	Tamil	Movies	logo	1	livestream.rajtv.tv	hls
+RajMusixTamil.in~Tamil	Raj Musix Tamil	Tamil	Music	logo	1	livestream.rajtv.tv	hls
+RajTV.in~Tamil	Raj TV	Tamil	Entertainment	logo	1	livestream.rajtv.tv	hls
+SaiTV.in~Tamil	Sai TV	Tamil	Undefined	logo	1	mumbai-edge.smartplaytv.in	hls
+SairamTV.in~Tamil	Sairam TV	Tamil	Religious		1	mumt04.tangotv.in	hls
+SanaPlus.in~Tamil	Sana Plus	Tamil	Music	logo	1	mumbai-edge.smartplaytv.in	hls
+SanaTV.in~Tamil	Sana TV	Tamil	Entertainment	logo	1	vglivessai.akamaized.net	hls
+SankaraTV.in~Tamil	Sankara TV	Tamil	Religious	logo	1	mumt05.tangotv.in	hls
+SathiyamTV.in~Tamil	Sathiyam TV	Tamil	News	logo	1	mumt07.tangotv.in	hls
+SirippoliTV.in~Tamil	Sirippoli TV	Tamil	Comedy	logo	1	segment.yuppcdn.net	hls
+SooriyanTV.ca~Tamil	Sooriyan TV	Tamil	Entertainment	logo	1	live20.bozztv.com	hls
+SubinTV.in~Tamil	Subin TV	Tamil	Entertainment	logo	1	stream.galaxyott.live	hls
+SunTV.in~Tamil	Sun TV HD	Tamil	Entertainment	logo	1	d2px1d6ssc60fw.cloudfront.net	hls
+SuriyaTV.in~Tamil	Suriya TV	Tamil	Entertainment	logo	1	stream.ottlive.co.in	hls
+SuriyanTV.in~Tamil	Suriyan TV	Tamil	Movies	logo	1	stream.sscloud7.com	hls
+SVBC2.in~Tamil	SVBC 2	Tamil	Religious	logo	1	player.mslivestream.net	hls
+TamilJanam.in~Tamil	Tamil Janam	Tamil	News	logo	1	mumt01.tangotv.in	hls
+TamilanTV.in~Tamil	Tamilan TV	Tamil	Undefined	logo	1	mumt04.tangotv.in	hls
+TamilVisionTV.ca~Tamil	TamilVision-TV	Tamil	Undefined	logo	1	live.cmr24.fm	hls
+ThalaaTV.in~Tamil	Thalaa TV	Tamil	Movies	logo	1	streams2.sofast.tv	hls
+ThanthiOne.in~Tamil	Thanthi One	Tamil	Entertainment	logo	1	mumt07.tangotv.in	hls
+ThanthiTV.in~Tamil	Thanthi TV	Tamil	News	logo	1	streams.tangotv.in	hls
+ThendralTV.in~Tamil	Thendral TV	Tamil	Undefined	logo	1	hls.thendraltv.in	hls
+Travelxp.in~Tamil	Travelxp 4K HDR [Geo-blocked]	Tamil	Travel	logo	2	deltatesttatasky.akamaized.net 103.151.60.162:2122	hls
+Tunes6.in~Tamil	Tunes 6	Tamil	Music	logo	1	stream.d6-pro.com	hls
+UltimateTV.in~Tamil	Ultimate TV	Tamil	Music	logo	1	stream.ottlive.co.in	hls
+VaanavilTV.in~Tamil	Vaanavil TV	Tamil	Music	logo	1	6n3yope4d9ok-hls-live.5centscdn.com	hls
+VasanthTV.in~Tamil	Vasanth TV	Tamil	Entertainment	logo	1	mumt04.tangotv.in	hls
+VelichamTV.in~Tamil	Velicham TV	Tamil	News	logo	1	mumt05.tangotv.in	hls
+VendharTV.in~Tamil	Vendhar TV	Tamil	Entertainment	logo	1	mumt04.tangotv.in	hls
+VillageTV.in~Tamil	Village TV	Tamil	Religious	logo	1	live.villagetv.net	hls
+WinTV.in~Tamil	Win TV	Tamil	Undefined	logo	1	mumt06.tangotv.in	hls
+WOWKidz.in~Tamil	WOW Kidz Tamil	Tamil	Animation;Kids	logo	1	yuppparoriglin.akamaized.net	hls
+ZeeTamil.in~Tamil	Zee Tamil [Geo-blocked]	Tamil	Entertainment	logo	2	ev-eu-hw-fast-mpd.starzplayarabia.com d2o8pibksxtln6.cloudfront.net	dash hls
+ZeeTamilNews.in~Tamil	Zee Tamil News	Tamil	News	logo	1	raw.githubusercontent.com	hls
+10TV.in~Telugu	10 TV	Telugu	News	logo	1	mumbai-edge.smartplaytv.in	hls
+4SiDESTV.in~Telugu	4 SiDES TV	Telugu	News	logo	1	stream.ottlive.co.in	hls
+6TVTelugu.in~Telugu	6 TV Telugu	Telugu	News	logo	1	yuppparoriglin.akamaized.net	hls
+9PlusNews.in~Telugu	9 Plus News	Telugu	News	logo	1	stream.ottlive.co.in	hls
+99TV.in~Telugu	99TV	Telugu	News	logo	1	cdn.pishow.tv	hls
+AasthaTelugu.in~Telugu	Aastha Telugu	Telugu	Religious	logo	1	mumbai-edge.smartplaytv.in	hls
+ABNAndhraJyoti.in~Telugu	ABN Andhra Jyoti	Telugu	News	logo	1	mumbai-edge.smartplaytv.in	hls
+BhakthiTV.in~Telugu	Bhakthi TV	Telugu	Religious	logo	1	cdn.pishow.tv	hls
+BIGTV.in~Telugu	BIG TV	Telugu	News	logo	1	stream.ottlive.co.in	hls
+BRKNews.in~Telugu	BRK News	Telugu	News	logo	1	mumbai-edge.smartplaytv.in	hls
+CalvaryTV.in~Telugu	Calvary TV	Telugu	Undefined	logo	1	cdn.pishow.tv	hls
+CartoonNetwork.in~Telugu	Cartoon Network	Telugu	Animation;Kids	logo	1	drk6xq0vhn.gpcdn.net	hls
+ChhayaChitramTelugu.in~Telugu	Chhaya Chitram Telugu	Telugu	Religious	logo	1	samitaorigin.tangotv.in	hls
+CVRHealth.in~Telugu	CVR Health	Telugu	Lifestyle	logo	1	mumbai-edge.smartplaytv.in	hls
+CVRNews.in~Telugu	CVR News	Telugu	News	logo	1	mumbai-edge.smartplaytv.in	hls
+CVROMSpiritual.in~Telugu	CVR OM Spiritual	Telugu	Religious	logo	1	yuppnimrestreammum.akamaized.net	hls
+DDSaptagiri.in~Telugu	DD Saptagiri	Telugu	General	logo	1	d2lk5u59tns74c.cloudfront.net	hls
+DDSports.in~Telugu	DD Sports HD	Telugu	Sports	logo	1	cdn.pishow.tv	hls
+DDYadagiri.in~Telugu	DD Yadagiri	Telugu	General	logo	1	fta.ektv.in	hls
+DiscoveryChannel.in~Telugu	Discovery Channel	Telugu	Entertainment	logo	2	drk6xq0vhn.gpcdn.net	hls
+DiscoveryKids.in~Telugu	Discovery Kids	Telugu	Kids	logo	1	drk6xq0vhn.gpcdn.net	hls
+DivyavaniTV.in~Telugu	Divyavani TV	Telugu	Religious	logo	1	mumbai-edge.smartplaytv.in	hls
+ETVAndhraPradesh.in~Telugu	ETV Andhra Pradesh	Telugu	News	logo	1	d1g35elx8qnif3.cloudfront.net	hls
+ETVBeats.in~Telugu	ETV Beats	Telugu	Music	logo	1	jmp2.uk	other
+ETVCinema.in~Telugu	ETV Cinema	Telugu	Movies	logo	2	yupplivegcpusa.yuppcdn.net d27zlkxhgwrfgo.cloudfront.net	hls
+ETVComedy.in~Telugu	ETV Comedy	Telugu	Comedy	logo	1	cc-wie8j8y69d2uy.akamaized.net	hls
+ETVJosh.in~Telugu	ETV Josh	Telugu	Entertainment	logo	1	cc-uyh1ow5zouoio.akamaized.net	hls
+ETVLife.in~Telugu	ETV Life	Telugu	Lifestyle	logo	1	mumbai-edge.smartplaytv.in	hls
+ETVMusic.in~Telugu	ETV Music	Telugu	Music	logo	1	mumbai-edge.smartplaytv.in	hls
+ETVNews.in~Telugu	ETV News	Telugu	News	logo	1	cc-3448kp65yhc5w.akamaized.net	hls
+ETVPlus.in~Telugu	ETV Plus	Telugu	Entertainment	logo	2	yupplivegcpusa.yuppcdn.net d12ee3o8yfkkhd.cloudfront.net	hls
+ETVTelangana.in~Telugu	ETV Telangana	Telugu	News	logo	1	d37d7pfp7vjqhh.cloudfront.net	hls
+ETVTelugu.in~Telugu	ETV Telugu HD	Telugu	Entertainment	logo	1	mumbai-edge.smartplaytv.in	hls
+GospelTVIndia.in~Telugu	Gospel TV India	Telugu	Religious	logo	1	server.livelegitpro.in:9899	hls
+HinduDharmam.in~Telugu	Hindu Dharmam	Telugu	Religious	logo	1	mumbai-edge.smartplaytv.in	hls
+HistoryTV18.in~Telugu	History TV18 HD [Geo-blocked]	Telugu	Documentary	logo	1	amg01448-amg01448c16-samsung-in-3495.playouts.now.amagi.tv	hls
+HMTV.in~Telugu	HMTV	Telugu	News	logo	1	cdn.pishow.tv	hls
+INews.in~Telugu	INews	Telugu	News	logo	1	cdn.pishow.tv	hls
+MahaaBhakti.in~Telugu	Mahaa Bhakti	Telugu	Religious	logo	1	mumbai-edge.smartplaytv.in	hls
+MahaaMax.in~Telugu	Mahaa Max	Telugu	Entertainment	logo	1	mumbai-edge.smartplaytv.in	hls
+MahaaNews.in~Telugu	Mahaa News	Telugu	News	logo	1	mumbai-edge.smartplaytv.in	hls
+MangoMobileTV.in~Telugu	Mango Mobile TV	Telugu	Entertainment	logo	1	amg01911-mangotv-amg01911c1-xiaomi-in-1270.playouts.now.amagi.tv	hls
+MetroTV.in~Telugu	Metro TV	Telugu	General	logo	1	mercury.streambridge.link:8042	hls
+MojoTV.in~Telugu	Mojo TV	Telugu	News	logo	1	mumt07.tangotv.in	hls
+NireekshanaTV.in~Telugu	Nireekshana TV	Telugu	Religious	logo	1	fta.ektv.in	hls
+NTVTelugu.in~Telugu	NTV Telugu	Telugu	News	logo	1	mumbai-edge.smartplaytv.in	hls
+PMCTelugu.in~Telugu	PMC Telugu	Telugu	Religious	logo	1	mumbai-edge.smartplaytv.in	hls
+Prime9News.in~Telugu	Prime9 News	Telugu	News	logo	1	mumbai-edge.smartplaytv.in	hls
+RajMusixTelugu.in~Telugu	Raj Musix Telugu	Telugu	Music	logo	1	cdn.pishow.tv	hls
+RajNewsTelugu.in~Telugu	Raj News Telugu	Telugu	News	logo	1	mumt04.tangotv.in	hls
+SakshiTV.in~Telugu	Sakshi TV	Telugu	News	logo	1	yuppmedtaorire.akamaized.net	hls
+StarMaa.in~Telugu	Star Maa HD	Telugu	Entertainment	logo	1	da86m1sqpm3o0.cloudfront.net	hls
+StarMaaMovies.in~Telugu	Star Maa Movies HD	Telugu	Movies	logo	1	da86m1sqpm3o0.cloudfront.net	hls
+StarSports2Telugu.in~Telugu	Star Sports 2 Telugu HD	Telugu	Sports	logo	1	real-vk.proxy.nellaiiptv.com	hls
+StudioOnePlus.in~Telugu	Studio One +	Telugu	Movies	logo	1	cdn.pishow.tv	hls
+StudioYuva.in~Telugu	Studio Yuva	Telugu	Entertainment	logo	1	mumt01.tangotv.in	hls
+SubhavaarthaTV.in~Telugu	Subhavaartha TV	Telugu	Religious	logo	1	2mk9qae4rwyb-hls-live.wmncdn.net	hls
+SVBC.in~Telugu	SVBC	Telugu	Religious	logo	1	player.mslivestream.net	hls
+SwatantraTV.in~Telugu	Swatantra TV	Telugu	News	logo	1	mumbai-edge.smartplaytv.in	hls
+TNews.in~Telugu	T News	Telugu	News	logo	1	cdn.pishow.tv	hls
+TeluguOne.in~Telugu	Telugu One	Telugu	Entertainment	logo	1	teluguone-yupptv.vgcdn.net	hls
+TollyTV.in~Telugu	Tolly TV	Telugu	Movies	logo	1	streams2.sofast.tv	hls
+TV5News.in~Telugu	TV5 News	Telugu	News	logo	1	yuppmedtaorire.akamaized.net	hls
+TV9Telugu.in~Telugu	TV9 Telugu	Telugu	News	logo	1	dyjmyiv3bp2ez.cloudfront.net	hls
+V6News.in~Telugu	V6 News	Telugu	News	logo	1	yuppmedtaorire.akamaized.net	hls
+VanithaTV.in~Telugu	Vanitha TV	Telugu	Entertainment	logo	1	mumt01.tangotv.in	hls
+VissaTV.in~Telugu	Vissa TV	Telugu	Entertainment	logo	1	mumt07.tangotv.in	hls
+WOWKidz.in~Telugu	WOW Kidz Telugu	Telugu	Animation;Kids	logo	1	yuppparoriglin.akamaized.net	hls
+ZeeTelugu.in~Telugu	Zee Telugu HD	Telugu	Entertainment	logo	1	raw.githubusercontent.com	hls
+ZeeTeluguNews.in~Telugu	Zee Telugu News	Telugu	News	logo	1	d116gfrn8orazi.cloudfront.net	hls
+4TVNews.in~Urdu	4TV News	Urdu	News	logo	1	fta.ektv.in	hls
+BharatExpress.in~Urdu	Bharat Express	Urdu	News	logo	1	mumt07.tangotv.in	hls
+ChannelWIN.in~Urdu	Channel WIN	Urdu	Religious	logo	1	cdn.pishow.tv	hls
+DDUrdu.in~Urdu	DD Urdu	Urdu	General	logo	1	cdn.pishow.tv	hls
+MunsifTV.in~Urdu	Munsif TV	Urdu	News	logo	1	live1.ottlive.co.in	hls
+News18DelhiNCRJK.in~Urdu	News18 Delhi NCR JK	Urdu	News	logo	1	n18syndication.akamaized.net	hls
+News18Urdu.in~Urdu	News18 Urdu	Urdu	News	logo	1	n18syndication.akamaized.net	hls
+PeaceTVUrdu.ae~Urdu	Peace TV Urdu	Urdu	Religious	logo	1	dzkyvlfyge.erbvr.com	hls
+SalaamTV.in~Urdu	Salaam TV	Urdu	News	logo	1	d2o3r1shda7xvv.cloudfront.net	hls
+ZainabiaChannel.in~Urdu	Zainabia Channel	Urdu	Religious		1	zainabia.livebox.co.in	hls

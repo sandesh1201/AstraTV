@@ -14,10 +14,11 @@ final class PlaybackSourceResolver {
         Resolution(Kind kind,Library.Title title,String reason){this.kind=kind;this.title=title;this.reason=reason;}
         boolean playable(){return kind!=Kind.NOT_AVAILABLE;}
     }
-    private static final Set<String> DIRECT=new HashSet<>(Arrays.asList("library","samples",EinthusanSimulatedProvider.ID));
+    private static final Set<String> DIRECT=new HashSet<>(Arrays.asList("library","samples"));
     /** Catalog metadata sources: they describe titles but never supply a stream. */
     static final Set<String> METADATA=Collections.unmodifiableSet(new HashSet<>(Arrays.asList("tmdb",WikidataFilmSource.PROVIDER,TvMazeSource.PROVIDER,"thesportsdb")));
     static boolean metadataOnly(Library.Title t){return t!=null&&METADATA.contains(t.provider);}
+    private static String ago(long at){long h=Math.max(0,(System.currentTimeMillis()-at)/3_600_000L);return h<1?"within the hour":h<48?h+" h ago":(h/24)+" days ago";}
     private final CatalogStorage store;
     PlaybackSourceResolver(CatalogStorage store){this.store=store;}
 
@@ -26,6 +27,8 @@ final class PlaybackSourceResolver {
         Library.Title t=c.title;
         if(CatalogItem.EVENT.equals(c.kind))return new Resolution(Kind.NOT_AVAILABLE,null,"Saandio has no broadcast rights for this event. Check the official broadcaster.");
         if(CatalogItem.CHANNEL.equals(c.kind)){
+            if("failed".equals(c.health)&&c.healthFails>=CatalogSyncCoordinator.RETIRE_AFTER_FAILS)
+                return new Resolution(Kind.CHANNEL,t,"The last "+c.healthFails+" playback checks failed"+(c.healthOkAt>0?"; it last answered "+ago(c.healthOkAt):"; it has never answered a check")+". The channel may be offline or region-locked.");
             if("failed".equals(c.health))return new Resolution(Kind.CHANNEL,t,"Last playback check failed. The channel may be offline or region-locked.");
             return new Resolution(Kind.CHANNEL,t,"ok".equals(c.health)?"Stream answered the last playback check.":"Stream has not been checked yet.");
         }

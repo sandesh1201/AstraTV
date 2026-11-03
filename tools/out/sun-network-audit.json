@@ -1,0 +1,369 @@
+{
+  "capturedAt": "2026-11-03T07:23:35.709Z",
+  "channels": [
+    {
+      "name": "Sun TV",
+      "language": "Tamil",
+      "inSaandio": [],
+      "iptvOrgDatabaseIds": [
+        "SunTV.in"
+      ],
+      "logoInDatabase": false,
+      "blocklisted": []
+    },
+    {
+      "name": "Sun TV HD",
+      "language": "Tamil",
+      "inSaandio": [
+        {
+          "id": "SunTV.in~Tamil",
+          "streams": 1,
+          "hosts": [
+            "d2px1d6ssc60fw.cloudfront.net"
+          ]
+        }
+      ],
+      "iptvOrgDatabaseIds": [],
+      "logoInDatabase": false,
+      "blocklisted": []
+    },
+    {
+      "name": "KTV",
+      "language": "Tamil",
+      "inSaandio": [],
+      "iptvOrgDatabaseIds": [
+        "KTV.in"
+      ],
+      "logoInDatabase": false,
+      "blocklisted": [
+        "KTV.in (dmca https://github.com/iptv-org/iptv/issues/34901)"
+      ]
+    },
+    {
+      "name": "KTV HD",
+      "language": "Tamil",
+      "inSaandio": [],
+      "iptvOrgDatabaseIds": [],
+      "logoInDatabase": false,
+      "blocklisted": []
+    },
+    {
+      "name": "Sun Music",
+      "language": "Tamil",
+      "inSaandio": [],
+      "iptvOrgDatabaseIds": [
+        "SunMusic.in"
+      ],
+      "logoInDatabase": false,
+      "blocklisted": [
+        "SunMusic.in (dmca https://github.com/iptv-org/iptv/issues/34901)"
+      ]
+    },
+    {
+      "name": "Sun Music HD",
+      "language": "Tamil",
+      "inSaandio": [],
+      "iptvOrgDatabaseIds": [],
+      "logoInDatabase": false,
+      "blocklisted": []
+    },
+    {
+      "name": "Sun News",
+      "language": "Tamil",
+      "inSaandio": [],
+      "iptvOrgDatabaseIds": [
+        "SunNews.in"
+      ],
+      "logoInDatabase": false,
+      "blocklisted": [
+        "SunNews.in (dmca https://github.com/iptv-org/iptv/issues/34901)"
+      ]
+    },
+    {
+      "name": "Adithya TV",
+      "language": "Tamil",
+      "inSaandio": [],
+      "iptvOrgDatabaseIds": [
+        "AdithyaTV.in"
+      ],
+      "logoInDatabase": false,
+      "blocklisted": [
+        "AdithyaTV.in (dmca https://github.com/iptv-org/iptv/issues/34901)"
+      ]
+    },
+    {
+      "name": "Chutti TV",
+      "language": "Tamil",
+      "inSaandio": [],
+      "iptvOrgDatabaseIds": [
+        "ChuttiTV.in"
+      ],
+      "logoInDatabase": false,
+      "blocklisted": [
+        "ChuttiTV.in (dmca https://github.com/iptv-org/iptv/issues/34901)"
+      ]
+    },
+    {
+      "name": "Sun Life",
+      "language": "Tamil",
+      "inSaandio": [],
+      "iptvOrgDatabaseIds": [
+        "SunLife.in"
+      ],
+      "logoInDatabase": false,
+      "blocklisted": [
+        "SunLife.in (dmca https://github.com/iptv-org/iptv/issues/34901)"
+      ]
+    },
+    {
+      "name": "Gemini TV",
+      "language": "Telugu",
+      "inSaandio": [],
+      "iptvOrgDatabaseIds": [
+        "GeminiTV.in"
+      ],
+      "logoInDatabase": false,
+      "blocklisted": []
+    },
+    {
+      "name": "Gemini TV HD",
+      "language": "Telugu",
+      "inSaandio": [],
+      "iptvOrgDatabaseIds": [],
+      "logoInDatabase": false,
+      "blocklisted": []
+    },
+    {
+      "name": "Gemini Movies",
+      "language": "Telugu",
+      "inSaandio": [],
+      "iptvOrgDatabaseIds": [
+        "GeminiMovies.in"
+      ],
+      "logoInDatabase": false,
+      "blocklisted": []
+    },
+    {
+      "name": "Gemini Movies HD",
+      "language": "Telugu",
+      "inSaandio": [],
+      "iptvOrgDatabaseIds": [],
+      "logoInDatabase": false,
+      "blocklisted": []
+    },
+    {
+      "name": "Gemini Music",
+      "language": "Telugu",
+      "inSaandio": [],
+      "iptvOrgDatabaseIds": [
+        "GeminiMusic.in"
+      ],
+      "logoInDatabase": false,
+      "blocklisted": []
+    },
+    {
+      "name": "Gemini Music HD",
+      "language": "Telugu",
+      "inSaandio": [],
+      "iptvOrgDatabaseIds": [],
+      "logoInDatabase": false,
+      "blocklisted": []
+    },
+    {
+      "name": "Gemini Comedy",
+      "language": "Telugu",
+      "inSaandio": [],
+      "iptvOrgDatabaseIds": [
+        "GeminiComedy.in"
+      ],
+      "logoInDatabase": false,
+      "blocklisted": []
+    },
+    {
+      "name": "Kushi TV",
+      "language": "Telugu",
+      "inSaandio": [],
+      "iptvOrgDatabaseIds": [
+        "KushiTV.in"
+      ],
+      "logoInDatabase": false,
+      "blocklisted": [
+        "KushiTV.in (dmca https://github.com/iptv-org/iptv/issues/34901)"
+      ]
+    },
+    {
+      "name": "Gemini Life",
+      "language": "Telugu",
+      "inSaandio": [],
+      "iptvOrgDatabaseIds": [
+        "GeminiLife.in"
+      ],
+      "logoInDatabase": false,
+      "blocklisted": []
+    },
+    {
+      "name": "Udaya TV",
+      "language": "Kannada",
+      "inSaandio": [],
+      "iptvOrgDatabaseIds": [],
+      "logoInDatabase": false,
+      "blocklisted": []
+    },
+    {
+      "name": "Udaya TV HD",
+      "language": "Kannada",
+      "inSaandio": [],
+      "iptvOrgDatabaseIds": [],
+      "logoInDatabase": false,
+      "blocklisted": []
+    },
+    {
+      "name": "Udaya Movies",
+      "language": "Kannada",
+      "inSaandio": [],
+      "iptvOrgDatabaseIds": [],
+      "logoInDatabase": false,
+      "blocklisted": []
+    },
+    {
+      "name": "Udaya Music",
+      "language": "Kannada",
+      "inSaandio": [],
+      "iptvOrgDatabaseIds": [],
+      "logoInDatabase": false,
+      "blocklisted": []
+    },
+    {
+      "name": "Udaya Comedy",
+      "language": "Kannada",
+      "inSaandio": [],
+      "iptvOrgDatabaseIds": [],
+      "logoInDatabase": false,
+      "blocklisted": []
+    },
+    {
+      "name": "Chintu TV",
+      "language": "Kannada",
+      "inSaandio": [],
+      "iptvOrgDatabaseIds": [
+        "ChintuTV.in"
+      ],
+      "logoInDatabase": false,
+      "blocklisted": [
+        "ChintuTV.in (dmca https://github.com/iptv-org/iptv/issues/34901)"
+      ]
+    },
+    {
+      "name": "Surya TV",
+      "language": "Malayalam",
+      "inSaandio": [],
+      "iptvOrgDatabaseIds": [],
+      "logoInDatabase": false,
+      "blocklisted": []
+    },
+    {
+      "name": "Surya TV HD",
+      "language": "Malayalam",
+      "inSaandio": [],
+      "iptvOrgDatabaseIds": [],
+      "logoInDatabase": false,
+      "blocklisted": []
+    },
+    {
+      "name": "Surya Movies",
+      "language": "Malayalam",
+      "inSaandio": [],
+      "iptvOrgDatabaseIds": [],
+      "logoInDatabase": false,
+      "blocklisted": []
+    },
+    {
+      "name": "Surya Music",
+      "language": "Malayalam",
+      "inSaandio": [],
+      "iptvOrgDatabaseIds": [],
+      "logoInDatabase": false,
+      "blocklisted": []
+    },
+    {
+      "name": "Surya Comedy",
+      "language": "Malayalam",
+      "inSaandio": [],
+      "iptvOrgDatabaseIds": [],
+      "logoInDatabase": false,
+      "blocklisted": []
+    },
+    {
+      "name": "Kochu TV",
+      "language": "Malayalam",
+      "inSaandio": [],
+      "iptvOrgDatabaseIds": [
+        "KochuTV.in"
+      ],
+      "logoInDatabase": false,
+      "blocklisted": [
+        "KochuTV.in (dmca https://github.com/iptv-org/iptv/issues/34901)"
+      ]
+    },
+    {
+      "name": "Sun Bangla",
+      "language": "Bengali",
+      "inSaandio": [],
+      "iptvOrgDatabaseIds": [
+        "SunBangla.in"
+      ],
+      "logoInDatabase": false,
+      "blocklisted": [
+        "SunBangla.in (dmca https://github.com/iptv-org/iptv/issues/34901)"
+      ]
+    },
+    {
+      "name": "Sun Bangla HD",
+      "language": "Bengali",
+      "inSaandio": [],
+      "iptvOrgDatabaseIds": [],
+      "logoInDatabase": false,
+      "blocklisted": []
+    },
+    {
+      "name": "Sun Marathi",
+      "language": "Marathi",
+      "inSaandio": [],
+      "iptvOrgDatabaseIds": [
+        "SunMarathi.in"
+      ],
+      "logoInDatabase": false,
+      "blocklisted": [
+        "SunMarathi.in (dmca https://github.com/iptv-org/iptv/issues/34901)"
+      ]
+    },
+    {
+      "name": "Sun Marathi HD",
+      "language": "Marathi",
+      "inSaandio": [],
+      "iptvOrgDatabaseIds": [],
+      "logoInDatabase": false,
+      "blocklisted": []
+    },
+    {
+      "name": "Sun Neo",
+      "language": "Hindi",
+      "inSaandio": [],
+      "iptvOrgDatabaseIds": [
+        "SunNeo.in"
+      ],
+      "logoInDatabase": false,
+      "blocklisted": [
+        "SunNeo.in (dmca https://github.com/iptv-org/iptv/issues/34901)"
+      ]
+    },
+    {
+      "name": "Sun Neo HD",
+      "language": "Hindi",
+      "inSaandio": [],
+      "iptvOrgDatabaseIds": [],
+      "logoInDatabase": false,
+      "blocklisted": []
+    }
+  ]
+}

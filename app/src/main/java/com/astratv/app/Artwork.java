@@ -15,11 +15,15 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Artwork loading sized for the view it lands in. Newest requests run first (the cards the viewer
- * is looking at), identical requests share one download, recycled cards cancel their request, and
- * memory and disk caches are bounded.
+ * is looking at), identical requests share one download, recycled cards cancel their request,
+ * memory and disk caches are bounded, transient failures get two delayed retries and URLs that
+ * keep failing are not requested again for a while.
  */
 final class Artwork {
     interface Callback{void ready(Bitmap bitmap);}
+    /** Outcome for a view that registered a listener; loading is implied until one of these arrives. */
+    interface StateListener{void onArtwork(int state);}
+    static final int LOADED=1,FAILED=2,MISSING=3;
     /** Decode targets in pixels. Posters on cards never need more than this; backdrops only on hero/detail screens. */
     static final int POSTER_W=342,POSTER_H=513,BACKDROP_W=1280,BACKDROP_H=720;
     private static final int MAX_QUEUE=48;
@@ -29,25 +33,38 @@ final class Artwork {
     private static final LruCache<String,Bitmap> CACHE=new LruCache<String,Bitmap>((int)Math.min(32L*1024*1024,Runtime.getRuntime().maxMemory()/8)){@Override protected int sizeOf(String key,Bitmap b){return b.getAllocationByteCount();}};
     private static final Map<String,Request> INFLIGHT=new HashMap<>();
     private static final AtomicBoolean TRIMMED=new AtomicBoolean(false);
+    static final ArtworkFailures FAILURES=new ArtworkFailures();
     static{IO.allowCoreThreadTimeOut(true);}
 
+    /** Download failure that says whether retrying could help. */
+    static final class ArtworkException extends IOException{
+        final boolean definitive;
+        ArtworkException(String message,boolean definitive){super(message);this.definitive=definitive;}
+    }
     private static final class Request implements Runnable{
-        final String url,key;final int w,h;final boolean opaque;final Context context;
+        final String url,key;final int w,h;final boolean opaque;final Context context;int attempt;
         final List<WeakReference<ImageView>> views=new ArrayList<>();final List<Callback> callbacks=new ArrayList<>();
         Request(Context context,String url,String key,int w,int h,boolean opaque){this.context=context;this.url=url;this.key=key;this.w=w;this.h=h;this.opaque=opaque;}
         boolean wanted(){if(!callbacks.isEmpty())return true;for(WeakReference<ImageView> r:views){ImageView v=r.get();if(v!=null&&key.equals(v.getTag(R.id.artwork_key)))return true;}return false;}
         @Override public void run(){
             boolean wanted;synchronized(INFLIGHT){wanted=wanted();if(!wanted)INFLIGHT.remove(key);}
             if(!wanted)return;
-            Bitmap bitmap=null;
-            try{byte[] data=read(context,url);bitmap=decode(data,w,h,opaque);}catch(Exception ignored){/* card keeps its text fallback */}
-            if(bitmap!=null)CACHE.put(key,bitmap);
+            Bitmap bitmap=null;boolean definitive=false,timeout=false;
+            try{byte[] data=read(context,url);bitmap=decode(data,w,h,opaque);if(bitmap==null){definitive=true;disk(context,url).delete();}}
+            catch(ArtworkException e){definitive=e.definitive;}
+            catch(SocketTimeoutException e){timeout=true;}
+            catch(Exception ignored){/* connection-level failure: transient */}
+            if(bitmap==null&&!definitive){
+                long delay=ArtworkFailures.retryDelayMs(attempt);
+                if(delay>=0){attempt++;Diagnostics.get().imageRetries.incrementAndGet();MAIN.postDelayed(()->{try{IO.execute(this);}catch(RejectedExecutionException e){synchronized(INFLIGHT){INFLIGHT.remove(key);}}},delay);return;}
+            }
+            Diagnostics.get().imageResult(bitmap!=null,timeout);
+            if(bitmap!=null)CACHE.put(key,bitmap);else FAILURES.failed(url,definitive,System.currentTimeMillis());
             Bitmap result=bitmap;List<WeakReference<ImageView>> targets;List<Callback> done;
             synchronized(INFLIGHT){INFLIGHT.remove(key);targets=new ArrayList<>(views);done=new ArrayList<>(callbacks);}
-            if(result==null)return;
             MAIN.post(()->{
-                for(WeakReference<ImageView> r:targets){ImageView v=r.get();if(v!=null&&key.equals(v.getTag(R.id.artwork_key)))show(v,result,true);}
-                for(Callback c:done)c.ready(result);
+                for(WeakReference<ImageView> r:targets){ImageView v=r.get();if(v==null||!key.equals(v.getTag(R.id.artwork_key)))continue;if(result!=null)show(v,result,true);else report(v,FAILED);}
+                if(result!=null)for(Callback c:done)c.ready(result);
             });
         }
     }
@@ -66,12 +83,17 @@ final class Artwork {
         boolean large=view.getLayoutParams()!=null&&view.getLayoutParams().width==-1&&view.getLayoutParams().height>TvTheme_dp(view,300);
         load(view,url,large?BACKDROP_W:POSTER_W,large?BACKDROP_H:POSTER_H,callback);
     }
+    /** Card art: reports LOADED, FAILED (after retries, or a known-broken URL) or MISSING (no usable URL) to {@code listener}. */
+    static void loadCard(ImageView view,String url,int w,int h,StateListener listener){
+        view.setTag(R.id.artwork_listener,listener);load(view,url,w,h,(Callback)null);
+    }
     static void load(ImageView view,String url,int w,int h,Callback callback){
         String key=key(url,w,h);
-        if(key.equals(view.getTag(R.id.artwork_key))&&view.getDrawable()!=null){if(callback!=null){Bitmap b=CACHE.get(key);if(b!=null)callback.ready(b);}return;}
+        if(key.equals(view.getTag(R.id.artwork_key))&&view.getDrawable()!=null){report(view,LOADED);if(callback!=null){Bitmap b=CACHE.get(key);if(b!=null)callback.ready(b);}return;}
         view.setTag(R.id.artwork_key,key);view.setTag(url);view.setImageDrawable(null);view.setBackgroundColor(Color.TRANSPARENT);
-        if(!Library.https(url))return;
+        if(!valid(url)){report(view,MISSING);return;}
         Bitmap cached=CACHE.get(key);if(cached!=null){show(view,cached,false);if(callback!=null)callback.ready(cached);return;}
+        if(FAILURES.known(url,System.currentTimeMillis())){Diagnostics.get().imagesSkipped.incrementAndGet();report(view,FAILED);return;}
         trimDiskOnce(view.getContext());
         if(view.isLaidOut()&&view.isShown()){enqueue(view,url,key,w,h,callback);return;}
         ViewTreeObserver.OnPreDrawListener listener=new ViewTreeObserver.OnPreDrawListener(){
@@ -85,15 +107,20 @@ final class Artwork {
         };view.getViewTreeObserver().addOnPreDrawListener(listener);
     }
     /** Called when a card is recycled; queued work for it is skipped unless another view wants the same image. */
-    static void cancel(ImageView view){view.setTag(R.id.artwork_key,null);view.setTag(null);view.setImageDrawable(null);}
+    static void cancel(ImageView view){view.setTag(R.id.artwork_key,null);view.setTag(R.id.artwork_listener,null);view.setTag(null);view.setImageDrawable(null);}
     /** Warms the cache for the next card or two only; callers keep prefetch shallow. */
     static void prefetch(Context context,String url){
-        if(!Library.https(url))return;String key=key(url,POSTER_W,POSTER_H);if(CACHE.get(key)!=null)return;
+        if(!valid(url)||FAILURES.known(url,System.currentTimeMillis()))return;String key=key(url,POSTER_W,POSTER_H);if(CACHE.get(key)!=null)return;
         synchronized(INFLIGHT){if(INFLIGHT.containsKey(key))return;Request r=new Request(context.getApplicationContext(),url,key,POSTER_W,POSTER_H,opaque(url));r.callbacks.add(b->{});INFLIGHT.put(key,r);IO.execute(r);}
     }
     static Bitmap cached(String url,int w,int h){return CACHE.get(key(url,w,h));}
     static void trimMemory(int level){if(level>=android.content.ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW)CACHE.trimToSize(CACHE.maxSize()/2);if(level>=android.content.ComponentCallbacks2.TRIM_MEMORY_COMPLETE)CACHE.evictAll();}
+    /** Memory cache use and limit in bytes, and the number of URLs currently skipped as broken. */
+    static long[] stats(){return new long[]{CACHE.size(),CACHE.maxSize(),FAILURES.size()};}
 
+    /** HTTPS with a host and a file name; rejects paths built from a missing value (".../w342null", ".../w342"). */
+    static boolean valid(String url){return ArtworkFailures.validUrl(url);}
+    private static void report(ImageView view,int state){Object l=view.getTag(R.id.artwork_listener);if(l instanceof StateListener)((StateListener)l).onArtwork(state);}
     private static void enqueue(ImageView view,String url,String key,int w,int h,Callback callback){
         boolean opaque=w<=POSTER_W*2&&opaque(url);
         synchronized(INFLIGHT){
@@ -104,7 +131,7 @@ final class Artwork {
         }
     }
     private static void show(ImageView v,Bitmap b,boolean fade){
-        v.setBackgroundColor(0xff1c2431);v.setImageBitmap(b);
+        v.setBackgroundColor(0xff1c2431);v.setImageBitmap(b);report(v,LOADED);
         if(fade&&!com.astratv.app.coreui.TvTheme.reduced(v.getContext())){v.setAlpha(0f);v.animate().alpha(1f).setDuration(180).start();}else v.setAlpha(1f);
     }
     private static String key(String url,int w,int h){return w+"x"+h+"|"+url;}
@@ -140,10 +167,12 @@ final class Artwork {
     }
     private static byte[] download(String url)throws IOException{
         String address=url;for(int hop=0;hop<4;hop++){
-            if(!Library.https(address))throw new IOException("Unsupported artwork URL");HttpURLConnection c=(HttpURLConnection)new URL(address).openConnection();c.setConnectTimeout(6000);c.setReadTimeout(6000);c.setInstanceFollowRedirects(false);c.setRequestProperty("User-Agent","SaandioTV/0.4");
-            try{int status=c.getResponseCode();if(status>=300&&status<400){String location=c.getHeaderField("Location");if(location==null)throw new IOException("Invalid artwork redirect");address=ProviderParser.absolute(address,location);continue;}if(status!=200||c.getContentLengthLong()>5*1024*1024)throw new IOException("Artwork unavailable");
-                try(InputStream in=c.getInputStream();ByteArrayOutputStream out=new ByteArrayOutputStream()){byte[] buf=new byte[8192];int n;while((n=in.read(buf))!=-1){if(out.size()+n>5*1024*1024)throw new IOException("Artwork too large");out.write(buf,0,n);}return out.toByteArray();}
+            if(!Library.https(address))throw new ArtworkException("Unsupported artwork URL",true);HttpURLConnection c=(HttpURLConnection)new URL(address).openConnection();c.setConnectTimeout(6000);c.setReadTimeout(6000);c.setInstanceFollowRedirects(false);c.setRequestProperty("User-Agent","SaandioTV/0.4");
+            try{int status=c.getResponseCode();if(status>=300&&status<400){String location=c.getHeaderField("Location");if(location==null)throw new ArtworkException("Invalid artwork redirect",true);address=ProviderParser.absolute(address,location);continue;}
+                if(status!=200)throw new ArtworkException("Artwork unavailable (HTTP "+status+")",ArtworkFailures.definitive(status));
+                if(c.getContentLengthLong()>5*1024*1024)throw new ArtworkException("Artwork too large",true);
+                try(InputStream in=c.getInputStream();ByteArrayOutputStream out=new ByteArrayOutputStream()){byte[] buf=new byte[8192];int n;while((n=in.read(buf))!=-1){if(out.size()+n>5*1024*1024)throw new ArtworkException("Artwork too large",true);out.write(buf,0,n);}return out.toByteArray();}
             }finally{c.disconnect();}
-        }throw new IOException("Artwork redirect limit");
+        }throw new ArtworkException("Artwork redirect limit",true);
     }
 }

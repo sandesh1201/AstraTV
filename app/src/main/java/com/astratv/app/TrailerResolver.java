@@ -26,11 +26,17 @@ public final class TrailerResolver {
     public static boolean youtubeEmbed(String url){
         try{URI u=new URI(url);String host=u.getHost()==null?"":u.getHost().toLowerCase(java.util.Locale.ROOT);return "https".equalsIgnoreCase(u.getScheme())&&(host.equals("www.youtube-nocookie.com")||host.equals("youtube-nocookie.com"));}catch(Exception e){return false;}
     }
+    /**
+     * Hosts the official YouTube embedded player needs (player code, media, thumbnails, and the
+     * Google ad and measurement services the YouTube API terms forbid blocking). Everything else is refused.
+     */
+    private static final String[] PLAYER_DOMAINS={"youtube.com","youtube-nocookie.com","ytimg.com","googlevideo.com","gstatic.com","google.com","googleapis.com",
+        "doubleclick.net","googlesyndication.com","googleadservices.com","ggpht.com","googleusercontent.com"};
     public static boolean youtubePlayerResource(String url){
         try{URI u=new URI(url);String host=u.getHost()==null?"":u.getHost().toLowerCase(java.util.Locale.ROOT);
-            if(!"https".equalsIgnoreCase(u.getScheme()))return false;
-            return host.equals("www.youtube-nocookie.com")||host.equals("youtube-nocookie.com")||host.endsWith(".youtube-nocookie.com")
-                ||host.equals("i.ytimg.com")||host.endsWith(".ytimg.com")||host.endsWith(".googlevideo.com")||host.equals("www.gstatic.com")||host.equals("gstatic.com");
+            if(!"https".equalsIgnoreCase(u.getScheme())||u.getUserInfo()!=null)return false;
+            for(String d:PLAYER_DOMAINS)if(host.equals(d)||host.endsWith("."+d))return true;
+            return false;
         }catch(Exception e){return false;}
     }
 }

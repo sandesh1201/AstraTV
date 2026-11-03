@@ -13,12 +13,25 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 final class TmdbCatalogSource implements CatalogSource {
     static final String MOVIES="tmdb.movies",TV="tmdb.tv";
+    /**
+     * Sort modes stay distinct: TRENDING is TMDB's weekly trending list, POPULAR its current
+     * popularity ranking, TRENDING_IN new Indian releases ordered by popularity, latest rows order by
+     * release date, and "Recently Added" (first seen by Saandio) is computed from the local store.
+     */
+    static final String ROW_TRENDING="movies.trending",ROW_POPULAR="movies.popular";
     static final String ROW_TRENDING_IN="movies.trending_in",ROW_RECENT_EPISODES="tv.recent_episodes",ROW_TV_NEW="tv.latest_updates";
     static final String[][] MOVIE_LANGUAGES={{"te","Telugu"},{"ta","Tamil"},{"hi","Hindi"},{"ml","Malayalam"},{"kn","Kannada"},{"en","Hollywood"}};
     static final String[][] SERIAL_LANGUAGES={{"te","Telugu"},{"ta","Tamil"},{"hi","Hindi"}};
     static final String IMG="https://image.tmdb.org/t/p/";
     static String latestRow(String code){return "movies.latest."+code;}
     static String serialRow(String code){return "tv.serials."+code;}
+    /** Original-language code a regional row promises, or empty for rows without one. */
+    static String expectedLanguage(String rowId){
+        String latest=latestRow(""),serial=serialRow("");
+        return rowId.startsWith(latest)?rowId.substring(latest.length()):rowId.startsWith(serial)?rowId.substring(serial.length()):"";
+    }
+    /** Discover filters are trusted but verified: a title whose original language differs from the row's is dropped. */
+    static boolean languageMatches(String expected,CatalogItem c){return expected.isEmpty()||c.languageCode.isEmpty()||expected.equals(c.languageCode);}
     interface Route{TmdbRoute get();}
     interface Today{LocalDate today();}
     static final class Page{
@@ -42,6 +55,8 @@ final class TmdbCatalogSource implements CatalogSource {
         try{g=genreMap(http,tv?"tv":"movie");}catch(Exception e){g=Collections.emptyMap();}
         Map<String,String> rows=new LinkedHashMap<>();
         if(!tv){
+            rows.put(ROW_TRENDING,"/trending/movie/week?language=en-US");
+            rows.put(ROW_POPULAR,"/movie/popular?region=IN&language=en-US");
             rows.put(ROW_TRENDING_IN,"/discover/movie?include_adult=false&region=IN&with_release_type=2%7C3%7C4&release_date.gte="+today.today().minusDays(120)+"&release_date.lte="+d+"&sort_by=popularity.desc");
             for(String[] l:MOVIE_LANGUAGES){
                 String extra=l[0].equals("en")?"&with_origin_country=US&vote_count.gte=2":"";
@@ -55,11 +70,11 @@ final class TmdbCatalogSource implements CatalogSource {
         List<Batch> out=new ArrayList<>();Exception first=null;
         for(Map.Entry<String,String> row:rows.entrySet()){
             try{
-                List<CatalogItem> items=new ArrayList<>();boolean notModified=true;Set<String> seen=new HashSet<>();
+                List<CatalogItem> items=new ArrayList<>();boolean notModified=true;Set<String> seen=new HashSet<>();String language=expectedLanguage(row.getKey());
                 for(int page=1;page<=2;page++){
                     CatalogHttp.Result r=get(http,url(row.getValue()+"&page="+page));notModified&=r.notModified;
                     JSONObject body=new JSONObject(r.body);
-                    for(CatalogItem c:parse(body,tv,g))if(seen.add(c.key()))items.add(c);
+                    for(CatalogItem c:parse(body,tv,g))if(languageMatches(language,c)&&seen.add(c.key()))items.add(c);
                     if(body.optInt("total_pages",1)<=page)break;
                 }
                 if(row.getKey().equals(ROW_RECENT_EPISODES)&&!notModified)for(int i=0;i<Math.min(15,items.size());i++)try{lastEpisode(http,items.get(i));}catch(Exception ignored){/* row still lists the series */}

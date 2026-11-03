@@ -84,7 +84,7 @@ final class CatalogStore implements CatalogStorage {
         return PlaylistParser.stable(s.toString());
     }
     @Override public synchronized List<CatalogItem> row(String rowId,int limit){
-        return items("SELECT i.payload,i.first_seen,h.ok_at,h.fail_at FROM row_items r JOIN items i ON i.key=r.key LEFT JOIN health h ON h.key=i.key WHERE r.row_id=? ORDER BY r.pos LIMIT "+Math.max(1,limit),rowId);
+        return items("SELECT i.payload,i.first_seen,h.ok_at,h.fail_at,h.fails FROM row_items r JOIN items i ON i.key=r.key LEFT JOIN health h ON h.key=i.key WHERE r.row_id=? ORDER BY r.pos LIMIT "+Math.max(1,limit),rowId);
     }
     @Override public synchronized List<CatalogItem> recent(String kind,int limit){
         return items("SELECT i.payload,i.first_seen,NULL,NULL FROM items i WHERE i.kind=? AND EXISTS(SELECT 1 FROM row_items r WHERE r.key=i.key) ORDER BY i.first_seen DESC,i.release DESC LIMIT "+Math.max(1,limit),kind);
@@ -101,7 +101,8 @@ final class CatalogStore implements CatalogStorage {
         try(Cursor c=db().rawQuery(sql,args)){
             while(c.moveToNext()){
                 try{CatalogItem item=CatalogItem.from(new JSONObject(c.getString(0)));item.firstSeen=c.getLong(1);
-                    if(!c.isNull(2)||!c.isNull(3)){long ok=c.isNull(2)?0:c.getLong(2),fail=c.isNull(3)?0:c.getLong(3);item.health=ok>=fail&&ok>0?"ok":fail>0?"failed":"";item.healthCheckedAt=Math.max(ok,fail);}
+                    if(!c.isNull(2)||!c.isNull(3)){long ok=c.isNull(2)?0:c.getLong(2),fail=c.isNull(3)?0:c.getLong(3);item.health=ok>=fail&&ok>0?"ok":fail>0?"failed":"";item.healthCheckedAt=Math.max(ok,fail);item.healthOkAt=ok;}
+                    if(c.getColumnCount()>4&&!c.isNull(4))item.healthFails=c.getInt(4);
                     out.add(item);}
                 catch(Exception ignored){/* skip a corrupt row rather than lose the catalog */}
             }
@@ -139,6 +140,13 @@ final class CatalogStore implements CatalogStorage {
         Map<String,long[]> out=new HashMap<>();
         try(Cursor c=db().rawQuery("SELECT key,ok_at,fail_at,fails FROM health",null)){while(c.moveToNext())out.put(c.getString(0),new long[]{c.getLong(1),c.getLong(2),c.getLong(3)});}
         catch(Exception ignored){/* none */}
+        return out;
+    }
+    /** Saved catalog size by kind, for diagnostics. */
+    synchronized Map<String,Integer> counts(){
+        Map<String,Integer> out=new LinkedHashMap<>();
+        try(Cursor c=db().rawQuery("SELECT kind,COUNT(*) FROM items GROUP BY kind ORDER BY kind",null)){while(c.moveToNext())out.put(c.getString(0),c.getInt(1));}
+        catch(Exception ignored){/* empty */}
         return out;
     }
     /** Release years present in the synced catalog, newest first; drives the Year filter instead of a fixed list. */

@@ -21,46 +21,34 @@ public final class ProviderRepository {
         public final String name,url;public final Map<String,String> headers;
         public final JSONArray subtitles=new JSONArray();
         public String mimeType="";
+        /** Declared by authorized providers; defaults mean "not stated". expiresAt 0 = read from the signed URL, if any. */
+        public int height;public boolean available=true;public long expiresAt;
+        public String drmScheme="",drmLicenseUrl="";
+        public final List<String> audio=new ArrayList<>();public final Set<String> regions=new HashSet<>();
         Stream(String name,String url,Map<String,String> headers){this.name=name;this.url=url;this.headers=headers;}
     }
     public final ExecutorService io=Executors.newFixedThreadPool(4);
     private final SharedPreferences prefs;
     private final File cache;
     private final NetMirrorProvider netmirror;
-    private final MoviePlaylistProvider movies=new MoviePlaylistProvider();
     private final IndianTvProvider tv=new IndianTvProvider();
-    private final android.content.res.AssetManager assets;
-    private EinthusanSimulatedProvider simulation;
-    public ProviderRepository(Context c){prefs=c.getSharedPreferences("astra",0);cache=new File(c.getCacheDir(),"catalogs-v3");cache.mkdirs();netmirror=new NetMirrorProvider(prefs);assets=c.getAssets();}
-    synchronized EinthusanSimulatedProvider simulation()throws IOException{
-        if(simulation==null){
-            try(InputStream in=assets.open(EinthusanSimulatedProvider.FIXTURE)){simulation=new EinthusanSimulatedProvider(new SimulatedPartnerServer(read(in,512*1024)),EinthusanSimulatedProvider.SIM_TOKEN);}
-            catch(JSONException e){throw new IOException("Provider fixture is invalid",e);}
-        }
-        return simulation;
-    }
-    private Catalog simulatedCatalog(String search,int page)throws IOException{
-        try{LicensedProvider.Page p=simulation().catalog(new LicensedProvider.Query("",search,page,20));List<Library.Title> titles=CatalogSort.newestFirst(p.titles);return new Catalog(titles,titles.size()+" simulated titles · Creative Commons samples",false,titles.size(),p.page,p.hasMore());}
-        catch(LicensedProvider.ProviderException e){throw new IOException(e.getMessage(),e);}
-    }
+    public ProviderRepository(Context c){prefs=c.getSharedPreferences("astra",0);cache=new File(c.getCacheDir(),"catalogs-v3");cache.mkdirs();netmirror=new NetMirrorProvider(prefs);}
     public String language(String id){return prefs.getString("browse.language."+id,id.equals("movierulz")?"Telugu + Hindi":id.equals("news")?"Telugu":"All");}
     public String genre(String id){return prefs.getString("browse.genre."+id,"All");}
     public String endpoint(String id){return prefs.getString("provider."+id,"");}
-    public boolean enabled(String id){return prefs.getBoolean("addon."+id,!id.equals(EinthusanSimulatedProvider.ID));}
+    public boolean enabled(String id){return prefs.getBoolean("addon."+id,true);}
     public void configure(String id,String manifest)throws IOException{
         if(!manifest.isEmpty()&&(!Library.https(manifest)||!manifest.endsWith("/manifest.json")))throw new IOException("Enter an HTTPS URL ending in /manifest.json");
         prefs.edit().putString("provider."+id,manifest).apply();
         File f=new File(cache,id+".json");if(f.exists())f.delete();
     }
     public Catalog load(Library.Addon addon,String search,int page)throws Exception{
-        requireEnabled(addon.id);
+        requireAuthorized(addon.id);requireEnabled(addon.id);
         List<Library.Title> titles;
         try{
             Catalog catalog=null;
             if(!endpoint(addon.id).isEmpty())titles=manifestCatalog(addon,search,page);
             else if(Library.netmirror(addon.id))titles=netmirror.catalog(search,addon.id);
-            else if(addon.id.equals("movierulz")){catalog=movies.catalog(search,page,search.isEmpty()?language(addon.id):"All",search.isEmpty()?genre(addon.id):"All");titles=catalog.titles;}
-            else if(addon.id.equals(EinthusanSimulatedProvider.ID)){catalog=simulatedCatalog(search,page);titles=catalog.titles;}
             else if(addon.id.equals("news")){catalog=tv.catalog(search,page,search.isEmpty()?language(addon.id):"All",search.isEmpty()?genre(addon.id):"All");titles=catalog.titles;}
             else{
                 String url=addon.url+(page>1?"page/"+page+"/":"")+(search.isEmpty()?"":"?s="+encode(search));
@@ -73,14 +61,25 @@ public final class ProviderRepository {
             if(search.isEmpty()&&page==1)saveCatalog(addon.id,result);
             return result;
         }catch(Exception e){
-            if(search.isEmpty()&&page==1){Catalog saved=readCached(addon.id);if(saved!=null&&!saved.titles.isEmpty())return new Catalog(saved.titles,"Saved catalog · "+message(e),true,saved.total,1,saved.hasMore);}
+            if(search.isEmpty()&&page==1){Catalog saved=readCached(addon.id);if(saved!=null)saved.titles.removeIf(SunNetworkChannels::rightsAsserted);if(saved!=null&&!saved.titles.isEmpty())return new Catalog(saved.titles,"Saved catalog · "+message(e),true,saved.total,1,saved.hasMore);}
             throw e;
         }
     }
-    public List<Library.Title> cached(String id){return readCatalog(id);}
+    public List<Library.Title> cached(String id){
+        if(unauthorized(id))return new ArrayList<>();
+        List<Library.Title> out=new ArrayList<>(readCatalog(id));out.removeIf(SunNetworkChannels::rightsAsserted);return out;
+    }
+    /** Sources with no authorized catalog or playback access. Their saved lists are not shown and their links are not played. */
+    static boolean unauthorized(String providerId){return !unauthorizedReason(providerId).isEmpty();}
+    static String unauthorizedReason(String providerId){
+        if(MovieRulzCatalogProvider.ORIGIN.equals(providerId))return MovieRulzCatalogProvider.REASON;
+        if(TamilTvSerialProvider.LEGACY_ADDON.equals(providerId))return TamilTvSerialProvider.REASON;
+        if(TeluguStreamProvider.LEGACY_ADDON.equals(providerId))return TeluguStreamProvider.REASON;
+        return "";
+    }
+    private static void requireAuthorized(String providerId)throws IOException{if(unauthorized(providerId))throw new IOException(unauthorizedReason(providerId));}
     public Library.Title details(Library.Title t)throws Exception{
-        if(!enabled(t.provider))return t;
-        if(t.provider.equals(EinthusanSimulatedProvider.ID)){try{Library.Title full=simulation().details(t.id);if(full.poster.isEmpty())full.poster=t.poster;return full;}catch(LicensedProvider.ProviderException e){throw new IOException(e.getMessage(),e);}}
+        if(!enabled(t.provider)||unauthorized(t.provider))return t;
         String manifest=endpoint(t.provider);
         if(!manifest.isEmpty()){
             JSONObject data=new JSONObject(request(base(manifest)+"/meta/"+encode(t.type)+"/"+encode(t.id)+".json","").body);
@@ -109,12 +108,8 @@ public final class ProviderRepository {
         return out;
     }
     public List<Stream> streams(Library.Title t)throws Exception{
-        requireEnabled(t.provider);
-        if(t.provider.equals(EinthusanSimulatedProvider.ID)){
-            try{Library.Title full=simulation().withPlayback(Library.Title.from(t.json()));List<Stream> out=new ArrayList<>();for(int i=0;i<full.videos.length();i++){JSONObject v=full.videos.getJSONObject(i);out.add(new Stream(v.getString("name"),v.getString("url"),Collections.emptyMap()));}return out;}
-            catch(LicensedProvider.ProviderException e){throw new IOException(e.getMessage(),e);}
-        }
-        if((t.provider.equals("news")||t.provider.equals("movierulz"))&&t.videos.length()>0){List<Stream> out=new ArrayList<>();for(int i=0;i<t.videos.length();i++){JSONObject v=t.videos.getJSONObject(i);if(Library.https(v.optString("url")))out.add(new Stream(v.optString("name","Source"),v.getString("url"),PlaylistParser.safeHeaders(v.optJSONObject("headers"))));}if(!out.isEmpty())return out;}
+        requireAuthorized(t.provider);requireEnabled(t.provider);
+        if(t.provider.equals("news")&&t.videos.length()>0){List<Stream> out=new ArrayList<>();for(int i=0;i<t.videos.length();i++){JSONObject v=t.videos.getJSONObject(i);if(Library.https(v.optString("url")))out.add(new Stream(v.optString("name","Source"),v.getString("url"),PlaylistParser.safeHeaders(v.optJSONObject("headers"))));}if(!out.isEmpty())return out;}
         if(Library.https(t.url))return Collections.singletonList(new Stream("Direct playback",t.url,PlaylistParser.safeHeaders(t.headers)));
         String manifest=endpoint(t.provider);
         if(!manifest.isEmpty()){
@@ -133,6 +128,13 @@ public final class ProviderRepository {
         resolvePage(t.pageUrl,"",0,seen,out,deadline);
         if(out.isEmpty())throw new IOException("The host did not expose a supported direct video stream. This source may require an interactive browser, authentication or a host-specific adapter. No website will be opened.");
         return out;
+    }
+    /** A licensed partner's playback descriptor as a stream the player understands. */
+    static Stream stream(LicensedProvider.Playback p){
+        Stream s=new Stream(p.quality.isEmpty()?"Source · "+p.protocol.toUpperCase(Locale.ROOT):p.quality+" · "+p.protocol.toUpperCase(Locale.ROOT),p.url,Collections.emptyMap());
+        s.height=p.maxHeight;s.audio.addAll(p.audioLanguages);s.drmScheme=p.drm;
+        s.mimeType=p.protocol.equalsIgnoreCase("hls")?"application/x-mpegURL":p.protocol.equalsIgnoreCase("dash")?"application/dash+xml":p.protocol.equalsIgnoreCase("mp4")?"video/mp4":"";
+        return s;
     }
     private void resolvePage(String url,String referer,int depth,Set<String> seen,List<Stream> out,long deadline)throws Exception{
         if(depth>2||seen.size()>=7||System.nanoTime()>deadline||!seen.add(url))return;
@@ -153,7 +155,7 @@ public final class ProviderRepository {
         return episodes(t,season,1);
     }
     public List<Library.Title> episodes(Library.Title t,int season,int page)throws Exception{
-        requireEnabled(t.provider);
+        requireAuthorized(t.provider);requireEnabled(t.provider);
         if(Library.netmirror(t.provider)&&endpoint(t.provider).isEmpty())return netmirror.episodes(t,season);
         List<Library.Title> out=new ArrayList<>();
         if((t.provider.equals("tamil")||t.provider.equals("telugu"))&&!t.seriesUrl.isEmpty()){
@@ -176,7 +178,7 @@ public final class ProviderRepository {
         if(e instanceof java.net.UnknownHostException)return "The source host could not be reached.";
         if(e instanceof javax.net.ssl.SSLException)return "A secure connection to this source could not be established.";
         if(e instanceof org.json.JSONException)return "The source returned an unsupported data format.";
-        String m=e.getMessage();if(m!=null)for(String prefix:new String[]{"Source ","Provider ","NetMirror ","No ","The host ","This provider ","This manifest ","Only HTTPS ","Enter an HTTPS ","The device ","Too many ","Each video ","Maximum ","Catalog must ","This title ","The partner "})if(m.startsWith(prefix))return m;
+        String m=e.getMessage();if(m!=null)for(String prefix:new String[]{"Source ","Provider ","NetMirror ","No ","The host ","This provider ","This manifest ","Only HTTPS ","Enter an HTTPS ","The device ","Too many ","Each video ","Maximum ","Catalog must ","This title ","The partner ","The provider ","The playback ","This stream ","This TV ","This link ","This source ","Not available. ","Authorization required. "})if(m.startsWith(prefix))return m;
         return "This source is unavailable. Check your connection and provider settings.";
     }
     public static final class Response {public String body,url;public boolean media;Response(String body,String url,boolean media){this.body=body;this.url=url;this.media=media;}}

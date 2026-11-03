@@ -13,6 +13,8 @@ public final class Library {
         public String provider="library", providerName="Your library", type="movie";
         public String pageUrl="", poster="", background="", rating="";
         public String language="", group="", released="", seriesUrl="";
+        /** When the content provider says it added the title (yyyy-MM-dd); empty when it does not say. */
+        public String added="";
         public int season=1,episode=0;
         public JSONObject headers=new JSONObject();
         public JSONArray videos=new JSONArray(), seasons=new JSONArray();
@@ -23,7 +25,7 @@ public final class Library {
             return new JSONObject().put("id",id).put("title",name).put("description",description).put("url",url)
                 .put("cast",cast).put("year",year).put("genre",genre).put("provider",provider).put("providerName",providerName)
                 .put("type",type).put("pageUrl",pageUrl).put("poster",poster).put("background",background).put("rating",rating).put("videos",videos).put("seasons",seasons)
-                .put("language",language).put("group",group).put("released",released).put("seriesUrl",seriesUrl).put("season",season).put("episode",episode).put("headers",headers);
+                .put("language",language).put("group",group).put("released",released).put("seriesUrl",seriesUrl).put("season",season).put("episode",episode).put("headers",headers).put("added",added);
         }
         public static Title from(JSONObject o) throws JSONException {
             Title t=new Title(o.getString("id"),o.optString("title",o.optString("name")),o.optString("description"),o.optString("url"),
@@ -32,7 +34,7 @@ public final class Library {
             t.type=o.optString("type","movie");t.pageUrl=o.optString("pageUrl");t.poster=o.optString("poster");
             t.background=o.optString("background",t.poster);t.rating=o.optString("rating");
             if(o.optJSONArray("videos")!=null)t.videos=o.getJSONArray("videos");if(o.optJSONArray("seasons")!=null)t.seasons=o.getJSONArray("seasons");
-            t.language=o.optString("language");t.group=o.optString("group");t.released=o.optString("released");t.seriesUrl=o.optString("seriesUrl");t.season=o.optInt("season",1);t.episode=o.optInt("episode");
+            t.language=o.optString("language");t.group=o.optString("group");t.released=o.optString("released");t.seriesUrl=o.optString("seriesUrl");t.season=o.optInt("season",1);t.episode=o.optInt("episode");t.added=o.optString("added");
             if(o.optJSONObject("headers")!=null)t.headers=o.getJSONObject("headers");return t;
         }
         public String key(){return provider+":"+id;}
@@ -64,11 +66,10 @@ public final class Library {
         new Addon("netmirror","Netflix (NetMirror)","NetMirror · Netflix",""),
         new Addon("netmirror_pv","Prime (NetMirror)","NetMirror · Prime Video",""),
         new Addon("netmirror_hs","Hotstar (NetMirror)","NetMirror · Hotstar",""),
-        new Addon("movierulz","MovieRulz","Telugu & Hindi movies","https://www.5movierulz.green/"),
-        new Addon("tamil","TamilTVSerials","Tamil series & episodes","https://www.tamiltvserial.com/"),
-        new Addon("telugu","TeluguStream","Telugu series & episodes","https://telugustream.com/"),
-        new Addon("news","TV channels","Indian live TV · language & genre",""),
-        new Addon(EinthusanSimulatedProvider.ID,EinthusanSimulatedProvider.NAME,"Contract simulation · Creative Commons sample films · off by default",""));}
+        new Addon("movierulz","MovieRulz","Not authorized · no licensed catalog or playback","https://www.5movierulz.green/"),
+        new Addon(TamilTvSerialProvider.LEGACY_ADDON,"TamilTVSerials","Not authorized · re-posted broadcaster serials, no licensed feed","https://www.tamiltvserial.com/"),
+        new Addon(TeluguStreamProvider.LEGACY_ADDON,"TeluguStream","Not authorized · re-posted broadcaster serials, no licensed feed","https://telugustream.com/"),
+        new Addon("news","TV channels","Indian live TV · language & genre",""));}
     public static boolean netmirror(String id){return id.equals("netmirror")||id.equals("netmirror_pv")||id.equals("netmirror_hs");}
     public static String platform(String id){return id.equals("netmirror_pv")?"pv":id.equals("netmirror_hs")?"hs":"nf";}
     public static String providerName(String id){for(Addon a:addons())if(a.id.equals(id))return a.name;return "Your library";}

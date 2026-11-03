@@ -9,6 +9,8 @@ import java.util.*;
 public interface LicensedProvider {
     String id();
     String displayName();
+    /** Content provider whose catalog this is (e.g. "movierulz"). A movie tab only accepts its own origin. */
+    default String origin(){return id();}
     /** Why this provider may or may not be used. A provider without authorization must not be queried. */
     Authorization authorization();
     Page catalog(Query query)throws ProviderException;
@@ -36,7 +38,8 @@ public interface LicensedProvider {
         public boolean playableWithoutLicenseServer(){return drm.isEmpty();}
     }
     final class ProviderException extends Exception {
-        public enum Code{NOT_AUTHORIZED,UNAUTHENTICATED,REGION_UNAVAILABLE,RATE_LIMITED,NOT_FOUND,MALFORMED,UNSUPPORTED_DRM,UNAVAILABLE}
+        /** UNAVAILABLE: this title has nothing playable. SERVICE_ERROR: the partner service itself failed. */
+        public enum Code{NOT_AUTHORIZED,UNAUTHENTICATED,REGION_UNAVAILABLE,RATE_LIMITED,NOT_FOUND,MALFORMED,UNSUPPORTED_DRM,UNAVAILABLE,SERVICE_ERROR}
         public final Code code;
         public ProviderException(Code code,String message){super(message);this.code=code;}
     }

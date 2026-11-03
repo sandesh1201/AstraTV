@@ -25,6 +25,14 @@ final class NetworkStatus {
         }
         return any;
     }
+    /** The default network can reach the internet (validated where the platform reports it). */
+    static boolean online(Context context){
+        ConnectivityManager cm=(ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        if(cm==null)return true;
+        Network active=cm.getActiveNetwork();if(active==null)return false;
+        NetworkCapabilities caps=cm.getNetworkCapabilities(active);
+        return caps!=null&&caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET);
+    }
     static boolean vpnActive(Context context){
         ConnectivityManager cm=(ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
         if(cm==null)return false;

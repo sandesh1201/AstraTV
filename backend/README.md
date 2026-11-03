@@ -74,6 +74,42 @@ route the build uses.
 Real protection comes from the endpoint whitelist, CDN caching and, if needed, rate limiting or a WAF
 on the host.
 
+## Trailer search (`/api/trailer`)
+
+Background trailer previews need a YouTube video ID. The app first uses TMDB's official trailer
+(`videos` marked `official`, type `Trailer`, site YouTube). When TMDB has none, it asks
+`GET /api/trailer?q={title} {year} {language} official trailer`. The server runs the official YouTube
+Data API: `search.list` (`type=video`, `videoEmbeddable=true`, `videoSyndicated=true`, 8 results) and
+`videos.list` (`snippet,contentDetails,status`), and returns those items. The app then rejects
+reactions, reviews, fan edits, full movies, live streams, private or unembeddable or region-blocked
+videos and anything from a channel that does not look official, and caches the chosen ID.
+
+```bash
+vercel env add YOUTUBE_API_KEY production   # a YouTube Data API v3 key restricted to that API
+curl "https://<your-project>.vercel.app/api/trailer?q=Pushpa%202%202024%20Telugu%20official%20trailer"
+```
+
+Each search costs about 101 quota units (100 for `search.list`, 1 for `videos.list`). Responses are
+CDN-cached for a day and the app caches each result for 30 days (misses for 3), so quota use stays
+small. Without `YOUTUBE_API_KEY` the route answers `503 not_configured` and the app shows backdrops.
+The key never reaches the APK or the logs. Video playback uses YouTube's embedded IFrame player only;
+no media URLs are extracted.
+
+## Catch-Up TV listing (`/api/channel-uploads`)
+
+`GET /api/channel-uploads?channel={UC…}` lists the newest 25 public uploads of an **allowlisted**
+official broadcaster channel (Doordarshan / Prasar Bharati; see `ALLOWED_CHANNELS` in
+`lib/channel-uploads.js`, kept in sync with the app's `CatchupChannels.java` by a unit test). It uses
+`playlistItems.list` on the channel's uploads playlist and `videos.list`, drops videos from other
+channels, and returns title, description (500 chars), publish time, thumbnail, duration, region
+restriction and privacy. Any other channel id gets `403 channel_not_allowed`, so the route is not a
+general YouTube proxy. It uses the same `YOUTUBE_API_KEY` (2 quota units per call; CDN-cached for an
+hour). Episodes play in the YouTube app; no media URLs are extracted.
+
+```bash
+curl "https://<your-project>.vercel.app/api/channel-uploads?channel=UC5-_zkjKabYd7tsLucKsriw"
+```
+
 ## Developer keys
 
 `tmdb.api.key` in `local.properties` is compiled into **debug builds only** (release builds always get

@@ -90,9 +90,9 @@ test('only GET and HEAD are accepted', async () => {
 });
 
 test('health reports configuration without exposing values', () => {
-  const res = health({ TMDB_READ_ACCESS_TOKEN: TOKEN });
+  const res = health({ TMDB_READ_ACCESS_TOKEN: TOKEN, YOUTUBE_API_KEY: 'yt-secret' });
   const body = JSON.parse(res.body);
-  assert.deepStrictEqual(body, { ok: true, service: 'saandio-catalog-api', tmdbConfigured: true, auth: 'bearer', clientTokenRequired: false });
-  assert.ok(!res.body.includes(TOKEN));
+  assert.deepStrictEqual(body, { ok: true, service: 'saandio-catalog-api', tmdbConfigured: true, auth: 'bearer', trailerSearchConfigured: true, clientTokenRequired: false });
+  assert.ok(!res.body.includes(TOKEN) && !res.body.includes('yt-secret'));
   assert.strictEqual(JSON.parse(health({}).body).tmdbConfigured, false);
 });

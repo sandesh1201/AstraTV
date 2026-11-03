@@ -1,5 +1,161 @@
 # Verification · research edition 0.3
 
+## Turn 10 · Six tabs, Catch-Up episodes, Einthusan removal (2026-11-03)
+
+**Automated checks:** `gradlew.bat testDebugUnitTest assembleDebug lintDebug` passes.
+- 224 unit tests ran, 0 failed, 0 skipped (counted from the JUnit XML).
+- The 17 tests in the new `CatchupFeedTest` cover:
+  - the six tabs
+  - RSS parsing and language mismatches
+  - episodes without an official app
+  - no URLs stored, entity decoding
+  - the broadcaster table and date labels
+  - newest-first ordering and de-duplication
+  - show tiles and a show's episodes, Continue Watching
+  - Sun channels kept out of Catch-Up, 14-day retention
+  - feed paging, stopping at known episodes, an unreachable feed, HTTPS-only feeds
+- `EinthusanContractTest` was deleted with the integration. `MovieSourcesTest`, `ContentSourcesTest`, `PlaybackPolicyTest` and `PlaybackSourceResolverTest` were updated for it.
+- Backend: `node --test` passes 18 of 18.
+- Lint: 0 errors, 44 warnings.
+- Debug APK in `dist/SaandioTV-debug.apk`: 26,139,948 bytes, SHA-256 `935503E4B3A1ECD1B582997096FF8F9804F21A7ED20A0D13B853A7184976740D`.
+
+**Live feed check** (`tools/catchup-live-check/run.ps1`, using the app's own parser and pager):
+- TamilTVSerial: 3 pages (HTTP 200), 54 episodes, 47 shows. Every episode is mapped to an official app.
+- TeluguStream: 3 pages, 30 episodes, 30 shows. Every episode is mapped to an official app.
+- No stored item contains a URL.
+
+**Emulator session:** Pixel_9a phone AVD with the display forced to 1920x1080, not an Android TV image. Screenshots are in `build/emulator/`.
+- **Navigation:** the six tabs are shown in order.
+- **Movies:** shows the MovieRulz "not available" reason and "No titles to show", with no TMDB titles and no Play button.
+- **Catch-Up TV:**
+  - Live show tiles load from both sites, with poster fallback tiles.
+  - After the sync, the status lines read "Updated just now". This was fixed this turn; before, they stayed on the launch-time status.
+  - A show opens its page (language, broadcaster, latest episode, aired date, Watch in <app>) and its episode grid.
+  - An episode opens its details. Back returns to the show with focus kept.
+  - Watch in ZEE5, with ZEE5 not installed, opened the Play Store page. **No broadcaster app was installed, so no episode was watched.**
+- **Live TV:**
+  - Health badges load.
+  - "Jonack" played in `PlayerActivity`: the media session reported PLAYING and video frames were captured.
+  - Back returned to the Live TV grid.
+
+**Not run:**
+- No Android TV image or real TV, so D-pad focus was checked only through unit tests and earlier sessions.
+- Trailer previews were not re-checked; that code is unchanged this turn.
+- No broadcaster app was installed, so the handoff into Sun NXT, JioHotstar, ZEE5, ETV Win or Sony LIV was not seen.
+
+## Turn 9 · Content-source mapping, Einthusan HD Movies, Catch-Up providers (2026-11-03)
+
+**Automated checks:** `gradlew.bat testDebugUnitTest assembleDebug lintDebug` passes.
+- 222 unit tests ran, 0 failed (counted from the JUnit XML).
+- The 7 new ones are in `ContentSourcesTest`. They cover:
+  - both serial providers without a feed are not ready, fetch nothing and explain why; their rows map to their own sources
+  - the legacy `tamil` and `telugu` scrapers are blocked
+  - authorized-feed rows are newest first, with one tile per series, and drop other providers, future dates and missing dates
+  - Recently Aired merges both providers; Continue Watching keeps only them
+  - the archive flag is off by default
+  - HD filters offer only the years, genres and extra languages the provider listed, and filter correctly; no quality without a verified rendition
+  - each diagnostics category is classified correctly, unsupported sources are reported once, and URLs are redacted
+- `MovieSourcesTest` is updated for UNSUPPORTED and LOGIN_REQUIRED, including legacy AUTHORIZATION_REQUIRED rows.
+- `LiveTvRegressionTest` is updated for the owner-approved removal of the Sun restreams. The other golden channels are unchanged, the two restreams are absent, all 37 Sun entries appear as Sun NXT handoffs, and only Sun-owned ids are removed (1 new test).
+- Backend: `node --test` passes 18 of 18.
+- Lint: 0 errors and 43 warnings, none in the files changed this turn.
+- Debug APK in `dist/SaandioTV-debug.apk`: 26,140,037 bytes, SHA-256 prefix `9B70DF99B90497B8`.
+
+**Investigations run:** `tools/source-investigation.js` and `tools/source-investigation-2.js` (GitHub API, einthusan.tv pages and terms, Play Store, both serial sites). Results are in [REFERENCE_PROJECTS.md](REFERENCE_PROJECTS.md) and [LIVE_TV_AND_CATCHUP.md § 7](LIVE_TV_AND_CATCHUP.md).
+
+**Not run:**
+- No emulator or device session. The new Catch-Up rows, HD filters, Diagnostics panel and "Open einthusan.tv" button were **not checked on screen**.
+- No Einthusan, TamilTVSerial or TeluguStream title was listed or played. No authorized interface exists.
+- No new Sun channel was added or played. Turn 8's inventory is unchanged.
+- Live TV regressions rely on the unit tests (`LiveTvRegressionTest`, passing). No channel was played this turn.
+
+## Turn 8 · Sun Network, Live TV additions, Catch-Up TV (2026-11-03)
+
+**Automated checks:** `gradlew.bat testDebugUnitTest assembleDebug lintDebug` passes.
+- 214 unit tests ran, 0 failed (counted from the JUnit XML). The 26 new ones:
+  - `LiveTvRegressionTest` (3): real feed fixture checked against the audit snapshot, flags off gives the identical list, existing channels are unchanged in place, and the Sun duplicates are hidden.
+  - `LiveTvAdditionsTest` (14): 37 Sun entries with no stream URLs, dedup with renamed ids, a failing provider is ignored, LIVE needs a playback validation, continuity, signature stability, YouTube reference validation, flag dependency, XMLTV offsets, now/next and progress, mapping refuses ambiguous names, external entities.
+  - `CatchupTest` (9): title parsing, Shorts/promo/live/private/region/future filtering, newest-first rows, one entry per series in Latest Episodes, the full episode model round trip, Continue Watching, subscription tiles, and the app list matching the backend allowlist.
+- Backend: `node --test` passes 18 of 18, including 4 new `/api/channel-uploads` tests (allowlist, key never returned, 503 without a key, quota mapping).
+- Lint: 0 errors. `compileReleaseJavaWithJavac` passes.
+- Debug APK in `dist/SaandioTV-debug.apk`: 26,140,037 bytes, SHA-256 prefix `81300B1042587463`.
+
+**Audits run:**
+- `tools/live-tv-audit.js`: 906 directory entries, 800 held by the app.
+- `tools/official-sources-audit.js` and `tools/yt-channel-search.js`: Play listings and verified YouTube channel ids.
+- `tools/sun-ids.js`: Sun-owned iptv-org ids and DMCA blocklist.
+
+**Not run:**
+- An emulator boot with 2 GB of RAM (about 4 GB free on the host) exited before Android finished booting, so the new tab, Live TV merge and handoff screens were **not checked on screen**.
+- No Sun channel was played. Saandio streams none of them, and Sun NXT needs a subscription.
+- Catch-Up rows were not loaded live. That needs `YOUTUBE_API_KEY` on a deployed backend (or a debug developer key).
+- No XMLTV guide was loaded. No permitted source is configured.
+
+## Turn 7 · Movie tab sources, movie playback, background trailers (2026-11-03)
+
+**Automated checks:** `gradlew.bat testDebugUnitTest assembleDebug lintDebug` passes. `compileReleaseJavaWithJavac` passes.
+- 188 unit tests in 29 classes: all ran, 0 failed. The 20 new ones are in `MovieSourcesTest` (11) and `TrailerMatcherTest` (9). They cover:
+  - MovieRulz is never ready, explains why, returns no titles, and its titles are refused before any network call
+  - Einthusan without authorization is empty and says "Authorization required"
+  - with the simulation: only Einthusan titles appear, and the playable row holds exactly the 4 confirmed films
+  - DRM-only, region-locked and insecure titles are UNAVAILABLE, each with a reason
+  - a provider of another origin is ignored, and a rejected catalog (401) propagates so the last rows are kept
+  - availability mapping, the store round-trip, and Watch Movie gating
+  - poster badges say "▶ Play" only for AVAILABLE
+  - trailer query format; rejection of reactions, reviews, fan edits, full movies, wrong years, unofficial channels, unembeddable, private, live and over-long videos
+  - movie names containing reject words ("Event Horizon", "2012")
+  - YouTube duration and region-block parsing; cache lifetimes and permanent player errors; the embed page and video ID validation
+- `TrailerResolverTest` is updated for the new player-host allowlist.
+- Backend: `node --test` passes 14 of 14, including 4 new `/api/trailer` tests (key never returned, 503 without a key, input limits, quota mapping).
+- Lint: 0 errors, 38 warnings.
+- Debug APK: 26,140,037 bytes, SHA-256 prefix `25B36F3088C872BF`.
+
+**Emulator (Pixel_9a AVD, API 37, 1280×720):**
+- HD Movies, before the simulation was enabled: it showed "Authorization required…" and no titles. No TMDB or Wikidata titles were substituted. The reason was printed three times; that is fixed, and the tab now shows it once.
+- Home and TV Shows rendered from the saved catalog.
+
+**Blocked by the environment:** the host had 0.6–1.9 GB of free RAM while the emulator needed 4 GB.
+- System UI stopped responding. Screen capture returned black frames.
+- Saandio's window could not get focus ("Input dispatching timed out (Application does not have a focused window)"). The ANR stack shows Saandio's main thread idle in `Looper.pollOnce`, so the app was not blocked.
+- A cold boot with a software GPU hit the same fault at a load average of 40–50.
+- **Not run:** the end-to-end path HD Movies (simulation) → Big Buck Bunny → Watch Movie → Media3 READY, the `SaandioPlayback` logcat trace, and the on-screen trailer preview and fallback.
+- The movie-playback fix is therefore **not declared done**. It needs this run on a device or emulator with enough memory.
+
+**Not possible without credentials or agreements:**
+- MovieRulz: no authorized API exists.
+- Einthusan: no public API and no agreement.
+- YouTube search: needs `YOUTUBE_API_KEY` on a deployed `backend/`.
+- TMDB official trailers: need the catalog service, or a developer key in debug builds.
+
+## Turn 6 · Playback reliability, posters, diagnostics, background refresh (2026-11-03)
+
+**Automated checks:** `gradlew.bat testDebugUnitTest assembleDebug lintDebug` passes.
+- 168 unit tests passed, 0 failed. The 14 new ones are in `PlaybackReliabilityTest` and `CatalogReliabilityTest`. They cover:
+  - stream type detection and rejection of non-media URLs (trailer, poster, web page, metadata API)
+  - checks for insecure links, unavailable titles, region locks and DRM
+  - signed-URL expiry formats (CloudFront, Akamai, AWS)
+  - per-category error classification and bounded backoff
+  - artwork URL validation, the broken-artwork memory and its size bound
+  - diagnostics redaction
+  - channel retirement and its daily re-check
+  - regional language verification
+- Lint: 0 errors, 35 warnings, down from 54.
+- Media3 is upgraded from 1.8.0 to 1.11.1, the current stable release on Google Maven, so `compileSdk` is now 36. `targetSdk` stays at 35.
+- Debug APK: 26,140,037 bytes, SHA-256 prefix `0730D28F3A29BE45`.
+
+**Emulator (API 35, 1280×720):**
+- Installed over the previous build and launched. Home rendered from the saved catalog.
+- Wikidata titles without artwork now show the branded Saandio title card instead of two-letter initials.
+- Cold start was 24 s on the first launch right after install (post-install optimization), then 10.4 s and 7.8 s on repeat launches with an emulator load average of 8–18. The previous build measured 6.8–8.0 s under similar load in Turn 5.
+- No crash or ANR from Saandio was logged.
+
+**Blocked by the environment:**
+- With ~0.3–1.9 GB of free host RAM, the emulator's `system_server` died (`DeadSystemException`). After a reboot, System UI, the launcher and the system process kept showing ANR dialogs, which captured D-pad input.
+- Because of that, these were **not run**: interactive HLS playback, the network drop during playback, the walkthrough of the Diagnostics screen, and the comparison of startup time against the previous build.
+- Expired-link refresh and DRM playback need a real authorized provider. Neither is configured, so they are covered by unit tests only.
+
+**Still not verified:** TMDB rows through the catalog proxy. No TMDB credential or deployed `backend/` exists on this machine.
+
 ## Turn 5 · Catalog without user keys (2026-11-02)
 
 **Root cause:** no build carried a TMDB credential (`local.properties` had only `sdk.dir`; BuildConfig `TMDB_API_KEY` was empty), so the TMDB sources reported not-ready, no movie or TV rows synced, and the UI asked viewers for a key. Permissions, base URLs and parsing were fine.

@@ -37,25 +37,23 @@ final class CatalogViews {
 
     // ---- cards -----------------------------------------------------------------------------
     final class CardHolder extends RecyclerView.ViewHolder{
-        final LinearLayout card;final FrameLayout art;final TextView fallback,badge,status,title,subtitle;final ImageView image;final ProgressBar progress;final int style;
+        final LinearLayout card;final Poster poster;final TextView badge,status,title,subtitle;final ProgressBar progress;final int style;
         CatalogItem item;String rowId="";int index;
-        CardHolder(LinearLayout card,FrameLayout art,TextView fallback,ImageView image,TextView badge,TextView status,ProgressBar progress,TextView title,TextView subtitle,int style){
-            super(card);this.card=card;this.art=art;this.fallback=fallback;this.image=image;this.badge=badge;this.status=status;this.progress=progress;this.title=title;this.subtitle=subtitle;this.style=style;
+        CardHolder(LinearLayout card,Poster poster,TextView badge,TextView status,ProgressBar progress,TextView title,TextView subtitle,int style){
+            super(card);this.card=card;this.poster=poster;this.badge=badge;this.status=status;this.progress=progress;this.title=title;this.subtitle=subtitle;this.style=style;
         }
     }
     CardHolder createCard(int style,boolean grid){
         LinearLayout card=ui.column();card.setPadding(ui.dp(4),ui.dp(4),ui.dp(4),ui.dp(6));
         RecyclerView.LayoutParams lp=new RecyclerView.LayoutParams(grid?-1:cardWidth(style),-2);if(!grid)lp.rightMargin=ui.dp(13);else lp.setMargins(ui.dp(4),0,ui.dp(9),ui.dp(14));card.setLayoutParams(lp);
-        FrameLayout art=new FrameLayout(context);art.setClipToOutline(true);
-        TextView fallback=ui.bold("",style==WIDE?22:30);fallback.setGravity(Gravity.CENTER);fallback.setPadding(ui.dp(10),ui.dp(10),ui.dp(10),ui.dp(10));fallback.setMaxLines(6);fallback.setEllipsize(TextUtils.TruncateAt.END);art.addView(fallback,new FrameLayout.LayoutParams(-1,-1));
-        ImageView image=new ImageView(context);image.setScaleType(style==WIDE?ImageView.ScaleType.FIT_CENTER:ImageView.ScaleType.CENTER_CROP);art.addView(image,new FrameLayout.LayoutParams(-1,-1));
+        Poster poster=new Poster(ui,style==WIDE,18);FrameLayout art=poster.root;
         TextView badge=ui.badge("",0xcc0b0d12);FrameLayout.LayoutParams bp=new FrameLayout.LayoutParams(-2,-2,Gravity.TOP|Gravity.START);bp.setMargins(ui.dp(6),ui.dp(6),0,0);art.addView(badge,bp);
         TextView status=ui.badge("",0xcc0b0d12);FrameLayout.LayoutParams sp=new FrameLayout.LayoutParams(-2,-2,Gravity.TOP|Gravity.END);sp.setMargins(0,ui.dp(6),ui.dp(6),0);art.addView(status,sp);
         ProgressBar progress=new ProgressBar(context,null,android.R.attr.progressBarStyleHorizontal);progress.setMax(100);art.addView(progress,new FrameLayout.LayoutParams(-1,ui.dp(3),Gravity.BOTTOM));
         card.addView(art,new LinearLayout.LayoutParams(-1,artHeight(style)));ui.gap(card,8);
         TextView title=ui.bold("",13);title.setMaxLines(1);title.setEllipsize(TextUtils.TruncateAt.END);card.addView(title);ui.gap(card,4);
         TextView subtitle=ui.text("",10,TvUi.MUTED);subtitle.setMaxLines(1);subtitle.setEllipsize(TextUtils.TruncateAt.END);card.addView(subtitle);
-        CardHolder h=new CardHolder(card,art,fallback,image,badge,status,progress,title,subtitle,style);
+        CardHolder h=new CardHolder(card,poster,badge,status,progress,title,subtitle,style);
         ui.focusCard(card,()->{if(h.item!=null)host.onItemFocused(h.rowId,h.item,h.getBindingAdapterPosition());});
         card.setOnClickListener(v->{if(h.item!=null)host.onItemClicked(h.rowId,h.item);});
         card.setOnLongClickListener(v->{if(h.item!=null)host.onItemLongPressed(h.rowId,h.item);return h.item!=null;});
@@ -64,38 +62,55 @@ final class CatalogViews {
     void bind(CardHolder h,CatalogItem c,String rowId,int index){
         h.item=c;h.rowId=rowId;h.index=index;Library.Title t=c.title;
         h.card.setTag(c.key());h.card.setContentDescription(t.name+", "+subtitle(c));
-        h.art.setBackground(ui.shape(0xff1b2638|(t.name.hashCode()&0x00181818),0,18));
-        boolean noArt=t.poster.isEmpty()&&t.background.isEmpty();
-        h.fallback.setTextSize(noArt?(h.style==WIDE?16:17):(h.style==WIDE?22:30));
-        h.fallback.setText(noArt?t.name+(c.year()>0?"\n"+c.year():""):t.name.isEmpty()?"":t.name.substring(0,Math.min(2,t.name.length())).toUpperCase(Locale.ROOT));
         h.title.setText(t.name);h.subtitle.setText(subtitle(c));
         String badge=badge(c);h.badge.setText(badge);h.badge.setVisibility(badge.isEmpty()?View.GONE:View.VISIBLE);
         String status=status(c);h.status.setText(status);h.status.setVisibility(status.isEmpty()?View.GONE:View.VISIBLE);
         h.status.setBackground(ui.shape(statusColor(c),0,8));
         int p=host.progress(c);h.progress.setProgress(p);h.progress.setVisibility(p>0?View.VISIBLE:View.GONE);
-        Artwork.load(h.image,t.poster.isEmpty()?t.background:t.poster);
+        h.poster.bind(t.name,CatalogItem.CHANNEL.equals(c.kind)||CatalogItem.EVENT.equals(c.kind)||CatalogItem.CATCHUP.equals(c.kind)?0:c.year(),t.poster.isEmpty()?t.background:t.poster);
     }
-    /** Quality only when an authorized provider verified it; LIVE only when the schedule says so. */
+    /** Quality only when an authorized provider verified it; LIVE only when the schedule says so or the player validated the channel. */
     static String badge(CatalogItem c){
         if(CatalogItem.EVENT.equals(c.kind))return c.live()?"● LIVE":"";
+        if(CatalogItem.CHANNEL.equals(c.kind)&&ChannelState.of(c,false,System.currentTimeMillis())==ChannelState.LIVE)return "● LIVE";
         if(c.verifiedHeight>0)return PlaybackPolicy.heightLabel(c.verifiedHeight);
         return "";
     }
     String status(CatalogItem c){
+        if(c.handoff())return (CatalogItem.CHANNEL.equals(c.kind)&&host.favorite(c)?"★ ":"")+handoffLabel(c);
         if(CatalogItem.CHANNEL.equals(c.kind))return (host.favorite(c)?"★ ":"")+("ok".equals(c.health)?"Online":"failed".equals(c.health)?"Offline":"Unchecked");
         if(CatalogItem.EVENT.equals(c.kind))return c.live()?"":SportsSource.statusLabel(c);
+        if(!c.availability.isEmpty())return availabilityBadge(c.availability());
         if(c.playable)return "▶ Play";
         return "";
     }
+    /** Poster badge for titles whose availability a source provider reported. Only AVAILABLE says Play. */
+    static String availabilityBadge(MovieAvailability a){
+        switch(a){
+            case AVAILABLE:return "▶ Play";
+            case CHECKING:return "Checking";
+            case LOGIN_REQUIRED:return "Login required";
+            case UNSUPPORTED:return "Unsupported";
+            case PROVIDER_ERROR:return "Provider error";
+            default:return "Unavailable";
+        }
+    }
+    /** Official-route entries say where they open and whether that costs anything; never "Online". */
+    static String handoffLabel(CatalogItem c){
+        String app=CatalogItem.YOUTUBE_HANDOFF.equals(c.playbackType)?"YouTube":OfficialAppHandoff.appName(c.playbackReference);
+        return CatalogItem.SUBSCRIPTION.equals(c.accessType)?"Subscription · "+app:CatalogItem.FREE.equals(c.accessType)?"Free · "+app:app;
+    }
     static int statusColor(CatalogItem c){
+        if(c.handoff())return CatalogItem.SUBSCRIPTION.equals(c.accessType)?0xcc6a4a12:0xcc1f4f8a;
         if(CatalogItem.CHANNEL.equals(c.kind))return "ok".equals(c.health)?0xcc1f6b3a:"failed".equals(c.health)?0xcc7a2630:0xcc33363d;
         if(CatalogItem.EVENT.equals(c.kind))return 0xcc33363d;
+        if(!c.availability.isEmpty()&&c.availability()!=MovieAvailability.AVAILABLE)return c.availability()==MovieAvailability.CHECKING?0xcc33363d:0xcc7a2630;
         return 0xcc1f4f8a;
     }
     static String subtitle(CatalogItem c){
         Library.Title t=c.title;
         if(CatalogItem.EVENT.equals(c.kind))return join(c.sport,time(c.startsAt),t.group.isEmpty()?"":t.group);
-        if(CatalogItem.CHANNEL.equals(c.kind))return join(t.language,t.group);
+        if(CatalogItem.CHANNEL.equals(c.kind))return c.episodeLabel.isEmpty()?join(t.language,t.group):c.episodeLabel;
         if(!c.episodeLabel.isEmpty())return c.episodeLabel;
         String rating=c.rating>0&&!c.ratingSource.isEmpty()?String.format(Locale.US,"★ %.1f",c.rating):"";
         return join(c.year()>0?String.valueOf(c.year()):"",t.language,rating,c.audio.size()>1?c.audio.size()+" audio":"");
@@ -117,9 +132,9 @@ final class CatalogViews {
         @NonNull @Override public CardHolder onCreateViewHolder(@NonNull ViewGroup parent,int type){return createCard(type,grid);}
         @Override public void onBindViewHolder(@NonNull CardHolder h,int position){
             bind(h,getItem(position),rowId,position);
-            if(position+1<getItemCount())Artwork.prefetch(context,getItem(position+1).title.poster);
+            if(style==POSTER&&position+1<getItemCount())Artwork.prefetch(context,getItem(position+1).title.poster);
         }
-        @Override public void onViewRecycled(@NonNull CardHolder h){Artwork.cancel(h.image);h.item=null;}
+        @Override public void onViewRecycled(@NonNull CardHolder h){h.poster.recycle();h.item=null;}
         int indexOf(String key){List<CatalogItem> l=getCurrentList();for(int i=0;i<l.size();i++)if(l.get(i).key().equals(key))return i;return -1;}
     }
     /** One fixed view (grid header or footer) inside a ConcatAdapter. */

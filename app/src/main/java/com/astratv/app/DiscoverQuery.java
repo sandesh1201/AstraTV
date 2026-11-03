@@ -44,7 +44,8 @@ final class DiscoverQuery {
         if(!(movie()?CatalogItem.MOVIE:CatalogItem.SERIES).equals(c.kind))return false;
         if(!languageCode.isEmpty()&&!languageCode.equalsIgnoreCase(c.languageCode)){
             String wanted=LanguageTaxonomy.canonical(languageCode);
-            if(wanted.equals(LanguageTaxonomy.OTHER)||!wanted.equals(LanguageTaxonomy.of(c.title)))return false;
+            if(wanted.equals(LanguageTaxonomy.OTHER)){if(!languageCode.trim().equalsIgnoreCase(c.title.language.trim()))return false;}
+            else if(!wanted.equals(LanguageTaxonomy.of(c.title)))return false;
         }
         if(year>0&&c.year()!=year)return false;
         if(!genreName.isEmpty()){boolean hit=false;for(String g:GenreTaxonomy.of(c.title))if(g.equalsIgnoreCase(GenreTaxonomy.canonical(genreName))){hit=true;break;}if(!hit&&!c.title.genre.toLowerCase(Locale.ROOT).contains(genreName.toLowerCase(Locale.ROOT)))return false;}
@@ -52,12 +53,15 @@ final class DiscoverQuery {
         if(minRating>0&&c.rating<minRating)return false;
         return true;
     }
-    /** Local ordering matching the chosen sort. Newest uses the official release date; added uses Saandio's first-seen time. */
+    /**
+     * Local ordering matching the chosen sort. Newest uses the official release date; added uses the
+     * provider's own added date when it reports one, otherwise Saandio's first-seen time.
+     */
     static List<CatalogItem> order(List<CatalogItem> items,String sort){
         List<CatalogItem> out=new ArrayList<>(items);
         Comparator<CatalogItem> newest=Comparator.comparingInt(CatalogItem::dateKey).reversed().thenComparing(c->c.title.name,String.CASE_INSENSITIVE_ORDER);
         switch(sort){
-            case "added":out.sort(Comparator.comparingLong((CatalogItem c)->Math.max(0,c.firstSeen)).reversed().thenComparing(newest));break;
+            case "added":out.sort(Comparator.comparingLong((CatalogItem c)->c.addedAt>0?c.addedAt:Math.max(0,c.firstSeen)).reversed().thenComparing(newest));break;
             case "trending":out.sort(Comparator.comparingDouble((CatalogItem c)->c.popularity).reversed().thenComparing(newest));break;
             case "rating":out.sort(Comparator.comparingDouble((CatalogItem c)->c.rating).reversed().thenComparing(newest));break;
             default:out.sort(newest);

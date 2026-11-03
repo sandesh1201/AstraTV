@@ -22,6 +22,11 @@ public class TrailerResolverTest {
         assertFalse(TrailerResolver.youtubeEmbed("https://evil.test/embed/dQw4w9WgXcQ"));
         assertFalse(TrailerResolver.youtubeEmbed("http://www.youtube-nocookie.com/embed/dQw4w9WgXcQ"));
         assertTrue(TrailerResolver.youtubePlayerResource("https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg"));
-        assertFalse(TrailerResolver.youtubePlayerResource("https://doubleclick.net/ad"));
+        assertTrue(TrailerResolver.youtubePlayerResource("https://www.youtube.com/iframe_api"));
+        assertTrue(TrailerResolver.youtubePlayerResource("https://googleads.g.doubleclick.net/pagead/id"));
+        assertFalse(TrailerResolver.youtubePlayerResource("https://evil-youtube.com/x"));
+        assertFalse(TrailerResolver.youtubePlayerResource("https://youtube.com.evil.test/x"));
+        assertFalse(TrailerResolver.youtubePlayerResource("http://www.youtube.com/iframe_api"));
+        assertFalse(TrailerResolver.youtubePlayerResource("https://user@www.youtube.com/iframe_api"));
     }
 }

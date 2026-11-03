@@ -1,6 +1,14 @@
 # Einthusan integration report
 
-## Status: blocked on authorization, simulated
+> **Removed in Turn 10 (2026-11-03).** At the owner's request the HD Movies tab and the whole
+> Einthusan integration were deleted: `EinthusanAdapter`, `EinthusanCatalogProvider`,
+> `EinthusanSimulatedProvider`, `SimulatedPartnerServer`, the Creative Commons fixture
+> (`assets/simulation/einthusan_partner_v1.json`), the simulation add-on, the "Open einthusan.tv"
+> button and `EinthusanContractTest`. The generic `LicensedProvider` contract and
+> `SourceMovieCatalog` remain for the Movies tab and are covered by `MovieSourcesTest`. The report
+> below is kept as a historical record.
+
+## Status (historical): blocked on authorization, simulated
 
 Einthusan publishes no third-party catalog or playback API and no partner programme that this
 project could find. Every community integration reviewed (`docs/REPO_EVALUATION.md`) works by

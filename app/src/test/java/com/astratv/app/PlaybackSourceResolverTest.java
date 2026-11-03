@@ -14,7 +14,7 @@ public class PlaybackSourceResolverTest {
         assertFalse(r.playable());assertNull(r.title);
     }
     @Test public void licensedProviderWithSameWorkMakesItPlayable(){
-        CatalogItem licensed=movie(EinthusanSimulatedProvider.ID,"e1","Devara (Hindi)","2024-09-27");licensed.playable=true;licensed.verifiedHeight=1080;licensed.title.providerName="Partner";
+        CatalogItem licensed=movie("partner","e1","Devara (Hindi)","2024-09-27");licensed.playable=true;licensed.verifiedHeight=1080;licensed.title.providerName="Partner";
         store.replaceRows("licensed",Collections.singletonList(new CatalogSource.Batch("licensed.playable",Collections.singletonList(licensed),false)),0);
         PlaybackSourceResolver.Resolution r=resolver.resolve(tmdb(1,"Devara","2024-09-27"));
         assertEquals(PlaybackSourceResolver.Kind.LICENSED_MATCH,r.kind);
@@ -22,7 +22,7 @@ public class PlaybackSourceResolverTest {
         assertTrue(r.reason.contains("Partner"));
     }
     @Test public void differentYearIsNotAMatch(){
-        CatalogItem licensed=movie(EinthusanSimulatedProvider.ID,"e1","Devdas","1955-01-01");licensed.playable=true;
+        CatalogItem licensed=movie("partner","e1","Devdas","1955-01-01");licensed.playable=true;
         store.replaceRows("licensed",Collections.singletonList(new CatalogSource.Batch("licensed.playable",Collections.singletonList(licensed),false)),0);
         assertFalse(resolver.resolve(tmdb(9,"Devdas","2002-07-12")).playable());
     }
@@ -43,7 +43,7 @@ public class PlaybackSourceResolverTest {
         }
     }
     @Test public void openDataTitleUsesLicensedMatchWhenOneExists(){
-        CatalogItem licensed=movie(EinthusanSimulatedProvider.ID,"e1","Devara","2024-09-27");licensed.playable=true;
+        CatalogItem licensed=movie("partner","e1","Devara","2024-09-27");licensed.playable=true;
         store.replaceRows("licensed",Collections.singletonList(new CatalogSource.Batch("licensed.playable",Collections.singletonList(licensed),false)),0);
         assertEquals(PlaybackSourceResolver.Kind.LICENSED_MATCH,resolver.resolve(movie(WikidataFilmSource.PROVIDER,"film:Q1","Devara","2024-09-27")).kind);
     }

@@ -18,7 +18,7 @@ Launch **Saandio TV** from your TV's apps. Navigate with arrows, Select and Back
 
 Providers supply **catalog data → title metadata → direct media sources**. The app owns the browsing experience and player. An unavailable source produces an error inside Astra; it never launches a website as a fallback.
 
-- **MovieRulz:** consumes the public [movies_m3u playlist](https://github.com/thirud4a4/movies_m3u), prioritizing Telugu and Hindi. Language filters and 48-title pages keep the catalog manageable; alternate streams are grouped per title. Listed third-party proxy URLs are consumed directly; their worker implementation is not bundled or deployed. Cast/synopsis are shown only when actually supplied, not invented from playlist names.
+- **MovieRulz:** retired (Turn 7). MovieRulz has no authorized catalog or playback API. Its sites and the [movies_m3u playlist](https://github.com/thirud4a4/movies_m3u) built from them list unlicensed copies of films, served through third-party proxies. Saandio no longer reads or plays them. The Movies tab stays empty and explains why.
 - **Tamil catch-up / TamilTVSerial:** parses episode cards and follows explicitly designated video sources without opening tabs. A shortlink that needs an interactive browser or an unsupported host cannot be played by this adapter.
 - **Telugu catch-up / TeluguStream:** uses the same native catalog/detail/resolution pipeline with its own provider identity and stored settings.
 - **TV channels:** intersects the [IPTV-org India directory](https://iptv-org.github.io/iptv/countries/in.m3u) with 15 language feeds, retains unclassified country entries, groups alternate HTTPS streams, and provides language then genre browsing. Default language is Telugu; choose All + News for news across languages. Partial feed coverage is explicit. This community directory does not guarantee every channel, free entitlement, regional availability or uptime. Video-embedded broadcaster ads remain.
@@ -48,9 +48,135 @@ Read [docs/VERIFICATION.md](docs/VERIFICATION.md) for actual checks and [docs/RE
 
 App-private preferences contain watchlist, reviews, history, imported metadata and encrypted optional provider sessions. Catalogs are cached in app-private storage; backup/transfer exclusions are configured. Source servers, third-party proxies, artwork hosts and optional metadata APIs (TMDB / OMDb / Trakt / YouTube Data) receive normal network requests when keys are configured. There are no analytics or advertising SDKs.
 
-**YouTube trailer exception:** the only WebView in the app loads the official YouTube IFrame player on `https://www.youtube-nocookie.com/embed/{id}`. Top-level navigation and new windows are blocked. JavaScript is enabled only so the player can run. Cookies are not accepted or persisted. Subresources are limited to youtube-nocookie, ytimg, googlevideo and gstatic HTTPS hosts required by that official embed. YouTube stream URLs are never scraped or extracted. Direct HTTPS trailers from a provider play in Media3 instead. Reduce motion and the Autoplay trailers setting disable this path. This does not remove advertising already embedded in a video stream or make the client a hardened security sandbox.
+**YouTube trailer exception:** the only WebView in the app runs YouTube's official IFrame Player API (`youtube.com/iframe_api`, `youtube-nocookie.com` host), loaded with the app's identity (`https://com.astratv.app/`) as origin and referrer, as YouTube's embed rules require.
+- Top-level navigation and new windows are blocked. JavaScript is enabled only so the player can run, and cookies are not accepted or persisted.
+- Requests may go only to the HTTPS Google hosts the official player needs, including its ad and measurement hosts. YouTube's API terms forbid blocking those.
+- YouTube stream URLs are never scraped or extracted. Direct HTTPS trailers from a provider play in Media3 instead.
+- Reduce motion and the Autoplay trailers setting disable this path. This is not a hardened security sandbox.
 
 Viewers never need an API key. TMDB requests go through the **Saandio Catalog API** (`backend/`), which keeps the TMDB credential in server environment variables; the build only learns its HTTPS address from `catalog.api.base` (see below). Optional developer keys are read from `local.properties` (`tmdb.api.key` — debug builds only —, `omdb.api.key`, `trakt.client.id`, `youtube.api.key`) into BuildConfig, or entered in Settings → Developer · metadata keys. They are stored in app-private `astra_ui_v1` preferences and are never committed or written to the research log.
+
+## Six tabs, Catch-Up TV episodes and Einthusan removal (Turn 10)
+
+- **Navigation:** exactly six tabs: Home, Movies, TV Shows, Catch-Up TV, Live TV and Sports Live (`Navigation.TABS`).
+  - "All Movies" is now **Movies**. Its saved filters keep the old preference key, so nothing resets.
+  - **HD Movies is removed**, together with every Einthusan class, the Creative Commons simulation fixture, the simulation add-on and the "Open einthusan.tv" button. Watch history, favorites and preferences are untouched.
+- **Movies (MovieRulz only):** unchanged and still empty, with the reason shown. MovieRulz has no authorized catalog or playback API, so Saandio does not read its pages. The tab never shows TMDB or any other catalog, and it shows no TMDB key prompt. Its Language, Year, Genre, Quality and Sort filters work on whatever an authorized MovieRulz provider would list.
+- **Catch-Up TV:** language → show → episodes → episode → official app.
+  - **Where the data comes from:** each site's public WordPress RSS feed (`/feed/`, `?paged=N`; robots.txt only excludes `/wp-admin/`), read by `WordPressSerialFeed` and `SerialFeedParser`.
+    - Only the show, episode number, air date (from the post title, in India time) and broadcaster are kept.
+    - Post links, bodies, thumbnails and embedded video links are dropped and never stored.
+    - Requests are conditional (ETag / Last-Modified) and 400 ms apart, and paging stops at the first page with nothing new. A routine hourly refresh is one or two requests; the first sync reads up to 12 pages per site.
+    - Episodes stay listed for 14 days. Repeated posts of the same show and episode are merged.
+  - **Broadcaster → app** (`CatchupBroadcasters`):
+
+    | Broadcasters | Official app |
+    |---|---|
+    | Sun TV, KTV, Gemini, Udaya, Surya | Sun NXT |
+    | Star Vijay, Star Maa, Colors Tamil/Kannada, Asianet, Star Suvarna | JioHotstar |
+    | Zee Tamil/Telugu/Kannada/Keralam | ZEE5 |
+    | ETV | ETV Win |
+    | Sony Vizha | Sony LIV |
+
+    The language follows the broadcaster, so a Telugu serial on TamilTVSerial is filed as Telugu. A broadcaster with no app (Kalaignar, Polimer, Raj, Jaya) or an unrecognised one gets "No official viewing option" instead of a Play button.
+  - **Screens:**
+    - The tab has a Language filter, an "All shows" grid, and rows for TV shows and latest episodes per site, Recently aired, and Continue Watching.
+    - A **show page** shows the name, language, broadcaster, latest episode and air date, a "Watch in <app>" button, and every saved episode, newest first.
+    - An **episode page** has Watch in <app> and "All episodes of <show>".
+    - Back returns to the same focused card.
+  - **What Watch does:** it opens the broadcaster's app on its home screen. None of these apps publishes episode deep links, so the viewer searches for the show there. Saandio has not checked that each episode is in the app.
+  - **What Saandio does not do:** it never opens the two sites' pages and never plays their videos, which re-host broadcaster episodes without a licence. The legacy scraping add-ons for both sites stay blocked.
+  - Sun Network channels stay only in Live TV.
+- **Web pages:** Saandio has no in-app browser. Its only WebView is the YouTube trailer player, which disables multiple windows, refuses `onCreateWindow`, blocks top-level navigation and non-YouTube hosts, and turns cookies off. A source-site browser for these catch-up sites was not built: it would turn Saandio into a viewer for unlicensed re-hosted episodes.
+- **Developer check:** `tools/catchup-live-check/run.ps1` runs the app's own parser against the live feeds and prints metadata only.
+
+## Content sources and Einthusan HD Movies (Turn 9)
+
+*Superseded by Turn 10: HD Movies and Einthusan were removed, and Catch-Up TV now lists episodes from the sites' RSS feeds.*
+
+Each tab reads only its own sources:
+
+| Tab | Source |
+|---|---|
+| Home | Aggregate of the other tabs |
+| All Movies | MovieRulz only |
+| HD Movies | Einthusan only |
+| TV Shows | Unchanged (TMDB / TVMaze) |
+| Catch-Up TV | TamilTVSerial and TeluguStream only |
+| Live TV, Sports Live | Unchanged |
+
+- **HD Movies is empty in release builds, and says why.** Einthusan has no catalog or playback API (`/api/` is a 404 page), no partner programme and no Android TV app. Its Terms of Use forbid access "through any automated means" and circumventing its video player's access controls. The Kodi add-ons and CLI tools that read Einthusan do exactly that, so none of their code is used (see [docs/REFERENCE_PROJECTS.md](docs/REFERENCE_PROJECTS.md)). An "Open einthusan.tv" button hands off to a web browser.
+- **HD Movies filters:** Language (Telugu, Tamil, Hindi, Malayalam, Kannada, Bengali, Marathi, Punjabi, plus any other language the provider lists), Year and Genre, both built from the provider's own titles, plus Verified quality. Sorting is newest release or provider-added date first. 1080p and 4K appear only from verified stream renditions.
+- **Availability states:** AVAILABLE, CHECKING, UNAVAILABLE, LOGIN_REQUIRED, UNSUPPORTED and PROVIDER_ERROR. Watch Movie appears only for AVAILABLE. Rows saved with the old AUTHORIZATION_REQUIRED read as UNSUPPORTED.
+- **Catch-Up TV:**
+  - Rows: Latest Telugu Episodes, Latest Tamil Episodes, Telugu Serials, Tamil Serials, Recently Aired and Continue Watching.
+  - `TamilTvSerialProvider` and `TeluguStreamProvider` fill them only from an authorized feed. None exists: both sites re-post same-day episodes that the broadcasters license to their own apps. The rows therefore stay empty with that reason.
+  - The legacy add-ons that scraped the two sites are now blocked, like MovieRulz.
+  - The Doordarshan archive rows and Sun NXT tiles from Turn 8 moved behind `feature.official_catchup_archives`, which is off by default. Sun Network stays in Live TV.
+- **Live TV:** the owner decided to remove the two third-party Sun restreams, "Sun TV HD" (`SunTV.in~Tamil`) and "Sun Surya HD" (`SunSurya.in~Malayalam`). `SunNetworkChannels.rightsAsserted` removes any directory channel whose iptv-org id belongs to a Sun channel. Sun TV, Sun TV HD, Surya TV and Surya TV HD now appear only as Sun NXT entries. All other directory channels are unchanged.
+- **Diagnostics:** a "Content providers" panel separates these cases: catalog request failed, title discovered but playback unavailable, expired session, provider authentication failure, unsupported Android TV integration, Media3 initialization failure, network error and decoder error.
+
+## Live TV additions, Sun Network and Catch-Up TV (Turn 8)
+
+Details, the 37-channel Sun Network audit and the source review are in [docs/LIVE_TV_AND_CATCHUP.md](docs/LIVE_TV_AND_CATCHUP.md).
+
+- **Existing Live TV unchanged.** The iptv-org directory keeps the same 800 channels, ids, stream URLs, favorites, health checks and labels. `LiveTvRegressionTest` locks this against a real feed fixture, and [docs/live-tv-baseline.tsv](docs/live-tv-baseline.tsv) records the baseline.
+- **Sun Network:**
+  - All 37 official channels are listed with their authorized route: **Sun NXT** (subscription, app handoff). Sun News also offers its official YouTube channel.
+  - No Sun stream is added. Sun has asserted rights over its channels with iptv-org.
+  - Channels already in the directory (Sun TV HD, Sun Surya HD) were not duplicated; they showed "Also on Sun NXT". Turn 9 removed those two restreams.
+- **Channel state:** LIVE means the channel actually played in Saandio within the last 6 hours, not just that its URL answered. Official entries show "Subscription · Sun NXT" or "Free · YouTube".
+- **Catch-Up TV tab**, between TV Shows and Live TV (since Turn 9, these rows show only with `feature.official_catchup_archives=true`):
+  - Episodes and programmes from the official Doordarshan / Prasar Bharati YouTube channels, newest first, in serial, classics and free-programme rows. They open in the YouTube app.
+  - Sun NXT catch-up tiles are marked as subscription.
+  - Needs the backend's `/api/channel-uploads` with `YOUTUBE_API_KEY`.
+- **Programme guide:** XMLTV support exists but ships **off**, because no permitted guide source was found. To turn it on, set `epg.xmltv.url` and `feature.extended_epg=true`.
+- **Rollback:** the `feature.new_live_sources`, `feature.sun_network`, `feature.catchup_tv` and `feature.extended_epg` entries in `local.properties`, or the toggles in Settings → Diagnostics → Feature flags.
+
+## Movie tabs, movie playback and background trailers (Turn 7)
+
+- **All Movies = MovieRulz only. HD Movies = Einthusan only.** Each tab reads one provider's own catalog (`MovieRulzCatalogProvider`, `EinthusanCatalogProvider`). TMDB, Wikidata, IMDb and OMDb never add titles there; metadata can only enrich a title the provider listed. A failing provider keeps its last confirmed titles. Nothing is filled in from another catalog.
+- **Availability:** every title carries `AVAILABLE`, `UNAVAILABLE`, `CHECKING`, `AUTHORIZATION_REQUIRED` or `PROVIDER_ERROR`, taken from the provider's playback API and the same checks the player applies.
+  - Tabs show only AVAILABLE titles by default. "Unavailable titles · Shown" reveals the rest with a status badge. "Check provider now" re-syncs.
+  - Watch Movie is enabled only for AVAILABLE. Otherwise the button says why ("Authorization required", "Not available to watch", "Provider error · Check again").
+- **Current status:**
+  - **MovieRulz:** not available. It has no authorized API, and Saandio will not use its pirated listings.
+  - **Einthusan:** authorization required. It has no public API and Saandio has no agreement with it.
+  - Debug builds can turn on the labelled Einthusan *simulation* (Creative Commons films behind the partner contract) to test the whole path.
+- **Playback trace:** `FullMoviePlaybackController` logs each stage under logcat tag `SaandioPlayback` and in Settings → Diagnostics → Playback stages. The stages are selected, record, resolver, descriptor, player, ready and error. Lines are redacted: no links, keys or tokens.
+- **Background trailers:** `TrailerPreviewController`, kept separate from movie playback.
+  - On focus the backdrop shows at once. After 700 ms a muted trailer plays in a 16:9 window at the top right, clear of the title text.
+  - Only one preview plays at a time. It stops on focus change, scrolling, dialogs or leaving the screen.
+  - Lookup order: provider trailer file, cached ID, TMDB official trailer, then a YouTube Data API search through the catalog service's `/api/trailer`, picked by `TrailerMatcher`.
+  - `TrailerMatcher` rejects reactions, reviews, fan edits, full movies, live, private, unembeddable or region-blocked videos and unofficial channels.
+  - Results are cached for 30 days (misses for 3). A player error, an 8-second start timeout or no match falls back to the backdrop. No black box, no spinner.
+
+## Playback reliability, posters and diagnostics (Turn 6)
+
+- **Playback candidates:** `PlaybackCandidate` carries everything known about a stream: provider, link, stream type (HLS, DASH or progressive), audio, subtitles, declared quality, availability, signed-link expiry, Widevine DRM settings, region list and approved headers.
+  - It is checked before the player starts. Non-media links (trailers, posters, web pages, metadata APIs), insecure links, expired links, unavailable titles, region locks and unsupported DRM are refused with a clear reason.
+- **Error handling:** `PlaybackErrors` sorts each Media3 failure into one category: network, authorization, expired link, not found, unsupported codec, invalid manifest, DRM, provider outage, decoder, or behind the live window.
+  - Only temporary failures retry, with bounded exponential backoff (1–16 s, at most 4 tries; decoder faults retry once).
+  - While offline, playback waits for the network and resumes from the saved position.
+  - An expired signed link is replaced by asking the provider again, at most twice.
+  - Repeated buffering stalls show a "connection is slower than this stream" hint.
+  - A paused player with no player screen is released after 10 minutes.
+- **Posters:** the `Poster` component has four states. Loading shows a skeleton, loaded shows the image, and missing or failed shows a branded Saandio card with the title and year.
+  - `Artwork` validates image URLs and retries temporary failures twice.
+  - URLs that keep failing are remembered and skipped: for a day after an HTTP 4xx, or 10 minutes after a temporary failure. The list holds at most 512 URLs.
+- **Catalog:** TMDB rows keep their sort modes distinct: Trending This Week (`/trending`), Popular Movies (`/movie/popular`), New & Popular in India, the Latest rows per language by release date, and Recently Added (first seen by Saandio).
+  - Regional rows drop titles whose original language doesn't match.
+  - A JobScheduler job refreshes due sources every 6 hours. Launch still syncs on its own, so first-run content never waits for the job.
+- **Live TV:** a channel that failed 3 or more checks and hasn't worked for 3 days is hidden from the main listing. It is re-checked daily, its record is kept, and a toggle shows it again.
+- **Diagnostics:** Settings → Diagnostics (debug builds, or builds with a tester PIN) shows:
+  - provider status and the saved-catalog size
+  - image and network failure counts
+  - recent metadata and playback errors
+  - the last successful playback start
+  - memory warnings
+
+  Entries keep reasons, codes and host names only.
+- **Reference projects:** see [docs/REFERENCE_PROJECTS.md](docs/REFERENCE_PROJECTS.md).
 
 ## Catalog without user keys (Turn 5)
 
@@ -70,7 +196,7 @@ Home shelves use language and genre titles. Provider names stay on Add-ons and i
 - **Navigation:** six tabs (Home, All Movies, HD Movies, TV Shows, Live TV, Sports Live) plus Search, Watchlist and Settings icons. Each tab remembers its focused card, scroll position and filters. Back from a detail page returns to the same card.
 - **Sources:** these are synced into a local SQLite catalog (`catalog_v2.db`, WAL mode):
   - TMDB movies and series, through the Saandio Catalog API (Turn 5), with Wikidata films and TVMaze episodes as keyless open data
-  - Licensed playback partners (only the clearly labelled Einthusan simulation today, off by default)
+  - Licensed playback partners (only the clearly labelled Einthusan simulation today, debug builds, off by default)
   - The iptv-org public channel directory
   - TheSportsDB match schedules (the shared free key works; a personal key adds yesterday's results)
 - **Sync:** the saved catalog shows immediately. Each source then refreshes in the background on launch, when the app returns to the foreground, and every 5 minutes while open. Requests use ETag / Last-Modified, so unchanged sources cost a 304.

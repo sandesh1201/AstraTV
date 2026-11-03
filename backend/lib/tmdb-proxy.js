@@ -136,7 +136,10 @@ async function handle(req, env, fetchImpl) {
 
 function health(env) {
   const cred = credential(env);
-  return json(200, { ok: true, service: 'saandio-catalog-api', tmdbConfigured: !!cred, auth: cred ? cred.kind : null, clientTokenRequired: !!env.SAANDIO_CLIENT_TOKEN });
+  return json(200, {
+    ok: true, service: 'saandio-catalog-api', tmdbConfigured: !!cred, auth: cred ? cred.kind : null,
+    trailerSearchConfigured: !!(env.YOUTUBE_API_KEY && env.YOUTUBE_API_KEY.trim()), clientTokenRequired: !!env.SAANDIO_CLIENT_TOKEN,
+  });
 }
 
 /** Adapts handle()/health() to Node's req/res (Vercel functions and the local dev server). */
@@ -149,4 +152,4 @@ async function respond(req, res, compute) {
   res.end(req.method === 'HEAD' ? '' : result.body);
 }
 
-module.exports = { handle, health, respond, ALLOWED_PATHS };
+module.exports = { handle, health, respond, json, sameSecret, ALLOWED_PATHS };
